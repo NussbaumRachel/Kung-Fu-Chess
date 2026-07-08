@@ -93,7 +93,6 @@ Piece* Board::getCell(int row, int col) const { return grid_[row][col]; }
 
 void Board::setCell(int row, int col, Piece* piece)
 {
-    delete grid_[row][col];
     grid_[row][col] = piece;
 }
 Piece* Board::takeCell(int row, int col)

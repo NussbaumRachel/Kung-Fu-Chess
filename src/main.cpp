@@ -49,6 +49,8 @@ int main()
         {
             int ms;
             iss >> ms;
+
+            game.wait(ms);
         }
     }
 

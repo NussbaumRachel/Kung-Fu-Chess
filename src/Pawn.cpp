@@ -1,32 +1,36 @@
 #include "Pawn.hpp"
 #include "Board.hpp"
-
+#include <cmath>
 Pawn::Pawn(Color color) : Piece(color, PieceType::Pawn) {}
 
-bool Pawn::isValidMove(int fromRow, int fromCol,
-                       int toRow, int toCol,
+bool Pawn::isValidMove(int fromRow,
+                       int fromCol,
+                       int toRow,
+                       int toCol,
                        const Board& board) const
 {
-    int direction = (color_ == Color::White) ? -1 : 1;
+    const int movementDirection =
+        (color_ == Color::White) ? -1 : 1;
 
-    int rowDiff = toRow - fromRow;
-    int colDiff = abs(toCol - fromCol);
+    const int rowDifference = toRow - fromRow;
+    const int colDifference = abs(toCol - fromCol);
 
-    // תנועה קדימה
+
+    // Move one square forward
     if (toCol == fromCol &&
-        rowDiff == direction &&
-        board.isEmptyCell(toRow, toCol))
+        rowDifference == movementDirection)
     {
-        return true;
+        return board.isEmptyCell(toRow, toCol);
     }
 
-    // אכילה באלכסון
-    if (colDiff == 1 &&
-        rowDiff == direction &&
-        board.hasEnemyPiece(toRow, toCol, color_))
+
+    // Capture diagonally
+    if (colDifference == 1 &&
+        rowDifference == movementDirection)
     {
-        return true;
+        return board.hasEnemyPiece(toRow, toCol, color_);
     }
+
 
     return false;
 }
