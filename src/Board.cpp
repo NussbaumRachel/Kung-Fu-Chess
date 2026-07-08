@@ -96,7 +96,12 @@ void Board::setCell(int row, int col, Piece* piece)
     delete grid_[row][col];
     grid_[row][col] = piece;
 }
-
+Piece* Board::takeCell(int row, int col)
+{
+    Piece* p = grid_[row][col];
+    grid_[row][col] = nullptr;
+    return p;
+}
 bool Board::isEmptyCell(int row, int col) const
 {
     return grid_[row][col] == nullptr;
@@ -111,7 +116,36 @@ bool Board::isInsideBoard(int row, int col) const
 
 int Board::rowCount() const { return static_cast<int>(grid_.size()); }
 int Board::colCount() const { return grid_.empty() ? 0 : static_cast<int>(grid_[0].size()); }
+bool Board::hasFriendlyPiece(int row, int col, Color color) const
+{
+    Piece* piece = getCell(row, col);
+    return piece != nullptr && piece->getColor() == color;
+}
+bool Board::hasEnemyPiece(int row, int col, Color color) const
+{
+    Piece* piece = getCell(row, col);
+    return piece != nullptr && piece->getColor() != color;
+}
+bool Board::isPathClear(int fromRow, int fromCol,
+                        int toRow, int toCol) const
+{
+    int rowStep = (toRow > fromRow) - (toRow < fromRow);
+    int colStep = (toCol > fromCol) - (toCol < fromCol);
 
+    int row = fromRow + rowStep;
+    int col = fromCol + colStep;
+
+    while (row != toRow || col != toCol)
+    {
+        if (!isEmptyCell(row, col))
+            return false;
+
+        row += rowStep;
+        col += colStep;
+    }
+
+    return true;
+}
 void Board::print() const
 {
     for (size_t i = 0; i < grid_.size(); ++i)

@@ -51,11 +51,17 @@ public:
 
     // בדיקה אם מיקום נמצא בתוך גבולות הלוח
     bool isInsideBoard(int row, int col) const;
-
+    Piece* takeCell(int row, int col);
     // מספר שורות ועמודות
     int rowCount() const;
     int colCount() const;
 
+    bool isPathClear(int fromRow, int fromCol,
+                    int toRow, int toCol) const;
+
+    bool hasFriendlyPiece(int row, int col, Color color) const;
+
+    bool hasEnemyPiece(int row, int col, Color color) const;
 private:
     Grid grid_;
 

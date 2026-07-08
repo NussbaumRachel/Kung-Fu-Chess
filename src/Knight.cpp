@@ -10,5 +10,6 @@ bool Knight::isValidMove(int fromRow, int fromCol, int toRow, int toCol, const B
     int dCol = std::abs(toCol - fromCol);
 
     // פרש: קפיצת L — 2+1 או 1+2
-    return (dRow == 2 && dCol == 1) || (dRow == 1 && dCol == 2);
+    return ((dRow == 2 && dCol == 1) || (dRow == 1 && dCol == 2)) 
+    && (!board.hasFriendlyPiece(toRow, toCol, color_));
 }

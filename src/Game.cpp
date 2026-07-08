@@ -34,9 +34,8 @@ Color Game::pieceColor(int row, int col) const
 
 void Game::movePiece(int toRow, int toCol)
 {
-    Piece* moving = board_.getCell(selectedRow_, selectedCol_);
+    Piece* moving = board_.takeCell(selectedRow_, selectedCol_);
     board_.setCell(toRow, toCol, moving);
-    board_.setCell(selectedRow_, selectedCol_, nullptr);
 }
 
 void Game::switchTurn()

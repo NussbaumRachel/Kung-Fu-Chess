@@ -10,5 +10,7 @@ bool King::isValidMove(int fromRow, int fromCol, int toRow, int toCol, const Boa
     int dCol = std::abs(toCol - fromCol);
 
     // מלך זז תא אחד בדיוק לכל כיוון
-    return dRow <= 1 && dCol <= 1 && (dRow != 0 || dCol != 0);
+    return dRow <= 1 && dCol <= 1 && (dRow != 0 || dCol != 0) && (!board.hasFriendlyPiece(toRow, toCol, color_));
 }
+
+
