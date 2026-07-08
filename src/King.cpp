@@ -1,0 +1,14 @@
+#include "King.hpp"
+#include "Board.hpp"
+#include <cstdlib>
+
+King::King(Color color) : Piece(color, PieceType::King) {}
+
+bool King::isValidMove(int fromRow, int fromCol, int toRow, int toCol, const Board& board) const
+{
+    int dRow = std::abs(toRow - fromRow);
+    int dCol = std::abs(toCol - fromCol);
+
+    // מלך זז תא אחד בדיוק לכל כיוון
+    return dRow <= 1 && dCol <= 1 && (dRow != 0 || dCol != 0);
+}
