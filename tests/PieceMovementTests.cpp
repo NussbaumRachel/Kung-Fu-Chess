@@ -356,3 +356,67 @@ TEST(PawnTest, PawnCannotMoveForwardIntoOccupiedCell)
         pawn->isValidMove(1, 0, 2, 0, board)
     );
 }
+TEST(RookTest, CanMoveHorizontally)
+{
+    std::vector<std::vector<std::string>> layout =
+    {
+        {"wR", ".", "."}
+    };
+
+    Board board(layout);
+
+    Piece* rook = board.getCell(0,0);
+
+    EXPECT_TRUE(
+        rook->isValidMove(0,0,0,2,board)
+    );
+}
+TEST(RookTest, CannotMoveDiagonally)
+{
+    std::vector<std::vector<std::string>> layout =
+    {
+        {"wR",".","."},
+        {".",".","."},
+        {".",".","."}
+    };
+
+    Board board(layout);
+
+    Piece* rook = board.getCell(0,0);
+
+    EXPECT_FALSE(
+        rook->isValidMove(0,0,2,2,board)
+    );
+}
+TEST(BishopTest, CanMoveDiagonally)
+{
+    std::vector<std::vector<std::string>> layout =
+    {
+        {"wB",".","."},
+        {".",".","."},
+        {".",".","."}
+    };
+
+    Board board(layout);
+
+    Piece* bishop = board.getCell(0,0);
+
+    EXPECT_TRUE(
+        bishop->isValidMove(0,0,2,2,board)
+    );
+}
+TEST(QueenTest, CanMoveHorizontally)
+{
+    std::vector<std::vector<std::string>> layout =
+    {
+        {"wQ",".","."}
+    };
+
+    Board board(layout);
+
+    Piece* queen = board.getCell(0,0);
+
+    EXPECT_TRUE(
+        queen->isValidMove(0,0,0,2,board)
+    );
+}

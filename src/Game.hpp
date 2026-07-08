@@ -41,7 +41,10 @@ private:
         int toRow,
         int toCol
     ) const;
+
+    bool isAnyPieceMoving() const;
     
+    void resolveCollisions();
 };
 
 #endif

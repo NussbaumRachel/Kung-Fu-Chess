@@ -5,11 +5,11 @@ Move::Move(Piece* piece,
            Position from,
            Position to,
            int durationMs)
-    :
-    piece_(piece),
-    from_(from),
-    to_(to),
-    remainingMs_(durationMs)
+    : piece_(piece),
+      from_(from),
+      to_(to),
+      remainingMs_(durationMs),
+      durationMs_(durationMs)
 {
 }
 
@@ -43,4 +43,20 @@ Position Move::getFrom() const
 Position Move::getTo() const
 {
     return to_;
+}
+
+void Move::cancel() 
+{ 
+    cancelled_ = true;
+} 
+ 
+bool Move::isCancelled() const 
+{ 
+    return cancelled_; 
+}
+double Move::getProgress() const
+{
+    return 1.0 -
+           static_cast<double>(remainingMs_) /
+           durationMs_;
 }

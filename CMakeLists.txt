@@ -27,6 +27,7 @@ add_subdirectory(external/googletest-1.17.0)
 
 add_executable(chess_tests
     tests/PieceMovementTests.cpp
+    tests/GameTests.cpp
     src/Piece.cpp
     src/King.cpp
     src/Queen.cpp

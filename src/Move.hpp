@@ -11,7 +11,8 @@ public:
     Move(Piece* piece,
          Position from,
          Position to,
-         int durationMs);
+         int durationMs_
+        );
 
     void update(int milliseconds);
 
@@ -21,14 +22,17 @@ public:
 
     Position getFrom() const;
     Position getTo() const;
+    bool isCancelled() const;
+    void cancel();
+    double getProgress() const;
 
 private:
     Piece* piece_;
-
     Position from_;
     Position to_;
-
+    bool cancelled_ = false;
     int remainingMs_;
+    int durationMs_;
 };
 
 #endif
