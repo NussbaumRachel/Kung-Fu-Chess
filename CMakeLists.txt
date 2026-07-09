@@ -10,6 +10,7 @@ enable_testing()
 add_executable(kungfuchess
     src/main.cpp
     src/Piece.cpp
+    src/PieceFactory.cpp
     src/King.cpp
     src/Queen.cpp
     src/Rook.cpp
@@ -17,8 +18,11 @@ add_executable(kungfuchess
     src/Knight.cpp
     src/Pawn.cpp
     src/Board.cpp
+    src/Move.cpp
     src/BoardParser.cpp
-    src/Game.cpp
+    src/RuleEngine.cpp
+    src/RealTimeArbiter.cpp
+    src/GameEngine.cpp
 )
 
 target_include_directories(kungfuchess PRIVATE src)
@@ -29,6 +33,7 @@ add_executable(chess_tests
     tests/PieceMovementTests.cpp
     tests/GameTests.cpp
     src/Piece.cpp
+    src/PieceFactory.cpp
     src/King.cpp
     src/Queen.cpp
     src/Rook.cpp
@@ -36,8 +41,11 @@ add_executable(chess_tests
     src/Knight.cpp
     src/Pawn.cpp
     src/Board.cpp
+    src/Move.cpp
     src/BoardParser.cpp
-    src/Game.cpp
+    src/RuleEngine.cpp
+    src/RealTimeArbiter.cpp
+    src/GameEngine.cpp
 )
 
 target_include_directories(chess_tests PRIVATE src)

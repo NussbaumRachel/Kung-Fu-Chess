@@ -26,6 +26,9 @@ public:
     void cancel();
     double getProgress() const;
 
+    int getDurationMs() const { return durationMs_; }
+    int getRemainingMs() const { return remainingMs_; }
+
 private:
     Piece* piece_;
     Position from_;

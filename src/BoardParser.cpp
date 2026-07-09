@@ -1,5 +1,5 @@
 #include "BoardParser.hpp"
-#include "Piece.hpp"
+#include "PieceFactory.hpp"
 #include <sstream>
 #include <algorithm>
 
@@ -93,7 +93,7 @@ BoardParser::ParseResult BoardParser::parse(std::istream& input)
 
         for (const auto& token : tokens)
         {
-            if (token != "." && !Piece::isValidToken(token))
+            if (token != "." && !PieceFactory::isValidToken(token))
             {
                 result.error = "ERROR UNKNOWN_TOKEN";
                 result.hasError = true;
@@ -104,7 +104,6 @@ BoardParser::ParseResult BoardParser::parse(std::istream& input)
         stringGrid.push_back(tokens);
     }
 
-    auto b = std::make_unique<Board>(stringGrid);
-    result.board = std::move(b);
+    result.board = Board(stringGrid);
     return result;
 }

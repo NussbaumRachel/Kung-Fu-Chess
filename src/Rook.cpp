@@ -1,7 +1,7 @@
 #include "Rook.hpp"
 #include "Board.hpp"
 
-Rook::Rook(Color color) : Piece(color, PieceType::Rook) {}
+Rook::Rook(Color color, Position startCell) : Piece(color, PieceType::Rook, startCell) {}
 
 bool Rook::isValidMove(int fromRow, int fromCol, int toRow, int toCol, const Board& board) const
 {

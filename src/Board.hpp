@@ -24,6 +24,9 @@ public:
     Board(const Board& other);
     Board& operator=(const Board& other);
 
+    // שכפול עמוק (נוחות — מפעיל את בנאי ההעתקה)
+    Board clone() const;
+
     // העברה
     Board(Board&& other) noexcept;
     Board& operator=(Board&& other) noexcept;

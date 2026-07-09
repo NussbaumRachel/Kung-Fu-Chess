@@ -2,7 +2,7 @@
 #include "Board.hpp"
 #include <cstdlib>
 
-King::King(Color color) : Piece(color, PieceType::King) {}
+King::King(Color color, Position startCell) : Piece(color, PieceType::King, startCell) {}
 
 bool King::isValidMove(int fromRow, int fromCol, int toRow, int toCol, const Board& board) const
 {

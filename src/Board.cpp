@@ -1,5 +1,6 @@
 #include "Board.hpp"
 #include "Piece.hpp"
+#include "PieceFactory.hpp"
 
 Board::Board() = default;
 
@@ -25,7 +26,7 @@ Board::Board(const Board& other)
         for (size_t c = 0; c < other.grid_[r].size(); ++c)
         {
             if (other.grid_[r][c])
-                grid_[r][c] = Piece::createFromToken(other.grid_[r][c]->toString());
+                grid_[r][c] = PieceFactory::createFromToken(other.grid_[r][c]->toString(), {static_cast<int>(r), static_cast<int>(c)});
             else
                 grid_[r][c] = nullptr;
         }
@@ -44,7 +45,7 @@ Board& Board::operator=(const Board& other)
             for (size_t c = 0; c < other.grid_[r].size(); ++c)
             {
                 if (other.grid_[r][c])
-                    grid_[r][c] = Piece::createFromToken(other.grid_[r][c]->toString());
+                    grid_[r][c] = PieceFactory::createFromToken(other.grid_[r][c]->toString(), {static_cast<int>(r), static_cast<int>(c)});
                 else
                     grid_[r][c] = nullptr;
             }
@@ -56,6 +57,11 @@ Board& Board::operator=(const Board& other)
 Board::Board(Board&& other) noexcept
     : grid_(std::move(other.grid_))
 {
+}
+
+Board Board::clone() const
+{
+    return Board(*this);
 }
 
 Board& Board::operator=(Board&& other) noexcept
@@ -80,7 +86,7 @@ Board::Board(const std::vector<std::vector<std::string>>& stringGrid)
             if (token == ".")
                 grid_[r][c] = nullptr;
             else
-                grid_[r][c] = Piece::createFromToken(token);
+                grid_[r][c] = PieceFactory::createFromToken(token, {static_cast<int>(r), static_cast<int>(c)});
         }
     }
 }

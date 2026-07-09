@@ -1,6 +1,6 @@
 #include "Board.hpp"
 #include "BoardParser.hpp"
-#include "Game.hpp"
+#include "GameEngine.hpp"
 #include <iostream>
 #include <sstream>
 
@@ -14,10 +14,10 @@ int main()
         return 0;
     }
 
-    if (!result.board || result.board->isEmpty())
+    if (!result.board.has_value() || result.board->isEmpty())
         return 0;
 
-    Game game(std::move(*result.board));
+    GameEngine engine(std::move(*result.board));
 
     std::string commandLine;
     while (std::getline(std::cin, commandLine))
@@ -36,21 +36,20 @@ int main()
         {
             int x, y;
             iss >> x >> y;
-            game.click(x, y);
+            engine.handleCellClick(y / 100, x / 100);
         }
         else if (cmd == "print")
         {
             std::string target;
             iss >> target;
             if (target == "board")
-                game.printBoard();
+                engine.getBoard().print();
         }
         else if (cmd == "wait")
         {
             int ms;
             iss >> ms;
-
-            game.wait(ms);
+            engine.advanceTime(ms);
         }
     }
 

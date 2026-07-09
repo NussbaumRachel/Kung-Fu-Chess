@@ -2,14 +2,13 @@
 #include "Board.hpp"
 #include <cstdlib>
 
-Bishop::Bishop(Color color) : Piece(color, PieceType::Bishop) {}
+Bishop::Bishop(Color color, Position startCell) : Piece(color, PieceType::Bishop, startCell) {}
 
 bool Bishop::isValidMove(int fromRow, int fromCol, int toRow, int toCol, const Board& board) const
 {
     int rowDiff = abs(toRow - fromRow);
     int colDiff = abs(toCol - fromCol);
 
-    // חייב להיות אלכסון
     if (rowDiff != colDiff)
         return false;
 

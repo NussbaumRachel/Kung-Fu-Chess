@@ -1,24 +1,21 @@
 #include "Piece.hpp"
-#include "King.hpp"
-#include "Queen.hpp"
-#include "Rook.hpp"
-#include "Bishop.hpp"
-#include "Knight.hpp"
-#include "Pawn.hpp"
 #include "Board.hpp"
 
-Piece::Piece(Color color, PieceType type)
-    : color_(color), type_(type)
+int Piece::nextId_ = 1;
+
+Piece::Piece(Color color, PieceType type, Position startCell)
+    : id_(nextId_++), color_(color), type_(type), cell_(startCell)
 {
 }
 
+int Piece::getId() const { return id_; }
 Color Piece::getColor() const { return color_; }
 PieceType Piece::getType() const { return type_; }
+PieceState Piece::getState() const { return state_; }
+Position Piece::getCell() const { return cell_; }
 
-bool Piece::isValidToken(const std::string& token)
-{
-    return createFromToken(token) != nullptr;
-}
+void Piece::setState(PieceState state) { state_ = state; }
+void Piece::setCell(Position cell) { cell_ = cell; }
 
 std::string Piece::toString() const
 {
@@ -34,28 +31,4 @@ std::string Piece::toString() const
     case PieceType::Pawn:   result += 'P'; break;
     }
     return result;
-}
-
-Piece* Piece::createFromToken(const std::string& token)
-{
-    if (token.length() != 2) return nullptr;
-
-    Color color;
-    switch (token[0])
-    {
-    case 'w': color = Color::White; break;
-    case 'b': color = Color::Black; break;
-    default:  return nullptr;
-    }
-
-    switch (token[1])
-    {
-    case 'K': return new King(color);
-    case 'Q': return new Queen(color);
-    case 'R': return new Rook(color);
-    case 'B': return new Bishop(color);
-    case 'N': return new Knight(color);
-    case 'P': return new Pawn(color);
-    default:  return nullptr;
-    }
 }

@@ -2,20 +2,34 @@
 #define PIECE_H
 
 #include "types.hpp"
+#include "Position.hpp"
 #include <string>
 
 // הכרזה קדימה
 class Board;
 
+enum class PieceState
+{
+    Idle,
+    Moving,
+    Captured
+};
+
 // מחלקת בסיס לכל כלי שחמט
 class Piece
 {
 public:
-    Piece(Color color, PieceType type);
+    Piece(Color color, PieceType type, Position startCell);
     virtual ~Piece() = default;
 
+    int getId() const;
     Color getColor() const;
     PieceType getType() const;
+    PieceState getState() const;
+    Position getCell() const;
+
+    void setState(PieceState state);
+    void setCell(Position cell);
 
     // מחזירה מחרוזת בת 2 תווים (למשל "wK")
     std::string toString() const;
@@ -25,15 +39,15 @@ public:
                              int toRow, int toCol,
                              const Board& board) const = 0;
 
-    // יצירת כלי מתאים לפי מחרוזת token (למשל "wK" → King לבן)
-    static Piece* createFromToken(const std::string& token);
-
-    // בדיקה סטטית אם token הוא מחרוזת כלי תקינה (לשימוש בפרסור)
-    static bool isValidToken(const std::string& token);
-
 protected:
+    int id_;
     Color color_;
     PieceType type_;
+    PieceState state_ = PieceState::Idle;
+    Position cell_;
+
+private:
+    static int nextId_;
 };
 
 #endif

@@ -2,9 +2,9 @@
 #define BOARD_PARSER_H
 
 #include "Board.hpp"
-#include <memory>
 #include <string>
 #include <iostream>
+#include <optional>
 
 // אחראי על פרסור לוח מקלט טקסטואלי
 // קורא מ-istream, מזהה את אזור ה-"Board:", ומפיק אובייקט Board
@@ -13,11 +13,9 @@ class BoardParser
 public:
     struct ParseResult
     {
-        std::unique_ptr<Board> board;
+        std::optional<Board> board;
         std::string error;
-        bool hasError;
-
-        ParseResult() : board(nullptr), error(""), hasError(false) {}
+        bool hasError = false;
     };
 
     // פרסור מתוך istream כללי (למשל std::cin, קובץ, stringstream)

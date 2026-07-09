@@ -2,7 +2,7 @@
 #include "Board.hpp"
 #include <cstdlib>
 
-Knight::Knight(Color color) : Piece(color, PieceType::Knight) {}
+Knight::Knight(Color color, Position startCell) : Piece(color, PieceType::Knight, startCell) {}
 
 bool Knight::isValidMove(int fromRow, int fromCol, int toRow, int toCol, const Board& board) const
 {

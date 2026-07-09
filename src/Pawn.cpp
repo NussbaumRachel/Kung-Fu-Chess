@@ -1,7 +1,7 @@
 #include "Pawn.hpp"
 #include "Board.hpp"
 #include <cmath>
-Pawn::Pawn(Color color) : Piece(color, PieceType::Pawn) {}
+Pawn::Pawn(Color color, Position startCell) : Piece(color, PieceType::Pawn, startCell) {}
 
 bool Pawn::isValidMove(int fromRow,
                        int fromCol,
