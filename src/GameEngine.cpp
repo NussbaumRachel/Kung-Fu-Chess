@@ -1,5 +1,6 @@
 #include "GameEngine.hpp"
 #include "Piece.hpp"
+#include "PieceFactory.hpp"
 #include <cstdlib>
 
 GameEngine::GameEngine(Board board)
@@ -231,4 +232,28 @@ void GameEngine::applyCompletedMove(const CompletedMove& cm)
     board_.setCell(cm.to.row, cm.to.col, piece);
     piece->setCell(cm.to);
     piece->setState(PieceState::Idle);
+
+    // בדיקת הכתרה — חייל שהגיע לשורה האחרונה
+    int lastRow = (piece->getColor() == Color::White) ? 0 : board_.rowCount() - 1;
+    if (piece->getType() == PieceType::Pawn && cm.to.row == lastRow)
+    {
+        promotePawn(piece, cm.to);
+    }
+}
+
+void GameEngine::promotePawn(Piece* pawn, Position at)
+{
+    Color pawnColor = pawn->getColor();
+
+    // מחיקת החייל מהלוח
+    delete board_.takeCell(at.row, at.col);
+
+    // יצירת מלכה חדשה באותו צבע ובאותו מיקום
+    // בעתיד: PieceType יכול להיות פרמטר (Queen/Rook/Bishop/Knight)
+    std::string token;
+    token += (pawnColor == Color::White) ? 'w' : 'b';
+    token += 'Q';
+
+    Piece* queen = PieceFactory::createFromToken(token, at);
+    board_.setCell(at.row, at.col, queen);
 }

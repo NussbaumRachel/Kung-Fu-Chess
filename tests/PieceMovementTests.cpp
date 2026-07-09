@@ -211,22 +211,29 @@ TEST(PawnTest, BlackPawnCannotMoveBackward)
 }
 
 
-TEST(PawnTest, PawnCannotMoveTwoSquares)
+// צעד כפול עובד רק משורת הפתיחה — לא משורה אחרת
+TEST(PawnTest, PawnCannotMoveTwoSquaresFromNonStartRow)
 {
-    std::vector<std::vector<std::string>> layout =
-    {
+    Board board({
+        {".", "."},
+        {".", "."},
         {".", "."},
         {".", "."},
         {"wP", "."}
-    };
+    });
 
-    Board board(layout);
+    Piece* pawn = board.getCell(4, 0);
 
-    Piece* pawn = board.getCell(2, 0);
+    // wP moved once to row 3
+    // Simulate: wP no longer on start row (startRow = 4)
+    // rowCount=5, startRow=4. fromRow=4==startRow → would be allowed.
+    // Let's adjust: test from row that is NOT start row
 
-    EXPECT_FALSE(
-        pawn->isValidMove(2, 0, 0, 0, board)
-    );
+    // Move pawn to row 3 (not start)
+    pawn->setCell({3, 0});
+
+    // Pawn at (3,0) trying double step to (1,0) — should fail (not on start row)
+    EXPECT_FALSE(pawn->isValidMove(3, 0, 1, 0, board));
 }
 
 

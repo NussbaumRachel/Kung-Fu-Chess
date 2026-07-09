@@ -1,6 +1,7 @@
 #include "Pawn.hpp"
 #include "Board.hpp"
 #include <cmath>
+
 Pawn::Pawn(Color color, Position startCell) : Piece(color, PieceType::Pawn, startCell) {}
 
 bool Pawn::isValidMove(int fromRow,
@@ -9,28 +10,35 @@ bool Pawn::isValidMove(int fromRow,
                        int toCol,
                        const Board& board) const
 {
-    const int movementDirection =
-        (color_ == Color::White) ? -1 : 1;
+    const int direction = (color_ == Color::White) ? -1 : 1;
+    const int startRow = (color_ == Color::White) ? board.rowCount() - 1 : 0;
 
-    const int rowDifference = toRow - fromRow;
-    const int colDifference = abs(toCol - fromCol);
+    const int rowDiff = toRow - fromRow;
+    const int colDiff = abs(toCol - fromCol);
 
-
-    // Move one square forward
-    if (toCol == fromCol &&
-        rowDifference == movementDirection)
+    // ── תנועה ישרה ──
+    if (toCol == fromCol)
     {
-        return board.isEmptyCell(toRow, toCol);
+        // צעד אחד קדימה
+        if (rowDiff == direction)
+        {
+            return board.isEmptyCell(toRow, toCol);
+        }
+
+        // צעד כפול — רק משורת הפתיחה, מסלול פנוי
+        if (rowDiff == 2 * direction && fromRow == startRow)
+        {
+            int midRow = fromRow + direction;
+            return board.isEmptyCell(midRow, toCol) &&
+                   board.isEmptyCell(toRow, toCol);
+        }
     }
 
-
-    // Capture diagonally
-    if (colDifference == 1 &&
-        rowDifference == movementDirection)
+    // ── לכידה באלכסון ──
+    if (colDiff == 1 && rowDiff == direction)
     {
         return board.hasEnemyPiece(toRow, toCol, color_);
     }
-
 
     return false;
 }

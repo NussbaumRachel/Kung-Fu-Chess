@@ -47,4 +47,8 @@ private:
     int calculateMoveTime(int fromRow, int fromCol,
                           int toRow, int toCol) const;
     void applyCompletedMove(const CompletedMove& cm);
+
+    // הכתרת חייל שהגיע לשורה האחרונה — מוחלף אוטומטית למלכה
+    // מתוכנן להתרחבות: בעתיד הפונקציה תוכל לקבל PieceType כפרמטר
+    void promotePawn(Piece* pawn, Position at);
 };

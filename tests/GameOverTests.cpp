@@ -118,3 +118,161 @@ TEST(GameOverTest, BlackCapturesWhiteKing)
     ASSERT_TRUE(snap.winner.has_value());
     EXPECT_EQ(*snap.winner, Color::Black);
 }
+
+// ============================================================
+// טסטים לחייל מורחב: צעד כפול + הכתרה
+// ============================================================
+
+// חייל לבן יכול לזוז 2 צעדים קדימה משורת הפתיחה
+TEST(PawnTest, WhitePawnDoubleStepFromStartRow)
+{
+    Board board({
+        {".", ".", "."},
+        {".", ".", "."},
+        {".", ".", "."},
+        {"wP", ".", "."}
+    });
+
+    GameEngine engine(std::move(board));
+
+    engine.handleCellClick(3, 0);   // בוחר wP שורה 3 (שורת פתיחה)
+    engine.handleCellClick(1, 0);   // זז 2 צעדים קדימה
+
+    engine.advanceTime(2000);
+
+    EXPECT_NE(engine.getBoard().getCell(1, 0), nullptr);
+    EXPECT_EQ(engine.getBoard().getCell(3, 0), nullptr);
+    EXPECT_EQ(engine.getBoard().getCell(2, 0), nullptr);   // התא האמצעי ריק
+}
+
+// חייל שחור יכול לזוז 2 צעדים קדימה משורת הפתיחה
+TEST(PawnTest, BlackPawnDoubleStepFromStartRow)
+{
+    Board board({
+        {"bP", ".", "."},
+        {".", ".", "."},
+        {".", ".", "."},
+        {".", ".", "."}
+    });
+
+    GameEngine engine(std::move(board));
+
+    engine.handleCellClick(0, 0);   // בוחר bP שורה 0 (שורת פתיחה)
+    engine.handleCellClick(2, 0);   // זז 2 צעדים קדימה
+
+    engine.advanceTime(2000);
+
+    EXPECT_NE(engine.getBoard().getCell(2, 0), nullptr);
+    EXPECT_EQ(engine.getBoard().getCell(0, 0), nullptr);
+}
+
+// צעד כפול חסום — יש כלי בתא האמצעי
+TEST(PawnTest, DoubleStepBlockedByMiddlePiece)
+{
+    Board board({
+        {".", ".", "."},
+        {".", ".", "."},
+        {"bP", ".", "."},           // אויב חוסם את התא האמצעי
+        {"wP", ".", "."}
+    });
+
+    GameEngine engine(std::move(board));
+
+    // בוחר wP ומנסה לזוז ל-(1,0) — חסום
+    engine.handleCellClick(3, 0);
+    engine.handleCellClick(1, 0);
+
+    // הצעד אמור להיכשל — state חוזר ל-WAITING_SELECTION
+    EXPECT_EQ(engine.getState(), GameState::WAITING_SELECTION);
+    EXPECT_NE(engine.getBoard().getCell(3, 0), nullptr);  // החייל לא זז
+}
+
+// צעד כפול — לא עובד מחוץ לשורת הפתיחה
+TEST(PawnTest, DoubleStepOnlyFromStartRow)
+{
+    Board board({
+        {".", ".", "."},
+        {".", ".", "."},
+        {"wP", ".", "."},           // wP בשורה 2 — לא שורת פתיחה
+        {".", ".", "."}
+    });
+
+    GameEngine engine(std::move(board));
+
+    engine.handleCellClick(2, 0);
+    engine.handleCellClick(0, 0);   // מנסה לזוז 2 צעדים
+
+    EXPECT_EQ(engine.getState(), GameState::WAITING_SELECTION);  // נכשל
+    EXPECT_NE(engine.getBoard().getCell(2, 0), nullptr);         // החייל נשאר
+}
+
+// חייל לבן מגיע לשורה 0 — מוכתר למלכה
+TEST(PawnTest, WhitePawnPromotesToQueenAtLastRow)
+{
+    Board board({
+        {".", ".", "."},
+        {"wP", ".", "."},
+        {".", ".", "."}
+    });
+
+    GameEngine engine(std::move(board));
+
+    engine.handleCellClick(1, 0);   // בוחר wP
+    engine.handleCellClick(0, 0);   // מגיע לשורה 0
+
+    engine.advanceTime(1000);
+
+    // וידוא: יש כלי ב-(0,0)
+    Piece* promoted = engine.getBoard().getCell(0, 0);
+    ASSERT_NE(promoted, nullptr);
+
+    // וידוא: זה עכשיו מלכה, לא חייל
+    EXPECT_EQ(promoted->getType(), PieceType::Queen);
+    EXPECT_EQ(promoted->getColor(), Color::White);
+}
+
+// חייל שחור מגיע לשורה אחרונה — מוכתר למלכה
+TEST(PawnTest, BlackPawnPromotesToQueenAtLastRow)
+{
+    Board board({
+        {".", ".", "."},
+        {"bP", ".", "."},
+        {".", ".", "."}
+    });
+
+    GameEngine engine(std::move(board));
+
+    engine.handleCellClick(1, 0);   // בוחר bP
+    engine.handleCellClick(2, 0);   // צעד בודד קדימה = שורה אחרונה בלוח 3-שורות
+
+    engine.advanceTime(1000);
+
+    Piece* promoted = engine.getBoard().getCell(2, 0);
+    ASSERT_NE(promoted, nullptr);
+    EXPECT_EQ(promoted->getType(), PieceType::Queen);
+    EXPECT_EQ(promoted->getColor(), Color::Black);
+}
+
+// הכתרה: החייל מתחלף, ה-id שונה (Piece חדש)
+TEST(PawnTest, PromotedPieceHasNewId)
+{
+    Board board({
+        {".", ".", "."},
+        {"wP", ".", "."},
+        {".", ".", "."}
+    });
+
+    GameEngine engine(std::move(board));
+
+    // תפוס את ה-id של החייל לפני התזוזה
+    Piece* pawnBefore = engine.getBoard().getCell(1, 0);
+    int pawnId = pawnBefore->getId();
+
+    engine.handleCellClick(1, 0);
+    engine.handleCellClick(0, 0);
+    engine.advanceTime(1000);
+
+    Piece* after = engine.getBoard().getCell(0, 0);
+    ASSERT_NE(after, nullptr);
+    EXPECT_NE(after->getId(), pawnId);  // id חדש — Piece חדש
+}
