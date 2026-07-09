@@ -40,6 +40,7 @@ private:
 
     GameState state_ = GameState::WAITING_SELECTION;
     std::optional<Position> selectedCell_;
+    std::optional<Color> winner_;
 
     // עזרים פנימיים
     bool isPieceAtPositionInvolved(int row, int col) const;

@@ -171,10 +171,7 @@ GameSnapshot GameEngine::getSnapshot() const
         }
     }
 
-    // זיהוי מנצח — נקבע לפי ה-state הפנימי
-    // (אם state_==GAME_OVER, המנצח נקבע ב-applyCompletedMove)
-    // לעת עתה, snapshot.winner נשאר nullopt כברירת מחדל
-    // יורחב כשתתווסף לוגיקת winner מפורשת
+    snapshot.winner = winner_;
 
     return snapshot;
 }
@@ -222,6 +219,7 @@ void GameEngine::applyCompletedMove(const CompletedMove& cm)
             piece->setCell(cm.to);
             piece->setState(PieceState::Idle);
             state_ = GameState::GAME_OVER;
+            winner_ = piece->getColor();  // הצבע הלוכד מנצח
             return;
         }
 
