@@ -38,6 +38,14 @@ int main()
             iss >> x >> y;
             engine.handleCellClick(y / 100, x / 100);
         }
+        else if (cmd == "jump")
+        {
+            int x, y;
+            iss >> x >> y;
+            // jump פקודת: קליק כפול — בחר וקפוץ
+            engine.handleCellClick(y / 100, x / 100);
+            engine.handleCellClick(y / 100, x / 100);
+        }
         else if (cmd == "print")
         {
             std::string target;

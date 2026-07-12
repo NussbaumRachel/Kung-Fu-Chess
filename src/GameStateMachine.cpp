@@ -85,6 +85,7 @@ GameDecision GameStateMachine::evaluate(
         }
     }
 
+    return {ActionType::NoOp, currentState};
 }
 
 // ── ניהול מצב ──
