@@ -22,6 +22,8 @@ add_executable(kungfuchess
     src/BoardParser.cpp
     src/RuleEngine.cpp
     src/RealTimeArbiter.cpp
+    src/GameStateMachine.cpp
+    src/BoardController.cpp
     src/GameEngine.cpp
 )
 
@@ -46,6 +48,8 @@ add_executable(chess_tests
     src/BoardParser.cpp
     src/RuleEngine.cpp
     src/RealTimeArbiter.cpp
+    src/GameStateMachine.cpp
+    src/BoardController.cpp
     src/GameEngine.cpp
 )
 

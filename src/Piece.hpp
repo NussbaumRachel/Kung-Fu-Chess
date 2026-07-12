@@ -12,6 +12,7 @@ enum class PieceState
 {
     Idle,
     Moving,
+    Jumping,
     Captured
 };
 

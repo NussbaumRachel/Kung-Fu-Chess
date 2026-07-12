@@ -3,16 +3,10 @@
 #include "Board.hpp"
 #include "RuleEngine.hpp"
 #include "RealTimeArbiter.hpp"
+#include "GameStateMachine.hpp"
+#include "BoardController.hpp"
 #include "GameSnapshot.hpp"
 #include <optional>
-
-enum class GameState
-{
-    WAITING_SELECTION,
-    WAITING_TARGET,
-    MOVE_IN_PROGRESS,
-    GAME_OVER
-};
 
 class GameEngine
 {
@@ -37,18 +31,13 @@ private:
     Board board_;
     RuleEngine ruleEngine_;
     RealTimeArbiter arbiter_;
+    BoardController boardController_;
+    GameStateMachine stateMachine_;
 
-    GameState state_ = GameState::WAITING_SELECTION;
-    std::optional<Position> selectedCell_;
-    std::optional<Color> winner_;
+    static constexpr int JUMP_DURATION_MS = 1000;
 
     // עזרים פנימיים
-    bool isPieceAtPositionInvolved(int row, int col) const;
     int calculateMoveTime(int fromRow, int fromCol,
                           int toRow, int toCol) const;
     void applyCompletedMove(const CompletedMove& cm);
-
-    // הכתרת חייל שהגיע לשורה האחרונה — מוחלף אוטומטית למלכה
-    // מתוכנן להתרחבות: בעתיד הפונקציה תוכל לקבל PieceType כפרמטר
-    void promotePawn(Piece* pawn, Position at);
 };
