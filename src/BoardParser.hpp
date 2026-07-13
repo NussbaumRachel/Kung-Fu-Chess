@@ -1,7 +1,7 @@
 #ifndef BOARD_PARSER_H
 #define BOARD_PARSER_H
-
 #include "Board.hpp"
+#include "GameController.hpp"
 #include <string>
 #include <iostream>
 #include <optional>
@@ -11,11 +11,12 @@
 class BoardParser
 {
 public:
+// BoardParser.hpp — שינוי
     struct ParseResult
     {
         std::optional<Board> board;
-        std::string error;
         bool hasError = false;
+        std::string error;
     };
 
     // פרסור מתוך istream כללי (למשל std::cin, קובץ, stringstream)
@@ -24,6 +25,9 @@ public:
 private:
     // פיצול שורה למילים
     static std::vector<std::string> split(const std::string& str);
+    //הסרת רווחים
+    static std::string trim(const std::string& str);
+
 };
 
 #endif

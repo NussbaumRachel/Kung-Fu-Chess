@@ -24,6 +24,8 @@ public:
     Position getTo() const;
     bool isCancelled() const;
     void cancel();
+    void setIntercepted();
+    bool isIntercepted() const;
     double getProgress() const;
 
     int getDurationMs() const { return durationMs_; }
@@ -34,6 +36,7 @@ private:
     Position from_;
     Position to_;
     bool cancelled_ = false;
+    bool intercepted_ = false;
     int remainingMs_;
     int durationMs_;
 };

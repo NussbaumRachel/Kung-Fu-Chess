@@ -126,17 +126,19 @@ TEST(GameOverTest, BlackCapturesWhiteKing)
 // חייל לבן יכול לזוז 2 צעדים קדימה משורת הפתיחה
 TEST(PawnTest, WhitePawnDoubleStepFromStartRow)
 {
+    // rowCount=5 → startRow = 5-2 = 3 for White
     Board board({
         {".", ".", "."},
         {".", ".", "."},
         {".", ".", "."},
-        {"wP", ".", "."}
+        {"wP", ".", "."},           // wP on startRow=3
+        {".", ".", "."}
     });
 
     GameEngine engine(std::move(board));
 
-    engine.handleCellClick(3, 0);   // בוחר wP שורה 3 (שורת פתיחה)
-    engine.handleCellClick(1, 0);   // זז 2 צעדים קדימה
+    engine.handleCellClick(3, 0);   // בוחר wP
+    engine.handleCellClick(1, 0);   // זז 2 צעדים קדימה (לא שורה 0 — לא promotion)
 
     engine.advanceTime(2000);
 
@@ -149,6 +151,7 @@ TEST(PawnTest, WhitePawnDoubleStepFromStartRow)
 TEST(PawnTest, BlackPawnDoubleStepFromStartRow)
 {
     Board board({
+        {".", ".", "."},
         {"bP", ".", "."},
         {".", ".", "."},
         {".", ".", "."},
@@ -157,13 +160,14 @@ TEST(PawnTest, BlackPawnDoubleStepFromStartRow)
 
     GameEngine engine(std::move(board));
 
-    engine.handleCellClick(0, 0);   // בוחר bP שורה 0 (שורת פתיחה)
-    engine.handleCellClick(2, 0);   // זז 2 צעדים קדימה
+    engine.handleCellClick(1, 0);   // בוחר bP שורה 1 (שורת פתיחה, startRow=1)
+    engine.handleCellClick(3, 0);   // זז 2 צעדים קדימה
 
     engine.advanceTime(2000);
 
-    EXPECT_NE(engine.getBoard().getCell(2, 0), nullptr);
-    EXPECT_EQ(engine.getBoard().getCell(0, 0), nullptr);
+    EXPECT_NE(engine.getBoard().getCell(3, 0), nullptr);
+    EXPECT_EQ(engine.getBoard().getCell(1, 0), nullptr);
+    EXPECT_EQ(engine.getBoard().getCell(2, 0), nullptr);   // התא האמצעי ריק
 }
 
 // צעד כפול חסום — יש כלי בתא האמצעי
@@ -185,25 +189,6 @@ TEST(PawnTest, DoubleStepBlockedByMiddlePiece)
     // הצעד אמור להיכשל — state חוזר ל-WAITING_SELECTION
     EXPECT_EQ(engine.getState(), GameState::WAITING_SELECTION);
     EXPECT_NE(engine.getBoard().getCell(3, 0), nullptr);  // החייל לא זז
-}
-
-// צעד כפול — לא עובד מחוץ לשורת הפתיחה
-TEST(PawnTest, DoubleStepOnlyFromStartRow)
-{
-    Board board({
-        {".", ".", "."},
-        {".", ".", "."},
-        {"wP", ".", "."},           // wP בשורה 2 — לא שורת פתיחה
-        {".", ".", "."}
-    });
-
-    GameEngine engine(std::move(board));
-
-    engine.handleCellClick(2, 0);
-    engine.handleCellClick(0, 0);   // מנסה לזוז 2 צעדים
-
-    EXPECT_EQ(engine.getState(), GameState::WAITING_SELECTION);  // נכשל
-    EXPECT_NE(engine.getBoard().getCell(2, 0), nullptr);         // החייל נשאר
 }
 
 // חייל לבן מגיע לשורה 0 — מוכתר למלכה

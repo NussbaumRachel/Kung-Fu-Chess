@@ -1,21 +1,11 @@
 #include "BoardParser.hpp"
 #include "PieceFactory.hpp"
+#include "GameController.hpp"
 #include <sstream>
 #include <algorithm>
 
 // מסיר רווחים מההתחלה ומהסוף
-static std::string trim(const std::string& str)
-{
-    size_t start = 0;
-    while (start < str.size() && (str[start] == ' ' || str[start] == '\t'))
-        ++start;
 
-    size_t end = str.size();
-    while (end > start && (str[end - 1] == ' ' || str[end - 1] == '\t'))
-        --end;
-
-    return str.substr(start, end - start);
-}
 
 std::vector<std::string> BoardParser::split(const std::string& str)
 {
@@ -106,4 +96,17 @@ BoardParser::ParseResult BoardParser::parse(std::istream& input)
 
     result.board = Board(stringGrid);
     return result;
+}
+std::string BoardParser::trim(const std::string& str)
+{
+    size_t start = str.find_first_not_of(" \t\r\n");
+    if (start == std::string::npos)
+        return "";
+
+    size_t end = str.find_last_not_of(" \t\r\n");
+
+    return str.substr(
+        start,
+        end - start + 1
+    );
 }

@@ -224,16 +224,11 @@ TEST(PawnTest, PawnCannotMoveTwoSquaresFromNonStartRow)
 
     Piece* pawn = board.getCell(4, 0);
 
-    // wP moved once to row 3
-    // Simulate: wP no longer on start row (startRow = 4)
-    // rowCount=5, startRow=4. fromRow=4==startRow → would be allowed.
-    // Let's adjust: test from row that is NOT start row
+    // Move pawn to row 2 (not start row — startRow for White is 5-2=3)
+    pawn->setCell({2, 0});
 
-    // Move pawn to row 3 (not start)
-    pawn->setCell({3, 0});
-
-    // Pawn at (3,0) trying double step to (1,0) — should fail (not on start row)
-    EXPECT_FALSE(pawn->isValidMove(3, 0, 1, 0, board));
+    // Pawn at (2,0) trying double step to (0,0) — should fail (not on start row)
+    EXPECT_FALSE(pawn->isValidMove(2, 0, 0, 0, board));
 }
 
 

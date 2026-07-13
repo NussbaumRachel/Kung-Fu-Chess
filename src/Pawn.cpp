@@ -11,7 +11,7 @@ bool Pawn::isValidMove(int fromRow,
                        const Board& board) const
 {
     const int direction = (color_ == Color::White) ? -1 : 1;
-    const int startRow = (color_ == Color::White) ? board.rowCount() - 1 : 0;
+    const int startRow = (color_ == Color::White) ? board.rowCount() - 2 : 1;
 
     const int rowDiff = toRow - fromRow;
     const int colDiff = abs(toCol - fromCol);

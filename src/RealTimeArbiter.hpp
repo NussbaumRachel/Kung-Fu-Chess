@@ -2,15 +2,10 @@
 
 #include "Move.hpp"
 #include "Position.hpp"
+#include "CompletedMove.hpp"
 #include <vector>
 
-struct CompletedMove
-{
-    Position from;
-    Position to;
-    Piece* piece;
-    bool wasCancelled;  // בוטל עקב התנגשות
-};
+
 
 // מבנה פנימי לכלי קופץ
 struct JumpEntry

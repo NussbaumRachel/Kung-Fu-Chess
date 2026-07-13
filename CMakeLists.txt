@@ -25,6 +25,10 @@ add_executable(kungfuchess
     src/GameStateMachine.cpp
     src/BoardController.cpp
     src/GameEngine.cpp
+    src/MoveCompletionService.cpp
+    src/GameController.cpp
+    src/TextTestRunner.cpp
+
 )
 
 target_include_directories(kungfuchess PRIVATE src)
@@ -51,6 +55,9 @@ add_executable(chess_tests
     src/GameStateMachine.cpp
     src/BoardController.cpp
     src/GameEngine.cpp
+    src/GameController.cpp
+    src/TextTestRunner.cpp
+    src/MoveCompletionService.cpp
 )
 
 target_include_directories(chess_tests PRIVATE src)

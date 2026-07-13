@@ -4,25 +4,25 @@
 #include "Piece.hpp"
 #include "Position.hpp"
 #include "types.hpp"
+#include <memory>
 
 class BoardController
 {
 public:
     explicit BoardController(Board& board);
 
-    // מבצע מהלך על הלוח:
-    // - לוקח כלי מהמקור (takeCell)
-    // - אם יש אויב ביעד — לוכד אותו (takeCell + delete)
-    // - ממקם את הכלי ביעד (setCell)
-    // - מעדכן את מצב הכלי ל-Idle
-    // מחזיר מצביע לכלי שנלכד (nullptr אם לא היה כלי) — הקורא אחראי
-    // לבדוק האם הכלי שנלכד הוא מלך לצורך סיום משחק.
-    Piece* executeMove(Piece* piece, Position from, Position to);
+    /// מבצע מהלך על הלוח:
+    ///   - לוקח את piece מהמקור (from)
+    ///   - אם יש כלי ביעד (to) — לוכד אותו (מסיר מהלוח, state=Captured)
+    ///   - ממקם piece ביעד
+    ///   - מחזיר unique_ptr<Piece> שנלכד (nullptr אם לא היה) — הקורא בודק King, ואז משחרר
+    ///   - piece אחרי המהלך במצב Idle
+    std::unique_ptr<Piece> executeMove(Piece& piece, Position from, Position to);
 
-    // בודק האם במיקום נתון נמצא כלי מסוג מלך
-    bool isKingAt(Position pos) const;
-
-    // מחליף חייל במלכה. מוחק את החייל, יוצר מלכה חדשה דרך PieceFactory.
+    /// המרת חייל למלכה:
+    ///   - מסיר את ה-pawn מהלוח ומוחק
+    ///   - יוצר Queen חדשה באותו תא
+    ///   - מחזיר raw observing pointer למלכה החדשה (הבעלות נשארת ב-Board)
     Piece* promoteToQueen(Piece* pawn, Position at);
 
 private:

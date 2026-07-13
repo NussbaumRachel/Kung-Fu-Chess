@@ -43,6 +43,7 @@ void RealTimeArbiter::advanceTime(int milliseconds)
             cm.to = it->getTo();
             cm.piece = it->getPiece();
             cm.wasCancelled = true;
+            cm.wasIntercepted = it->isIntercepted();
             completedMoves_.push_back(cm);
             it = activeMoves_.erase(it);
         }
@@ -209,6 +210,7 @@ void RealTimeArbiter::resolveJumpInterceptions()
             {
                 // הקופץ לוכד את האויב — האויב מבוטל
                 move.cancel();
+                move.setIntercepted();
             }
         }
     }

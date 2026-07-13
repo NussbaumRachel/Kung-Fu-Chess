@@ -2,7 +2,8 @@
   "permissions": {
     "allow": [
       "Bash(cmd.exe /c C:\\\\Kung-Fu-Chess\\\\build.bat)",
-      "Bash(/c/Kung-Fu-Chess/build/kungfuchess.exe)"
+      "Bash(/c/Kung-Fu-Chess/build/kungfuchess.exe)",
+      "Bash(./Debug/kungfuchess.exe)"
     ]
   }
 }

@@ -1,11 +1,14 @@
 #include "GameEngine.hpp"
 #include "Piece.hpp"
 #include "PieceFactory.hpp"
+#include "BoardController.hpp"
 #include <cstdlib>
 
 GameEngine::GameEngine(Board board)
-    : board_(std::move(board)),
-      boardController_(board_)
+    :
+    board_(std::move(board)),
+    boardController_(board_),
+    moveCompletionService_( boardController_, board_, stateMachine_)
 {
 }
 
@@ -118,6 +121,29 @@ void GameEngine::handleCellClick(int row, int col)
     }
 }
 
+void GameEngine::handleJump(int row, int col)
+{
+    if (!board_.isInsideBoard(row, col))
+        return;
+
+    // אפשר לקפוץ רק כשיש כלי, הוא לא בתנועה/קפיצה, והמשחק לא נגמר
+    if (board_.isEmptyCell(row, col))
+        return;
+
+    if (arbiter_.isPieceInvolved(row, col))
+        return;
+
+    if (stateMachine_.getState() == GameState::GAME_OVER)
+        return;
+
+    Piece* piece = board_.getCell(row, col);
+    Position pos{row, col};
+    arbiter_.startJump(piece, pos, JUMP_DURATION_MS);
+    piece->setState(PieceState::Jumping);
+    stateMachine_.setSelectedCell(std::nullopt);
+    stateMachine_.setState(GameState::JUMP_IN_PROGRESS);
+}
+
 void GameEngine::advanceTime(int milliseconds)
 {
     arbiter_.advanceTime(milliseconds);
@@ -136,17 +162,18 @@ void GameEngine::advanceTime(int milliseconds)
     // יירוטים: moves שבוטלו (wasCancelled=true) — קופץ יירט אויב
     for (const CompletedMove& cm : completedMoves)
     {
-        if (cm.wasCancelled && cm.piece)
+        MoveCompletionResult result =
+            moveCompletionService_.completeMove(cm);
+        
+        if (result.gameOver)
         {
-            // האויב בוטל ע"י יירוט קפיצה — הקופץ לוכד אותו
-            cm.piece->setState(PieceState::Captured);
-            delete board_.takeCell(cm.from.row, cm.from.col);
-            continue;
-        }
+            stateMachine_.setState(GameState::GAME_OVER);
 
-        applyCompletedMove(cm);
-        if (stateMachine_.getState() == GameState::GAME_OVER)
+            if (result.winner.has_value())
+                stateMachine_.setWinner(result.winner.value());
+
             return;
+        }
     }
 
     // ── חזרה למצב בחירה ──
@@ -172,7 +199,7 @@ GameSnapshot GameEngine::getSnapshot() const
     {
         for (int c = 0; c < board_.colCount(); ++c)
         {
-            Piece* p = grid[r][c];
+            Piece* p = grid[r][c].get();
             if (!p)
                 continue;
 
@@ -219,46 +246,20 @@ GameSnapshot GameEngine::getSnapshot() const
 int GameEngine::calculateMoveTime(int fromRow, int fromCol,
                                   int toRow, int toCol) const
 {
-    int distance = std::abs(toRow - fromRow) + std::abs(toCol - fromCol);
+    int distance = std::max(std::abs(toRow - fromRow), std::abs(toCol - fromCol));
     return distance * 1000;
 }
 
-void GameEngine::applyCompletedMove(const CompletedMove& cm)
-{
-    if (cm.wasCancelled)
-    {
-        if (cm.piece)
-            cm.piece->setState(PieceState::Idle);
-        return;
-    }
+// void GameEngine::applyCompletedMove(const CompletedMove& completedMove)
+// {
+//     MoveCompletionResult result =
+//         moveCompletionService_.completeMove(completedMove);
 
-    // שליפת הכלי מהמקור — guard: ייתכן שכבר הוזז ע"י מהלך קודם
-    Piece* piece = board_.getCell(cm.from.row, cm.from.col);
-    if (piece != cm.piece)
-        return;  // piece already moved (e.g. collision swap resolved by first mover)
+//     if (!result.gameOver)
+//         return;
 
-    // בדיקת מלך לפני ביצוע המהלך
-    Piece* targetPiece = board_.getCell(cm.to.row, cm.to.col);
-    bool targetIsKing = targetPiece != nullptr &&
-                        targetPiece->getType() == PieceType::King;
+//     stateMachine_.setState(GameState::GAME_OVER);
 
-    // ביצוע המהלך דרך BoardController
-    boardController_.executeMove(cm.piece, cm.from, cm.to);
-
-    // טיפול בלכידת מלך
-    if (targetIsKing)
-    {
-        stateMachine_.setState(GameState::GAME_OVER);
-        if (cm.piece)
-            stateMachine_.setWinner(cm.piece->getColor());
-        return;
-    }
-
-    // הכתרה אוטומטית — חייל שהגיע לשורה האחרונה
-    if (cm.piece && cm.piece->getType() == PieceType::Pawn)
-    {
-        int lastRow = (cm.piece->getColor() == Color::White) ? 0 : board_.rowCount() - 1;
-        if (cm.to.row == lastRow)
-            boardController_.promoteToQueen(cm.piece, cm.to);
-    }
-}
+//     if (result.winner.has_value())
+//         stateMachine_.setWinner(result.winner.value());
+// }
