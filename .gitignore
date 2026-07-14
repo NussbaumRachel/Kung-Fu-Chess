@@ -1,0 +1,33 @@
+# Build directories
+build/
+cmake-build-*/
+
+# Visual Studio
+.vs/
+
+# Debug/Release
+Debug/
+Release/
+
+# Object files
+*.obj
+*.o
+
+# Executables
+*.exe
+
+# Libraries
+*.dll
+*.lib
+
+# Debug symbols
+*.pdb
+
+# CMake
+CMakeFiles/
+CMakeCache.txt
+cmake_install.cmake
+Makefile
+
+# Logs
+*.log
