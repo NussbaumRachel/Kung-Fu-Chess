@@ -31,3 +31,8 @@ Makefile
 
 # Logs
 *.log
+
+.claude/
+_ctd26_files/
+external/
+OpenCV_451/
