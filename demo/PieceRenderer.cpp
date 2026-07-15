@@ -6,12 +6,14 @@
 #define M_PI 3.14159265358979323846
 #endif
 
-PieceRenderer::PieceRenderer(const SpriteSheet& spriteSheet)
-    : spriteSheet_(spriteSheet) {}
+PieceRenderer::PieceRenderer(const AssetManager& assets)
+    : assets_(&assets)
+{
+}
 
 cv::Point PieceRenderer::computePiecePixel(const PieceInfo& info, int cellSize) const
 {
-    const int half  = cellSize / 2;
+    const int half = cellSize / 2;
     const int baseX = info.cell.col * cellSize + half;
     const int baseY = info.cell.row * cellSize + half;
 
@@ -19,18 +21,19 @@ cv::Point PieceRenderer::computePiecePixel(const PieceInfo& info, int cellSize) 
     {
     case PieceState::Moving:
     {
-        auto it = previousCells_.find(info.pieceId);
-        if (it != previousCells_.end() && info.progress > 0.0)
+        if (info.targetCell.has_value() && info.progress > 0.0)
         {
             double p = info.progress;
-            int fromX = it->second.col * cellSize + half;
-            int fromY = it->second.row * cellSize + half;
+            int fromX = info.cell.col * cellSize + half;
+            int fromY = info.cell.row * cellSize + half;
+            int toX = info.targetCell->col * cellSize + half;
+            int toY = info.targetCell->row * cellSize + half;
             return {
-                static_cast<int>(fromX + (baseX - fromX) * p),
-                static_cast<int>(fromY + (baseY - fromY) * p)
+                static_cast<int>(fromX + (toX - fromX) * p),
+                static_cast<int>(fromY + (toY - fromY) * p)
             };
         }
-        return { baseX, baseY };
+        return {baseX, baseY};
     }
     case PieceState::Jumping:
     {
@@ -39,36 +42,42 @@ cv::Point PieceRenderer::computePiecePixel(const PieceInfo& info, int cellSize) 
         {
             int arcOffset = static_cast<int>(
                 -std::sin(p * M_PI) * DemoConfig::JUMP_HEIGHT_PX);
-            return { baseX, baseY + arcOffset };
+            return {baseX, baseY + arcOffset};
         }
-        return { baseX, baseY };
+        return {baseX, baseY};
     }
     case PieceState::Idle:
     case PieceState::Captured:
     default:
-        return { baseX, baseY };
+        return {baseX, baseY};
     }
 }
 
 void PieceRenderer::drawSpriteCentered(Img& canvas, const Img& sprite,
-                                       const cv::Point& center, int cellSize) const
+                                        const cv::Point& center, int cellSize) const
 {
+        if (!sprite.is_loaded()) return;
+
     int margin     = static_cast<int>(cellSize * 0.1);
     int spriteSize = cellSize - margin * 2;
 
-    // resize
     Img resized = sprite.clone();
-    resized.resize_to(spriteSize, spriteSize);
+    // resize לגודל תא — שמירה על aspect ratio
+    double scaleX = static_cast<double>(spriteSize) / resized.width();
+    double scaleY = static_cast<double>(spriteSize) / resized.height();
+    double scale  = std::min(scaleX, scaleY);
+    int newW = static_cast<int>(resized.width()  * scale);
+    int newH = static_cast<int>(resized.height() * scale);
+    resized.resize_to(newW, newH);
 
-    int topX = center.x - spriteSize / 2;
-    int topY = center.y - spriteSize / 2;
+    int topX = center.x - newW / 2;
+    int topY = center.y - newH / 2;
 
     if (topX < 0) topX = 0;
     if (topY < 0) topY = 0;
-    if (topX + spriteSize > canvas.width())  topX = canvas.width()  - spriteSize;
-    if (topY + spriteSize > canvas.height()) topY = canvas.height() - spriteSize;
+    if (topX + newW > canvas.width())  topX = canvas.width()  - newW;
+    if (topY + newH > canvas.height()) topY = canvas.height() - newH;
 
-    // שימוש ב-draw_on (המתודה המקורית של Img)
     try
     {
         resized.draw_on(canvas, topX, topY);
@@ -78,12 +87,12 @@ void PieceRenderer::drawSpriteCentered(Img& canvas, const Img& sprite,
         // fallback: העתקה ישירה
         cv::Mat& canvasMat = canvas.get_mat();
         const cv::Mat& spriteMat = resized.get_mat();
-        cv::Rect roi(topX, topY, spriteSize, spriteSize);
+        cv::Rect roi(topX, topY, newW, newH);
         if (roi.x + roi.width <= canvasMat.cols && roi.y + roi.height <= canvasMat.rows)
         {
+            cv::Mat roiImg = canvasMat(roi);
             if (spriteMat.channels() == 4)
             {
-                cv::Mat roiImg = canvasMat(roi);
                 for (int y = 0; y < spriteMat.rows; ++y)
                 {
                     for (int x = 0; x < spriteMat.cols; ++x)
@@ -105,30 +114,36 @@ void PieceRenderer::drawSpriteCentered(Img& canvas, const Img& sprite,
     }
 }
 
-void PieceRenderer::drawPieces(Img& canvas, const GameSnapshot& snapshot, int cellSize)
+void PieceRenderer::drawPieces(Img& canvas, const GameSnapshot& snapshot, int cellSize,
+                                AnimationManager& animMgr)
 {
     for (const auto& info : snapshot.pieces)
     {
         if (info.state == PieceState::Captured)
             continue;
 
-        auto it = previousCells_.find(info.pieceId);
-        if (it != previousCells_.end())
-        {
-            if (!(it->second == info.cell))
-                it->second = info.cell;
-        }
-        else
-        {
-            previousCells_[info.pieceId] = info.cell;
-        }
+        const AnimatedSprite* sprite = assets_->getSprite(info.kind, info.color);
+        if (!sprite)
+            continue;
 
-        if (info.state == PieceState::Idle)
-            previousCells_[info.pieceId] = info.cell;
-
-        Img sprite = spriteSheet_.getSprite(info.kind, info.color);
         cv::Point pixel = computePiecePixel(info, cellSize);
 
-        drawSpriteCentered(canvas, sprite, pixel, cellSize);
+        // שליפת ה-frame המתאים מ-AnimatedSprite לפי state + frame index
+        std::string stateName = AnimatedSprite::pieceStateToFolder(
+            static_cast<int>(info.state));
+        
+        int frameIndex = 0;
+        if (info.state == PieceState::Moving || info.state == PieceState::Jumping)
+        {
+            // הערך את ה-frame index מ-AnimMgr
+            frameIndex = animMgr.getFrameIndex(info.pieceId);
+        }
+        
+        if (sprite->hasState(stateName) && 
+            frameIndex < sprite->getFrameCount(stateName))
+        {
+            const Img& frameImg = sprite->getFrame(stateName, frameIndex);
+            drawSpriteCentered(canvas, frameImg, pixel, cellSize);
+        }
     }
 }

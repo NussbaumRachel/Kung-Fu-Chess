@@ -17,7 +17,7 @@ public:
 
 private:
     const AssetManager* assets_;  // לא הבעלים — ChessRenderer הוא הבעלים (unique_ptr)
-    mutable std::unordered_map<int, Position> previousCells_;
+    // mutable std::unordered_map<int, Position> previousCells_;
 
     cv::Point computePiecePixel(const PieceInfo& info, int cellSize) const;
     void drawSpriteCentered(Img& canvas, const Img& sprite,

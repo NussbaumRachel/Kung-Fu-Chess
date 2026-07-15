@@ -60,18 +60,18 @@ bool BoardRenderer::loadBackground(const std::string& filePath)
 
 void BoardRenderer::drawCheckerboard(Img& canvas) const
 {
-    for (int r = 0; r < DemoConfig::BOARD_ROWS; ++r)
-    {
-        for (int c = 0; c < DemoConfig::BOARD_COLS; ++c)
-        {
-            cv::Point tl = cellToPixelTopLeft({r, c}, DemoConfig::CELL_SIZE);
-            bool isLight = ((r + c) % 2 == 0);
-            cv::Vec3b color = isLight ? DemoConfig::CELL_LIGHT : DemoConfig::CELL_DARK;
+    // for (int r = 0; r < DemoConfig::BOARD_ROWS; ++r)
+    // {
+    //     for (int c = 0; c < DemoConfig::BOARD_COLS; ++c)
+    //     {
+    //         cv::Point tl = cellToPixelTopLeft({r, c}, DemoConfig::CELL_SIZE);
+    //         bool isLight = ((r + c) % 2 == 0);
+    //         cv::Vec3b color = isLight ? DemoConfig::CELL_LIGHT : DemoConfig::CELL_DARK;
 
-            canvas.fill_rect(tl.x, tl.y, DemoConfig::CELL_SIZE, DemoConfig::CELL_SIZE,
-                             cv::Scalar(color[0], color[1], color[2]));
-        }
-    }
+    //         canvas.fill_rect(tl.x, tl.y, DemoConfig::CELL_SIZE, DemoConfig::CELL_SIZE,
+    //                          cv::Scalar(color[0], color[1], color[2]));
+    //     }
+    // }
 }
 
 // ════════════════════════════════════════════
@@ -99,28 +99,28 @@ void BoardRenderer::drawCellHighlight(Img& canvas, const Position& cell,
 //  draw
 // ════════════════════════════════════════════
 
-// void BoardRenderer::draw(Img& canvas,
-//                          const std::optional<Position>& selectedCell,
-//                          const std::vector<Position>& highlightedCells) const
-// {
-//     if (canvas.width() != DemoConfig::BOARD_WIDTH_PX ||
-//         canvas.height() != DemoConfig::BOARD_HEIGHT_PX)
-//     {
-//         canvas = Img::create(DemoConfig::BOARD_WIDTH_PX, DemoConfig::BOARD_HEIGHT_PX, 3);
-//     }
+void BoardRenderer::draw(Img& canvas,
+                         const std::optional<Position>& selectedCell,
+                         const std::vector<Position>& highlightedCells) const
+{
+    if (canvas.width() != DemoConfig::BOARD_WIDTH_PX ||
+        canvas.height() != DemoConfig::BOARD_HEIGHT_PX)
+    {
+        canvas = Img::create(DemoConfig::BOARD_WIDTH_PX, DemoConfig::BOARD_HEIGHT_PX, 3);
+    }
 
-//     if (backgroundLoaded_)
-//     {
-//         canvas = background_.clone();
-//     }
-//     else
-//     {
-//         drawCheckerboard(canvas);
-//     }
+    if (backgroundLoaded_)
+    {
+        canvas = background_.clone();
+    }
+    else
+    {
+        drawCheckerboard(canvas);
+    }
 
-//     for (const auto& cell : highlightedCells)
-//         drawCellHighlight(canvas, cell, DemoConfig::HIGHLIGHT, 0.3);
+    for (const auto& cell : highlightedCells)
+        drawCellHighlight(canvas, cell, DemoConfig::HIGHLIGHT, 0.3);
 
-//     if (selectedCell.has_value())
-//         drawCellHighlight(canvas, *selectedCell, DemoConfig::SELECTED, 0.4);
-// }
+    if (selectedCell.has_value())
+        drawCellHighlight(canvas, *selectedCell, DemoConfig::SELECTED, 0.4);
+}

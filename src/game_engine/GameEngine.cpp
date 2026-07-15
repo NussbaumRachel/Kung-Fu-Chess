@@ -218,10 +218,12 @@ GameSnapshot GameEngine::getSnapshot() const
                     if (move.getPiece() == p)
                     {
                         info.progress = move.getProgress();
+                        info.targetCell = move.getTo();  // NEW
                         break;
                     }
                 }
             }
+
             else if (p->getState() == PieceState::Jumping)
             {
                 for (const JumpEntry& jump : arbiter_.getActiveJumps())

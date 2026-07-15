@@ -1,5 +1,5 @@
 #include <gtest/gtest.h>
-#include "game_emgine/GameEngine.hpp"
+#include "game_engine/GameEngine.hpp"
 #include "model/Board.hpp"
 #include "model/Rook.hpp"
 #include "model/Bishop.hpp"

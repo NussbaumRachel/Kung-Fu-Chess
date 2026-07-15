@@ -14,7 +14,9 @@ struct PieceInfo
     Position cell;
     PieceState state;
     double progress;  // 0.0–1.0, רלוונטי רק ב-Moving
+    std::optional<Position> targetCell;  // NEW: תא היעד בזמן Move
 };
+
 
 struct GameSnapshot
 {

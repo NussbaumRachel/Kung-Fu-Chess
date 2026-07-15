@@ -26,6 +26,7 @@ bool ChessRenderer::initialize(const std::string& assetsPath)
     {
         boardRenderer_.loadBackground(boardPath);
     }
+    canvas_ = Img::create(DemoConfig::BOARD_WIDTH_PX, DemoConfig::BOARD_HEIGHT_PX, 3);
 
     // PieceRenderer נבנה מחדש עם ה-AssetManager (עכשיו pointer — assignment עובד)
     pieceRenderer_ = PieceRenderer(*assets_);
