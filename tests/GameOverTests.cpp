@@ -1,6 +1,6 @@
 #include <gtest/gtest.h>
-#include "GameEngine.hpp"
-#include "Board.hpp"
+#include "game_engine/GameEngine.hpp"
+#include "model/Board.hpp"
 
 // ============================================================
 // טסטים להתנהגות Game Over

@@ -5,7 +5,6 @@
 #include "DemoBoardState.hpp"
 #include "DemoConfig.hpp"
 #include "img.hpp"
-
 #include <iostream>
 #include <string>
 #include <filesystem>

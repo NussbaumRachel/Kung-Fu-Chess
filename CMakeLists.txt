@@ -8,26 +8,26 @@ set(CMAKE_CXX_STANDARD_REQUIRED ON)
 enable_testing()
 
 add_executable(kungfuchess
-    src/main.cpp
-    src/Piece.cpp
-    src/PieceFactory.cpp
-    src/King.cpp
-    src/Queen.cpp
-    src/Rook.cpp
-    src/Bishop.cpp
-    src/Knight.cpp
-    src/Pawn.cpp
-    src/Board.cpp
-    src/Move.cpp
-    src/BoardParser.cpp
-    src/RuleEngine.cpp
-    src/RealTimeArbiter.cpp
-    src/GameStateMachine.cpp
-    src/BoardController.cpp
-    src/GameEngine.cpp
-    src/MoveCompletionService.cpp
-    src/GameController.cpp
-    src/TextTestRunner.cpp
+    src/text_io/main.cpp
+    src/model/Piece.cpp
+    src/model/King.cpp
+    src/model/Queen.cpp
+    src/model/Rook.cpp
+    src/model/Bishop.cpp
+    src/model/Knight.cpp
+    src/model/Pawn.cpp
+    src/model/Board.cpp
+    src/movement/Move.cpp
+    src/movement/PieceFactory.cpp
+    src/rule_engine/RuleEngine.cpp
+    src/arbiter/RealTimeArbiter.cpp
+    src/game_engine/GameStateMachine.cpp
+    src/game_engine/BoardController.cpp
+    src/game_engine/MoveCompletionService.cpp
+    src/game_engine/GameEngine.cpp
+    src/controllerClick/GameController.cpp
+    src/text_io/BoardParser.cpp
+    src/text_io/TextTestRunner.cpp
 
 )
 
@@ -39,25 +39,25 @@ add_executable(chess_tests
     tests/PieceMovementTests.cpp
     tests/GameTests.cpp
     tests/GameOverTests.cpp
-    src/Piece.cpp
-    src/PieceFactory.cpp
-    src/King.cpp
-    src/Queen.cpp
-    src/Rook.cpp
-    src/Bishop.cpp
-    src/Knight.cpp
-    src/Pawn.cpp
-    src/Board.cpp
-    src/Move.cpp
-    src/BoardParser.cpp
-    src/RuleEngine.cpp
-    src/RealTimeArbiter.cpp
-    src/GameStateMachine.cpp
-    src/BoardController.cpp
-    src/GameEngine.cpp
-    src/GameController.cpp
-    src/TextTestRunner.cpp
-    src/MoveCompletionService.cpp
+    src/model/Piece.cpp
+    src/model/King.cpp
+    src/model/Queen.cpp
+    src/model/Rook.cpp
+    src/model/Bishop.cpp
+    src/model/Knight.cpp
+    src/model/Pawn.cpp
+    src/model/Board.cpp
+    src/movement/Move.cpp
+    src/movement/PieceFactory.cpp
+    src/rule_engine/RuleEngine.cpp
+    src/arbiter/RealTimeArbiter.cpp
+    src/game_engine/GameStateMachine.cpp
+    src/game_engine/BoardController.cpp
+    src/game_engine/MoveCompletionService.cpp
+    src/game_engine/GameEngine.cpp
+    src/controllerClick/GameController.cpp
+    src/text_io/BoardParser.cpp
+    src/text_io/TextTestRunner.cpp
 )
 
 target_include_directories(chess_tests PRIVATE src)

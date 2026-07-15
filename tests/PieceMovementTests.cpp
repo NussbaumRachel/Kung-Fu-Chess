@@ -1,11 +1,11 @@
 #include <gtest/gtest.h>
 
-#include "Board.hpp"
-#include "Rook.hpp"
-#include "Bishop.hpp"
-#include "Knight.hpp"
-#include "Queen.hpp"
-#include "Pawn.hpp"
+#include "model/Board.hpp"
+#include "model/Rook.hpp"
+#include "model/Bishop.hpp"
+#include "model/Knight.hpp"
+#include "model/Queen.hpp"
+#include "model/Pawn.hpp"
 
 TEST(RookTest, CannotMoveThroughPiece)
 {
