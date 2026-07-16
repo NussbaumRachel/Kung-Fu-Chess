@@ -70,13 +70,3 @@ include(GoogleTest)
 gtest_discover_tests(chess_tests)
 add_test(NAME chess_tests COMMAND chess_tests)
 add_subdirectory(DEMO)
-target_include_directories(kungfuchess_demo PRIVATE
-    ${CMAKE_CURRENT_SOURCE_DIR}
-    ${CMAKE_SOURCE_DIR}/src
-    ${CMAKE_SOURCE_DIR}/src/game_engine
-    ${CMAKE_SOURCE_DIR}/src/model
-    ${CMAKE_SOURCE_DIR}/src/controllerClick
-    ${CMAKE_SOURCE_DIR}/src/text_io
-
-    ${OpenCV_INCLUDE_DIRS}
-)

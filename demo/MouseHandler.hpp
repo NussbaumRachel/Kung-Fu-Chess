@@ -18,8 +18,9 @@ public:
 
     static void onMouse(int event, int x, int y, int flags, void* userdata);
 
+    int cellSize() const { return cellSize_; }
+
 private:
     int           cellSize_;
     ClickCallback callback_;
-    Position pixelsToCell(int x, int y) const;
 };

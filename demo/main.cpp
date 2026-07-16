@@ -47,16 +47,14 @@ int main(int argc, char* argv[])
     
     // ── 4. Engine + Controller ──
     GameEngine engine(std::move(board));
-    GameController controller(engine, DemoConfig::CELL_SIZE);
-    
+    GameController controller(engine);
+
     // ── 5. Mouse callback ──
-    // MouseHandler נותן (row,col), GameController מצפה לפיקסלים.
-    // הפתרון: מעבר ישיר ל-engine.handleCellClick (דילוג על GameController).
-    renderer.setClickCallback([&engine, &renderer](int row, int col) {
-        engine.handleCellClick(row, col);
-        
+    renderer.setClickCallback([&controller, &renderer](int row, int col) {
+        controller.handleCellClick(row, col);
+
         // איפוס AnimationManager לכל Piece שהתחיל לזוז
-        GameSnapshot snap = engine.getSnapshot();
+        GameSnapshot snap = controller.getSnapshot();
         for (const auto& p : snap.pieces)
         {
             if (p.state == PieceState::Moving && p.progress == 0.0)

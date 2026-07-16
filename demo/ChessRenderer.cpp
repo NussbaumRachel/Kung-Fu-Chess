@@ -3,16 +3,13 @@
 #include <filesystem>
 
 ChessRenderer::ChessRenderer()
-    : pieceRenderer_(*assets_)  // זמני — מוחלף ב-initialize
-    , windowName_(DemoConfig::WINDOW_NAME)
+    : windowName_(DemoConfig::WINDOW_NAME)
 {
     assets_ = std::make_unique<AssetManager>();
 }
 
 bool ChessRenderer::initialize(const std::string& assetsPath)
 {
-    namespace fs = std::filesystem;
-
     // ── לוח ──
     std::string boardPath = assetsPath + "/board.png";
     bool boardOk = assets_->loadBoard(boardPath);
@@ -28,8 +25,8 @@ bool ChessRenderer::initialize(const std::string& assetsPath)
     }
     canvas_ = Img::create(DemoConfig::BOARD_WIDTH_PX, DemoConfig::BOARD_HEIGHT_PX, 3);
 
-    // PieceRenderer נבנה מחדש עם ה-AssetManager (עכשיו pointer — assignment עובד)
-    pieceRenderer_ = PieceRenderer(*assets_);
+    // PieceRenderer מאותחל פעם אחת, אחרי שה-AssetManager מוכן
+    pieceRenderer_ = std::make_unique<PieceRenderer>(*assets_);
 
     // ── חלון ──
     Img::named_window(windowName_);
@@ -59,7 +56,7 @@ void ChessRenderer::render(const GameSnapshot& snapshot)
     std::vector<Position> highlightedCells;
 
     boardRenderer_.draw(canvas_, selectedCell, highlightedCells);
-    pieceRenderer_.drawPieces(canvas_, snapshot, DemoConfig::CELL_SIZE, animMgr_);
+    pieceRenderer_->drawPieces(canvas_, snapshot, DemoConfig::CELL_SIZE, animMgr_);
 
     if (snapshot.gameOver)
         drawGameOverlay(snapshot);

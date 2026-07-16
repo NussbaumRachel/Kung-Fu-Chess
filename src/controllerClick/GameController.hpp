@@ -6,10 +6,10 @@
 class GameController
 {
 public:
-    explicit GameController(GameEngine& engine, int cellSize = 100);
+    explicit GameController(GameEngine& engine);
 
-    void handleClick(int pixelX, int pixelY);
-    void handleJump(int pixelX, int pixelY);
+    void handleCellClick(int row, int col);
+    void handleJump(int row, int col);
     void handleWait(int milliseconds);
     void handlePrint(std::ostream& output) const;
 
@@ -19,11 +19,9 @@ public:
     [[nodiscard]]
     GameSnapshot getSnapshot() const;
 
-private:
-    [[nodiscard]]
-    Position pixelsToCell(int pixelX, int pixelY) const;
+    /// המרת פיקסלים לקואורדינטת תא (סטטית — זמינה לכולם)
+    static Position pixelsToCell(int pixelX, int pixelY, int cellSize);
 
 private:
     GameEngine& engine_;
-    int cellSize_;
 };

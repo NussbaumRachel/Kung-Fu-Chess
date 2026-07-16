@@ -33,7 +33,7 @@ private:
     std::unique_ptr<AssetManager>   assets_;
     AnimationManager                animMgr_;
     BoardRenderer                   boardRenderer_;
-    PieceRenderer                   pieceRenderer_;
+    std::unique_ptr<PieceRenderer>  pieceRenderer_;
     std::unique_ptr<MouseHandler>   mouseHandler_;
 
     Img         canvas_;

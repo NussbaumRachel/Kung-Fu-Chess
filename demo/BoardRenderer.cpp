@@ -5,13 +5,6 @@
 //  כלי-עזר סטטיים
 // ════════════════════════════════════════════
 
-Position BoardRenderer::pixelsToCell(int pixelX, int pixelY, int cellSize)
-{
-    int col = std::clamp(pixelX / cellSize, 0, DemoConfig::BOARD_COLS - 1);
-    int row = std::clamp(pixelY / cellSize, 0, DemoConfig::BOARD_ROWS - 1);
-    return { row, col };
-}
-
 cv::Point BoardRenderer::cellToPixelTopLeft(const Position& cell, int cellSize)
 {
     return { cell.col * cellSize, cell.row * cellSize };
@@ -55,26 +48,6 @@ bool BoardRenderer::loadBackground(const std::string& filePath)
 }
 
 // ════════════════════════════════════════════
-//  ציור לוח שחמט
-// ════════════════════════════════════════════
-
-void BoardRenderer::drawCheckerboard(Img& canvas) const
-{
-    // for (int r = 0; r < DemoConfig::BOARD_ROWS; ++r)
-    // {
-    //     for (int c = 0; c < DemoConfig::BOARD_COLS; ++c)
-    //     {
-    //         cv::Point tl = cellToPixelTopLeft({r, c}, DemoConfig::CELL_SIZE);
-    //         bool isLight = ((r + c) % 2 == 0);
-    //         cv::Vec3b color = isLight ? DemoConfig::CELL_LIGHT : DemoConfig::CELL_DARK;
-
-    //         canvas.fill_rect(tl.x, tl.y, DemoConfig::CELL_SIZE, DemoConfig::CELL_SIZE,
-    //                          cv::Scalar(color[0], color[1], color[2]));
-    //     }
-    // }
-}
-
-// ════════════════════════════════════════════
 //  Highlight
 // ════════════════════════════════════════════
 
@@ -112,10 +85,6 @@ void BoardRenderer::draw(Img& canvas,
     if (backgroundLoaded_)
     {
         canvas = background_.clone();
-    }
-    else
-    {
-        drawCheckerboard(canvas);
     }
 
     for (const auto& cell : highlightedCells)

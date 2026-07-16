@@ -1,5 +1,6 @@
 #include "MouseHandler.hpp"
 #include "DemoConfig.hpp"
+#include "GameController.hpp"
 #include <iostream>
 
 MouseHandler::MouseHandler(int cellSize, ClickCallback onCellClick)
@@ -18,15 +19,10 @@ void MouseHandler::onMouse(int event, int x, int y, int flags, void* userdata)
     auto* self = static_cast<MouseHandler*>(userdata);
     if (!self || !self->callback_) return;
 
-    Position cell = self->pixelsToCell(x, y);
+    Position cell = GameController::pixelsToCell(x, y, self->cellSize_);
     if (cell.row < 0 || cell.row >= DemoConfig::BOARD_ROWS ||
         cell.col < 0 || cell.col >= DemoConfig::BOARD_COLS)
         return;
 
     self->callback_(cell.row, cell.col);
-}
-
-Position MouseHandler::pixelsToCell(int x, int y) const
-{
-    return { y / cellSize_, x / cellSize_ };
 }

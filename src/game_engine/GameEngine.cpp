@@ -27,7 +27,6 @@ void GameEngine::handleCellClick(int row, int col)
     if (!board_.isInsideBoard(row, col))
         return;
 
-    // ── 1. איסוף מידע ──
     GameState currentState = stateMachine_.getState();
     const auto& selectedCell = stateMachine_.getSelectedCell();
 
