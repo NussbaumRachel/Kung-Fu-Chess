@@ -130,23 +130,19 @@ void GameEngine::advanceTime(int milliseconds)
     }
 
     // ── 2. טיפול במהלכים שהושלמו ──
-    for (const CompletedMove& cm : arbiter_.pollCompletedMoves())
+        for (const CompletedMove& cm : arbiter_.pollCompletedMoves())
     {
-        // מהלך שנעצר — צריך להשתמש ב-stoppedAtCell
-        if (cm.wasStopped)
-        {
-            // המהלך לא בוטל, הוא נעצר — הכלי מגיע ל-stoppedAtCell
-            // MoveCompletionService.completeMove() כבר משתמש ב-cm.to
-            // (שהוגדר כ-stoppedAtCell דרך getTo())
-        }
-
         MoveCompletionResult result = moveCompletionService_.completeMove(cm);
-
+        
         if (!cm.wasCancelled && cm.piece)
         {
+            // המהלך הושלם בהצלחה — הכלי עכשיו ב-to
             Piece* movedPiece = board_.getCell(cm.to.row, cm.to.col);
             if (movedPiece)
-                startResting(movedPiece, REST_AFTER_MOVE_MS);
+            {
+                movedPiece->setState(PieceState::Idle);      // ← נקי: קודם Idle
+                startResting(movedPiece, REST_AFTER_MOVE_MS); // ← ואז Resting
+            }
         }
 
         if (result.gameOver)
@@ -155,6 +151,7 @@ void GameEngine::advanceTime(int milliseconds)
             return;
         }
     }
+
 
 
     // ── 3. קידום טיימרי מנוחה ──

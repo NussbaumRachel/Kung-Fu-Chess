@@ -25,7 +25,7 @@ public:
     void startJump(Piece* piece, Position cell, int durationMs);
 
     // קידום זמן לוגי — ללא sleep
-    void advanceTime(int milliseconds, const Board& board);
+    void advanceTime(int milliseconds, Board& board);
 
     // איסוף מהלכים שהושלמו מאז ה-poll הקודם
     std::vector<CompletedMove> pollCompletedMoves();
@@ -55,6 +55,6 @@ private:
 
     void resolveCollisions();
     void resolveJumpInterceptions();
-    void resolvePathCollisions(const Board& board);
+    void resolvePathCollisions(Board& board);
 
 };

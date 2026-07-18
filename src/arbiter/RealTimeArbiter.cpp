@@ -19,7 +19,7 @@ void RealTimeArbiter::startJump(Piece* piece, Position cell, int durationMs)
 
 // ──────────────── advanceTime ────────────────
 
-void RealTimeArbiter::advanceTime(int milliseconds, const Board& board)
+void RealTimeArbiter::advanceTime(int milliseconds, Board& board)
 {
     completedMoves_.clear();
     completedJumps_.clear();
@@ -216,7 +216,7 @@ void RealTimeArbiter::resolveJumpInterceptions()
         }
     }
 }
-void RealTimeArbiter::resolvePathCollisions(const Board& board)
+void RealTimeArbiter::resolvePathCollisions(Board& board)
 {
     // ── התנגשות בין שני מהלכים פעילים ──
     for (size_t i = 0; i < activeMoves_.size(); ++i)
@@ -240,36 +240,40 @@ void RealTimeArbiter::resolvePathCollisions(const Board& board)
             const auto& path1 = move1.getPath();
             const auto& path2 = move2.getPath();
 
-            // מצא חיתוך בין המסלולים
+            int actualElapsed1 = move1.getDurationMs() - move1.getRemainingMs();
+            int actualElapsed2 = move2.getDurationMs() - move2.getRemainingMs();
+
             for (const Position& cell : path1)
             {
                 double progress1 = move1.getProgressAtCell(cell);
                 double progress2 = move2.getProgressAtCell(cell);
 
                 if (progress1 < 0.0 || progress2 < 0.0)
-                    continue;  // לא משותף
+                    continue;
 
-                // חשב זמן הגעה (ms) לכל משבצת
-                int time1 = static_cast<int>(progress1 * move1.getDurationMs());
-                int time2 = static_cast<int>(progress2 * move2.getDurationMs());
+                // זמן שנותר ms מהרגע הנוכחי עד להגעה למשבצת
+                int elapsedToCell1 = static_cast<int>(progress1 * move1.getDurationMs());
+                int elapsedToCell2 = static_cast<int>(progress2 * move2.getDurationMs());
+                int remaining1 = elapsedToCell1 - actualElapsed1;
+                int remaining2 = elapsedToCell2 - actualElapsed2;
+                if (remaining1 < 0) remaining1 = 0;
+                if (remaining2 < 0) remaining2 = 0;
 
-                // חפיפה בזמן?
-                int diff = std::abs(time1 - time2);
+                int diff = std::abs(remaining1 - remaining2);
                 int threshold = std::max(move1.getMsPerStep(), move2.getMsPerStep()) / 2;
 
                 if (diff <= threshold)
                 {
                     if (sameColor)
                     {
-                        // ידידותי — מי שמגיע מאוחר יותר נעצר
-                        if (time1 > time2)
+                        // ידידותי — מי שמגיע מאוחר יותר נעצר במשבצת הקודמת
+                        if (remaining1 > remaining2)
                         {
-                            // move1 מגיע מאוחר — נעצר במשבצת הקודמת
                             int idx = static_cast<int>(progress1 * (path1.size() - 1));
                             if (idx > 0)
                                 move1.stopAtCell(path1[idx - 1]);
                             else
-                                move1.cancel();  // אין משבצת קודמת — מבטלים
+                                move1.cancel();
                         }
                         else
                         {
@@ -283,17 +287,24 @@ void RealTimeArbiter::resolvePathCollisions(const Board& board)
                     else
                     {
                         // אויב — מי שמגיע ראשון אוכל את השני
-                        if (time1 <= time2)
-                            move2.cancel();   // move1 אוכל את move2
+                        if (remaining1 <= remaining2)
+                        {
+                            move2.cancel();
+                            move2.setIntercepted();
+                        }
                         else
-                            move1.cancel();   // move2 אוכל את move1
+                        {
+                            move1.cancel();
+                            move1.setIntercepted();
+                        }
                     }
+                    break;  // מצאנו התנגשות — עבור לזוג הבא
                 }
             }
         }
     }
 
-    // ── התנגשות בין מהלך לכלי נייח (Idle/Resting) על הלוח ──
+    // ── התנגשות בין מהלך לכלי נייח על הלוח ──
     for (Move& move : activeMoves_)
     {
         if (move.isCancelled() || move.isFinished())
@@ -304,7 +315,7 @@ void RealTimeArbiter::resolvePathCollisions(const Board& board)
 
         const auto& path = move.getPath();
 
-                for (size_t idx = 1; idx < path.size(); ++idx)
+        for (size_t idx = 1; idx < path.size(); ++idx)
         {
             const Position& cell = path[idx];
 
@@ -325,14 +336,15 @@ void RealTimeArbiter::resolvePathCollisions(const Board& board)
                     move.stopAtCell(path[prevIdx]);
                 else
                     move.cancel();
+                break;  // עצרנו — לא ממשיכים לבדוק את שאר המסלול
             }
             else
             {
-                // אויב נייח — אוכלים אותו, ממשיכים
-                // האויב יוסר מה-board ב-completeMove (כבר מטופל)
-                // לא צריך לעשות כלום כאן — moveCompletionService יטפל
+                // אויב נייח — אוכלים אותו עכשיו
+                stationaryPiece->setState(PieceState::Captured);
+                board.takeCell(cell.row, cell.col);  // מסיר מהלוח
+                // ממשיכים — האויב הוסר, המהלך ממשיך
             }
         }
-
     }
 }

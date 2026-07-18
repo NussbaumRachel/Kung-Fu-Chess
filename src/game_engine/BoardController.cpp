@@ -25,7 +25,7 @@ std::unique_ptr<Piece> BoardController::executeMove(Piece& piece, Position from,
     // מיקום הכלי ביעד
     board_.setCell(to.row, to.col, std::move(removed));
     piece.setCell(to);
-    piece.setState(PieceState::Idle);
+    // piece.setState(PieceState::Idle);
 
     return capturedPiece;
 }
@@ -45,7 +45,9 @@ Piece* BoardController::promotePiece(Piece* piece, Position at, PieceType newTyp
         at
     );
     Piece* newPieceRaw = newPiece.get();
+    newPieceRaw->setState(PieceState::Idle);   // ← תוודא שהכלי החדש Idle
     board_.setCell(at.row, at.col, std::move(newPiece));
+
 
     return newPieceRaw;  // observing pointer — בעלות ב-Board
 }

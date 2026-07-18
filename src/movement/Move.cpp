@@ -43,15 +43,20 @@ void Move::stopAtCell(Position cell)
 {
     stopped_ = true;
     stoppedAt_ = cell;
-    // נחשב מחדש את הזמן שנותר לפי ההתקדמות למשבצת העצירה
+    
     double progress = getProgressAtCell(cell);
     if (progress >= 0.0)
     {
-        int elapsed = static_cast<int>(durationMs_ * progress);
-        remainingMs_ = durationMs_ - elapsed;
+        // elapsed time to reach this cell from start
+        int elapsedToCell = static_cast<int>(durationMs_ * progress);
+        // actual elapsed so far
+        int actualElapsed = durationMs_ - remainingMs_;
+        // remaining = time to cell - time already passed
+        remainingMs_ = elapsedToCell - actualElapsed;
         if (remainingMs_ < 0) remainingMs_ = 0;
     }
 }
+
 
 const std::vector<Position>& Move::getPath() const
 {
