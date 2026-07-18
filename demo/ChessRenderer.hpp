@@ -4,7 +4,7 @@
 #include <memory>
 #include <string>
 #include "DemoConfig.hpp"
-#include "GameSnapshot.hpp"
+#include "game_engine/GameSnapshot.hpp"
 #include "AssetManager.hpp"
 #include "AnimationManager.hpp"
 #include "BoardRenderer.hpp"

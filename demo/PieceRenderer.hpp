@@ -4,7 +4,7 @@
 #include <unordered_map>
 #include "AssetManager.hpp"
 #include "AnimationManager.hpp"
-#include "GameSnapshot.hpp"
+#include "game_engine/GameSnapshot.hpp"
 
 /// מצייר כלים (עם אנימציות frame-based). עובד עם AssetManager + AnimationManager.
 class PieceRenderer

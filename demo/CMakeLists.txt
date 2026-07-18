@@ -47,7 +47,6 @@ set(DEMO_SOURCES
     BoardRenderer.cpp
     PieceRenderer.cpp
     MouseHandler.cpp
-    DemoBoardState.cpp
 
 
     # Model
@@ -59,6 +58,8 @@ set(DEMO_SOURCES
     ${CMAKE_SOURCE_DIR}/src/model/Bishop.cpp
     ${CMAKE_SOURCE_DIR}/src/model/Knight.cpp
     ${CMAKE_SOURCE_DIR}/src/model/Pawn.cpp
+    ${CMAKE_SOURCE_DIR}/src/model/Position.hpp
+    ${CMAKE_SOURCE_DIR}/src/model/types.hpp
 
 
     # Movement
@@ -79,6 +80,10 @@ set(DEMO_SOURCES
     ${CMAKE_SOURCE_DIR}/src/game_engine/BoardController.cpp
     ${CMAKE_SOURCE_DIR}/src/game_engine/GameEngine.cpp
     ${CMAKE_SOURCE_DIR}/src/game_engine/MoveCompletionService.cpp
+    ${CMAKE_SOURCE_DIR}/src/game_engine/ClickPreparationService.cpp
+    ${CMAKE_SOURCE_DIR}/src/game_engine/ClickPreparationService.hpp
+    ${CMAKE_SOURCE_DIR}/src/game_engine/ClickContext.hpp
+    ${CMAKE_SOURCE_DIR}/src/game_engine/GameSnapshot.hpp
 
 
     # Controller
@@ -101,7 +106,6 @@ set(DEMO_HEADERS
     PieceRenderer.hpp
     MouseHandler.hpp
     DemoConfig.hpp
-    DemoBoardState.hpp
 )
 
 

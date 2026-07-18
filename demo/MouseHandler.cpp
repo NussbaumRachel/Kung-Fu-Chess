@@ -1,6 +1,6 @@
 #include "MouseHandler.hpp"
 #include "DemoConfig.hpp"
-#include "GameController.hpp"
+#include "controllerClick/GameController.hpp"
 #include <iostream>
 
 MouseHandler::MouseHandler(int cellSize, ClickCallback onCellClick)

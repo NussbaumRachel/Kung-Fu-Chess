@@ -124,7 +124,7 @@ bool Board::isPathClear(int fromRow, int fromCol,
 
     while (row != toRow || col != toCol)
     {
-        if (!isEmptyCell(row, col) && !(getCell(row, col).getState() == PieceInfo::move))
+        if (!isEmptyCell(row, col))
             return false;
 
         row += rowStep;

@@ -6,6 +6,8 @@
 #include "game_engine/GameStateMachine.hpp"
 #include "game_engine/BoardController.hpp"
 #include "game_engine/GameSnapshot.hpp"
+#include "game_engine/ClickPreparationService.hpp"
+#include <unordered_map>
 #include <optional>
 
 class GameEngine
@@ -13,21 +15,11 @@ class GameEngine
 public:
     explicit GameEngine(Board board);
 
-    // מטעם Controller — קליק על תא בלוח
     void handleCellClick(int row, int col);
-
-    // מטעם Controller — קפיצה ישירה (ללא two-click flow)
     void handleJump(int row, int col);
-
-    // מטעם main loop — קידום זמן לוגי
     void advanceTime(int milliseconds);
-
-    // מטעם Renderer — תמונת מצב אימוטאבילית
     GameSnapshot getSnapshot() const;
-
     GameState getState() const;
-
-    // לטסטים
     const Board& getBoard() const;
 
 private:
@@ -37,10 +29,34 @@ private:
     BoardController boardController_;
     GameStateMachine stateMachine_;
     MoveCompletionService moveCompletionService_;
+    ClickPreparationService clickPrepService_;
     static constexpr int JUMP_DURATION_MS = 1000;
 
-    // עזרים פנימיים
+    // ביצוע החלטות
+    void executeDecision(const GameDecision& d);
+
+    // עזרים ל-advanceTime
+    void handleGameOver(std::optional<Color> winner);
+    void maybeReturnToSelection();
+
+    // Pre-compute maps ל-getSnapshot
+    std::unordered_map<const Piece*, double> buildMoveProgressMap() const;
+    std::unordered_map<const Piece*, Position> buildMoveTargetMap() const;
+    std::unordered_map<const Piece*, double> buildJumpProgressMap() const;
+
+    // חישוב זמן מהלך
     int calculateMoveTime(int fromRow, int fromCol,
                           int toRow, int toCol) const;
-    // void applyCompletedMove(const CompletedMove& cm);
+
+        // Cooldown tracker: Piece* → remainingRestMs
+    std::unordered_map<const Piece*, int> restTimers_;
+
+    static constexpr int REST_AFTER_MOVE_MS = 2000;
+    static constexpr int REST_AFTER_JUMP_MS = 500;
+
+    // עזרים:
+    void startResting(Piece* piece, int durationMs);
+    void advanceRestTimers(int milliseconds);
+    bool isResting(const Piece* piece) const;
+
 };

@@ -1,8 +1,8 @@
 #include "ChessRenderer.hpp"
 #include "DemoConfig.hpp"
-#include "GameEngine.hpp"
-#include "GameController.hpp"
-#include "BoardParser.hpp"
+#include "game_engine/GameEngine.hpp"
+#include "controllerClick/GameController.hpp"
+#include "text_io/BoardParser.hpp"
 #include "img.hpp"
 #include <iostream>
 #include <string>

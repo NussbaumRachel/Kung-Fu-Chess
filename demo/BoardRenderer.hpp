@@ -4,7 +4,7 @@
 #include <optional>
 #include <vector>
 
-#include "Position.hpp"
+#include "model/Position.hpp"
 #include "DemoConfig.hpp"
 
 /// מצייר לוח (רקע + הדגשות). עובד עם Img.

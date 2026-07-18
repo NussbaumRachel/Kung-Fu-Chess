@@ -3,7 +3,7 @@
 #include "img.hpp"
 #include <functional>
 #include <string>
-#include "Position.hpp"
+#include "model/Position.hpp"
 
 /// טיפול אירועי עכבר. עובד עם Img (דרכה עוברים ל-OpenCV).
 class MouseHandler

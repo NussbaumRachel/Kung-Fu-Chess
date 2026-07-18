@@ -4,8 +4,8 @@
 #include "AnimatedSprite.hpp"
 #include <map>
 #include <string>
-#include "types.hpp"
-#include "Piece.hpp"
+#include "model/types.hpp"
+#include "model/Piece.hpp"
 
 /// טוען ומרכז את כל ה-assets: לוח + 12 AnimatedSprites.
 /// מחליף את SpriteSheet הישן.

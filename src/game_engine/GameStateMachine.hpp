@@ -1,5 +1,5 @@
 #pragma once
-
+#include "game_engine/ClickContext.hpp"
 #include "model/Position.hpp"
 #include "model/Constants.hpp"
 #include <optional>
@@ -41,13 +41,9 @@ public:
     // המכונה לא תלויה ב-Board, RuleEngine, או RealTimeArbiter.
     // GameEngine אוסף את המידע ומעביר אותו לכאן.
     GameDecision evaluate(
-        GameState currentState,
-        int clickRow, int clickCol,
-        const std::optional<Position>& currentSelectedCell,
-        bool cellIsEmpty,
-        bool cellHasFriendlyPiece,
-        bool cellIsInvolved,
-        bool moveIsValid
+    const ClickContext& ctx,
+    GameState currentState,
+    const std::optional<Position>& currentSelectedCell
     ) const;
 
     // ── ניהול מצב (state mutation — נקרא ע"י GameEngine) ──

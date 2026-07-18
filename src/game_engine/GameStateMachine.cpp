@@ -3,13 +3,9 @@
 GameStateMachine::GameStateMachine() = default;
 
 GameDecision GameStateMachine::evaluate(
+    const ClickContext& ctx,
     GameState currentState,
-    int clickRow, int clickCol,
-    const std::optional<Position>& currentSelectedCell,
-    bool cellIsEmpty,
-    bool cellHasFriendlyPiece,
-    bool cellIsInvolved,
-    bool moveIsValid) const
+    const std::optional<Position>& currentSelectedCell) const
 {
     // ── GAME_OVER: אין קליקים ──
     if (currentState == GameState::GAME_OVER)
@@ -23,13 +19,13 @@ GameDecision GameStateMachine::evaluate(
         currentState == GameState::JUMP_IN_PROGRESS)
     {
         // ניתן לבחור רק כלי פנוי (לא ריק, לא בתנועה/קפיצה)
-        if (!cellIsEmpty && !cellIsInvolved)
+        if (!ctx.isEmpty && !ctx.isInvolved)
         {
-            GameDecision d;
-            d.action = ActionType::SelectPiece;
-            d.newState = GameState::WAITING_TARGET;
-            d.selectedCell = Position{clickRow, clickCol};
-            return d;
+            GameDecision decision;
+            decision.action = ActionType::SelectPiece;
+            decision.newState = GameState::WAITING_TARGET;
+            decision.selectedCell = Position{ctx.row, ctx.col};
+            return decision;
         }
         return {ActionType::NoOp, currentState};
     }
@@ -44,44 +40,44 @@ GameDecision GameStateMachine::evaluate(
         }
 
         // תרחיש 2: לחיצה על אותו תא — קפיצה
-        if (Position{clickRow, clickCol} == *currentSelectedCell)
+        if (Position{ctx.row, ctx.col} == *currentSelectedCell)
         {
-            if (!cellIsInvolved)
+            if (!ctx.isInvolved)
             {
-                GameDecision d;
-                d.action = ActionType::StartJump;
-                d.newState = GameState::JUMP_IN_PROGRESS;
-                d.from = *currentSelectedCell;
-                return d;
+                GameDecision decision;
+                decision.action = ActionType::StartJump;
+                decision.newState = GameState::JUMP_IN_PROGRESS;
+                decision.from = *currentSelectedCell;
+                return decision;
             }
             // התא מעורב במהלך/קפיצה — לא ניתן לקפוץ
             return {ActionType::NoOp, GameState::WAITING_TARGET};
         }
 
         // תרחיש 3: לחיצה על כלי ידידותי אחר — החלף בחירה
-        if (cellHasFriendlyPiece)
+        if (ctx.hasFriendly)
         {
-            GameDecision d;
-            d.action = ActionType::SwitchPiece;
-            d.newState = GameState::WAITING_TARGET;
-            d.selectedCell = Position{clickRow, clickCol};
-            return d;
+            GameDecision decision;
+            decision.action = ActionType::SwitchPiece;
+            decision.newState = GameState::WAITING_TARGET;
+            decision.selectedCell = Position{ctx.row, ctx.col};
+            return decision;
         }
 
         // תרחיש 4: מהלך לא חוקי — בטל בחירה
-        if (!moveIsValid)
+        if (!ctx.moveIsValid)
         {
             return {ActionType::CancelSelection, GameState::WAITING_SELECTION};
         }
 
         // תרחיש 5: מהלך חוקי — התחל תנועה
         {
-            GameDecision d;
-            d.action = ActionType::StartMove;
-            d.newState = GameState::MOVE_IN_PROGRESS;
-            d.from = *currentSelectedCell;
-            d.to = Position{clickRow, clickCol};
-            return d;
+            GameDecision decision;
+            decision.action = ActionType::StartMove;
+            decision.newState = GameState::MOVE_IN_PROGRESS;
+            decision.from = *currentSelectedCell;
+            decision.to = Position{ctx.row, ctx.col};
+            return decision;
         }
     }
 

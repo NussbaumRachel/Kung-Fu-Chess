@@ -27,7 +27,7 @@ void TextTestRunner::run(std::istream& input)
 
             iss >> x >> y;
 
-            controller_.handleClick(x, y);
+            controller_.handleCellClick(x, y);
         }
         else if (command == "JUMP" || command == "jump")
         {

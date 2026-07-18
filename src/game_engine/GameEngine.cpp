@@ -5,13 +5,12 @@
 #include <cstdlib>
 
 GameEngine::GameEngine(Board board)
-    :
-    board_(std::move(board)),
-    boardController_(board_),
-    moveCompletionService_( boardController_, board_, stateMachine_)
+    : board_(std::move(board)),
+      boardController_(board_),
+      moveCompletionService_(boardController_, board_, stateMachine_)
+      // clickPrepService_ מאותחל אוטומטית (default constructor)
 {
 }
-
 const Board& GameEngine::getBoard() const
 {
     return board_;
@@ -27,59 +26,28 @@ void GameEngine::handleCellClick(int row, int col)
     if (!board_.isInsideBoard(row, col))
         return;
 
+    ClickContext ctx = clickPrepService_.prepare(
+        board_, arbiter_, ruleEngine_,
+        stateMachine_.getSelectedCell(),
+        stateMachine_.getState(),
+        row, col);
+
     GameState currentState = stateMachine_.getState();
-    const auto& selectedCell = stateMachine_.getSelectedCell();
 
-    bool cellIsEmpty = board_.isEmptyCell(row, col);
-    bool cellHasFriendlyPiece = false;
-    bool cellIsInvolved = arbiter_.isPieceInvolved(row, col);
-    bool moveIsValid = false;
-
-    // זיהוי כלי ידידותי (רק כשיש כלי בתא הנוכחי ויש כלי נבחר)
-    if (!cellIsEmpty)
-    {
-        Piece* clickedPiece = board_.getCell(row, col);
-        if (selectedCell.has_value() &&
-            board_.isInsideBoard(selectedCell->row, selectedCell->col) &&
-            !board_.isEmptyCell(selectedCell->row, selectedCell->col))
-        {
-            Piece* selectedPiece = board_.getCell(selectedCell->row, selectedCell->col);
-            if (selectedPiece && clickedPiece &&
-                clickedPiece->getColor() == selectedPiece->getColor())
-            {
-                cellHasFriendlyPiece = true;
-            }
-        }
-    }
-
-    // אימות מהלך — רק כשצריך (מצב WAITING_TARGET, יש בחירה, לא קפיצה/החלפה)
-    if (currentState == GameState::WAITING_TARGET &&
-        selectedCell.has_value() &&
-        board_.isInsideBoard(selectedCell->row, selectedCell->col) &&
-        !board_.isEmptyCell(selectedCell->row, selectedCell->col))
-    {
-        Position clickPos{row, col};
-
-        // לא צריך לאמת מהלך עבור קפיצה או החלפת כלי
-        if (!(clickPos == *selectedCell) && !cellHasFriendlyPiece)
-        {
-            Piece* selectedPiece = board_.getCell(selectedCell->row, selectedCell->col);
-            if (selectedPiece)
-            {
-                MoveValidation validation = ruleEngine_.validateMove(
-                    board_, *selectedCell, clickPos, selectedPiece->getColor());
-                moveIsValid = validation.isValid;
-            }
-        }
-    }
-
-    // ── 2. שאילת מכונת המצבים ──
     GameDecision d = stateMachine_.evaluate(
-        currentState, row, col, selectedCell,
-        cellIsEmpty, cellHasFriendlyPiece,
-        cellIsInvolved, moveIsValid);
+        ctx, currentState, stateMachine_.getSelectedCell());
 
-    // ── 3. ביצוע ההחלטה ──
+    executeDecision(d);
+}
+void GameEngine::handleGameOver(std::optional<Color> winner)
+{
+    stateMachine_.setState(GameState::GAME_OVER);
+    if (winner.has_value())
+        stateMachine_.setWinner(winner.value());
+}
+
+void GameEngine::executeDecision(const GameDecision& d)
+{
     switch (d.action)
     {
     case ActionType::SelectPiece:
@@ -91,9 +59,9 @@ void GameEngine::handleCellClick(int row, int col)
     case ActionType::StartMove:
     {
         Piece* piece = board_.getCell(d.from->row, d.from->col);
-        int duration = calculateMoveTime(
+        int moveTime = calculateMoveTime(
             d.from->row, d.from->col, d.to->row, d.to->col);
-        arbiter_.startMove(piece, *d.from, *d.to, duration);
+        arbiter_.startMove(piece, *d.from, *d.to, moveTime);
         piece->setState(PieceState::Moving);
         stateMachine_.setSelectedCell(std::nullopt);
         stateMachine_.setState(d.newState);
@@ -119,25 +87,19 @@ void GameEngine::handleCellClick(int row, int col)
         break;
     }
 }
-
 void GameEngine::handleJump(int row, int col)
 {
     if (!board_.isInsideBoard(row, col))
         return;
 
-    // אפשר לקפוץ רק כשיש כלי, הוא לא בתנועה/קפיצה, והמשחק לא נגמר
-    if (board_.isEmptyCell(row, col))
-        return;
-
-    if (arbiter_.isPieceInvolved(row, col))
-        return;
-
-    if (stateMachine_.getState() == GameState::GAME_OVER)
+    // אפשר לקפוץ רק כשיש כלי פנוי והמשחק לא נגמר
+    if (board_.isEmptyCell(row, col) ||
+        arbiter_.isPieceInvolved(row, col) ||
+        stateMachine_.getState() == GameState::GAME_OVER)
         return;
 
     Piece* piece = board_.getCell(row, col);
-    Position pos{row, col};
-    arbiter_.startJump(piece, pos, JUMP_DURATION_MS);
+    arbiter_.startJump(piece, Position{row, col}, JUMP_DURATION_MS);
     piece->setState(PieceState::Jumping);
     stateMachine_.setSelectedCell(std::nullopt);
     stateMachine_.setState(GameState::JUMP_IN_PROGRESS);
@@ -147,93 +109,82 @@ void GameEngine::advanceTime(int milliseconds)
 {
     arbiter_.advanceTime(milliseconds);
 
-    // ── טיפול ב-Jumps שהושלמו ──
-    auto completedJumps = arbiter_.pollCompletedJumps();
-    for (const auto& jump : completedJumps)
+    // טיפול בקפיצות שהושלמו
+    for (const auto& jump : arbiter_.pollCompletedJumps())
     {
         if (jump.piece)
             jump.piece->setState(PieceState::Idle);
     }
 
-    // ── טיפול ב-Moves שהושלמו ──
-    auto completedMoves = arbiter_.pollCompletedMoves();
-
-    // יירוטים: moves שבוטלו (wasCancelled=true) — קופץ יירט אויב
-    for (const CompletedMove& cm : completedMoves)
+    // טיפול במהלכים שהושלמו
+    for (const CompletedMove& cm : arbiter_.pollCompletedMoves())
     {
-        MoveCompletionResult result =
-            moveCompletionService_.completeMove(cm);
-        
+        MoveCompletionResult result = moveCompletionService_.completeMove(cm);
         if (result.gameOver)
         {
-            stateMachine_.setState(GameState::GAME_OVER);
-
-            if (result.winner.has_value())
-                stateMachine_.setWinner(result.winner.value());
-
-            return;
+            handleGameOver(result.winner);
+            return;   // המשחק נגמר — לא ממשיכים
         }
     }
 
-    // ── חזרה למצב בחירה ──
-    bool allDone = !arbiter_.hasActiveMoves() && !arbiter_.hasActiveJumps();
-    if (allDone)
+    // חזרה למצב בחירה אם הכל שקט
+    maybeReturnToSelection();
+}
+void GameEngine::maybeReturnToSelection()
+{
+    if (!arbiter_.hasActiveMoves() && !arbiter_.hasActiveJumps())
     {
         GameState s = stateMachine_.getState();
-        if (s == GameState::MOVE_IN_PROGRESS || s == GameState::JUMP_IN_PROGRESS)
+        if (s == GameState::MOVE_IN_PROGRESS ||
+            s == GameState::JUMP_IN_PROGRESS)
+        {
             stateMachine_.setState(GameState::WAITING_SELECTION);
+        }
     }
 }
-
 GameSnapshot GameEngine::getSnapshot() const
 {
+    // Pre-compute maps — O(activeMoves + activeJumps) במקום O(pieces × ...)
+    auto moveProgressMap = buildMoveProgressMap();
+    auto moveTargetMap   = buildMoveTargetMap();
+    auto jumpProgressMap = buildJumpProgressMap();
+
     GameSnapshot snapshot;
-    snapshot.boardWidth = board_.colCount();
+    snapshot.boardWidth  = board_.colCount();
     snapshot.boardHeight = board_.rowCount();
     snapshot.selectedCell = stateMachine_.getSelectedCell();
-    snapshot.gameOver = (stateMachine_.getState() == GameState::GAME_OVER);
+    snapshot.gameOver    = (stateMachine_.getState() == GameState::GAME_OVER);
 
     const auto& grid = board_.getGrid();
     for (int r = 0; r < board_.rowCount(); ++r)
     {
         for (int c = 0; c < board_.colCount(); ++c)
         {
-            Piece* p = grid[r][c].get();
-            if (!p)
-                continue;
+            const Piece* p = grid[r][c].get();
+            if (!p) continue;
 
             PieceInfo info;
-            info.kind = p->getType();
-            info.color = p->getColor();
+            info.kind    = p->getType();
+            info.color   = p->getColor();
             info.pieceId = p->getId();
-            info.cell = p->getCell();
-            info.state = p->getState();
+            info.cell    = p->getCell();
+            info.state   = p->getState();
             info.progress = 0.0;
 
             if (p->getState() == PieceState::Moving)
             {
-                for (const Move& move : arbiter_.getActiveMoves())
+                auto it = moveProgressMap.find(p);
+                if (it != moveProgressMap.end())
                 {
-                    if (move.getPiece() == p)
-                    {
-                        info.progress = move.getProgress();
-                        info.targetCell = move.getTo();  // NEW
-                        break;
-                    }
+                    info.progress   = it->second;
+                    info.targetCell = moveTargetMap[p];
                 }
             }
-
             else if (p->getState() == PieceState::Jumping)
             {
-                for (const JumpEntry& jump : arbiter_.getActiveJumps())
-                {
-                    if (jump.piece == p)
-                    {
-                        info.progress = 1.0 -
-                            static_cast<double>(jump.remainingMs) / JUMP_DURATION_MS;
-                        break;
-                    }
-                }
+                auto it = jumpProgressMap.find(p);
+                if (it != jumpProgressMap.end())
+                    info.progress = it->second;
             }
 
             snapshot.pieces.push_back(info);
@@ -243,11 +194,72 @@ GameSnapshot GameEngine::getSnapshot() const
     snapshot.winner = stateMachine_.getWinner();
     return snapshot;
 }
-
 int GameEngine::calculateMoveTime(int fromRow, int fromCol,
                                   int toRow, int toCol) const
 {
     int distance = std::max(std::abs(toRow - fromRow), std::abs(toCol - fromCol));
     return distance * 1000;
 }
-
+std::unordered_map<const Piece*, double> GameEngine::buildMoveProgressMap() const
+{
+    std::unordered_map<const Piece*, double> map;
+    for (const Move& move : arbiter_.getActiveMoves())
+    {
+        if (move.getPiece())
+            map[move.getPiece()] = move.getProgress();
+    }
+    return map;
+}
+std::unordered_map<const Piece*, Position> GameEngine::buildMoveTargetMap() const
+{
+    std::unordered_map<const Piece*, Position> map;
+    for (const Move& move : arbiter_.getActiveMoves())
+    {
+        if (move.getPiece())
+            map[move.getPiece()] = move.getTo();
+    }
+    return map;
+}
+std::unordered_map<const Piece*, double> GameEngine::buildJumpProgressMap() const
+{
+    std::unordered_map<const Piece*, double> map;
+    for (const JumpEntry& jump : arbiter_.getActiveJumps())
+    {
+        if (jump.piece)
+        {
+            map[jump.piece] = 1.0 -
+                static_cast<double>(jump.remainingMs) / JUMP_DURATION_MS;
+        }
+    }
+    return map;
+}
+void GameEngine::startResting(Piece* piece, int durationMs)
+{
+    if (piece)
+    {
+        piece->setState(PieceState::Resting);
+        restTimers_[piece] = durationMs;
+    }
+}
+void GameEngine::advanceRestTimers(int milliseconds)
+{
+    for (auto it = restTimers_.begin(); it != restTimers_.end(); )
+    {
+        it->second -= milliseconds;
+        if (it->second <= 0)
+        {
+            // הכלי סיים מנוחה
+            if (it->first)
+                it->first->setState(PieceState::Idle);
+            it = restTimers_.erase(it);
+        }
+        else
+        {
+            ++it;
+        }
+    }
+}
+bool GameEngine::isResting(const Piece* piece) const
+{
+    return restTimers_.find(piece) != restTimers_.end();
+}

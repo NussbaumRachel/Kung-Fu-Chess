@@ -25,6 +25,7 @@ add_executable(kungfuchess
     src/game_engine/BoardController.cpp
     src/game_engine/MoveCompletionService.cpp
     src/game_engine/GameEngine.cpp
+    src/game_engine/ClickPreparationService.cpp
     src/controllerClick/GameController.cpp
     src/text_io/BoardParser.cpp
     src/text_io/TextTestRunner.cpp
@@ -55,6 +56,7 @@ add_executable(chess_tests
     src/game_engine/BoardController.cpp
     src/game_engine/MoveCompletionService.cpp
     src/game_engine/GameEngine.cpp
+    src/game_engine/ClickPreparationService.cpp
     src/controllerClick/GameController.cpp
     src/text_io/BoardParser.cpp
     src/text_io/TextTestRunner.cpp

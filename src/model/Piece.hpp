@@ -13,8 +13,10 @@ enum class PieceState
     Idle,
     Moving,
     Jumping,
+    Resting,    
     Captured
 };
+
 
 // מחלקת בסיס לכל כלי שחמט
 class Piece
