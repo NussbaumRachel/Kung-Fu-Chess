@@ -118,7 +118,7 @@ void GameEngine::handleJump(int row, int col)
 
 void GameEngine::advanceTime(int milliseconds)
 {
-    arbiter_.advanceTime(milliseconds);
+    arbiter_.advanceTime(milliseconds, board_);
 
     // ── 1. טיפול בקפיצות שהושלמו ──
     for (const auto& jump : arbiter_.pollCompletedJumps())
@@ -132,15 +132,21 @@ void GameEngine::advanceTime(int milliseconds)
     // ── 2. טיפול במהלכים שהושלמו ──
     for (const CompletedMove& cm : arbiter_.pollCompletedMoves())
     {
+        // מהלך שנעצר — צריך להשתמש ב-stoppedAtCell
+        if (cm.wasStopped)
+        {
+            // המהלך לא בוטל, הוא נעצר — הכלי מגיע ל-stoppedAtCell
+            // MoveCompletionService.completeMove() כבר משתמש ב-cm.to
+            // (שהוגדר כ-stoppedAtCell דרך getTo())
+        }
+
         MoveCompletionResult result = moveCompletionService_.completeMove(cm);
-        
-        // הכלי המבצע נח אחרי המהלך (אם לא בוטל/יורט)
+
         if (!cm.wasCancelled && cm.piece)
         {
-            // צריך למצוא את הכלי במיקומו החדש (אחרי executeMove)
             Piece* movedPiece = board_.getCell(cm.to.row, cm.to.col);
             if (movedPiece)
-                startResting(movedPiece, REST_AFTER_MOVE_MS);  // 2000ms מנוחה
+                startResting(movedPiece, REST_AFTER_MOVE_MS);
         }
 
         if (result.gameOver)
@@ -149,6 +155,7 @@ void GameEngine::advanceTime(int milliseconds)
             return;
         }
     }
+
 
     // ── 3. קידום טיימרי מנוחה ──
     advanceRestTimers(milliseconds);

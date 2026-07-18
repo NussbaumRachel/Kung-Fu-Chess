@@ -14,7 +14,10 @@ struct CompletedMove
     Position to;
 
     bool wasCancelled = false;
-    bool wasIntercepted = false;   // בוטל ע"י יירוט קפיצה — piece נלכד
+    bool wasIntercepted = false;
 
-    std::optional<PieceType> promoteTo;  // None = Queen (ברירת מחדל)
+    bool wasStopped = false;        // חדש: המהלך נעצר מוקדם
+    Position stoppedAtCell;         // חדש: איפה נעצר
+
+    std::optional<PieceType> promoteTo;
 };

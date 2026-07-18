@@ -4,6 +4,7 @@
 #include "model/Position.hpp"
 #include "movement/CompletedMove.hpp"
 #include <vector>
+#include "model/Board.hpp"   // או forward declaration אם מספיק
 
 
 
@@ -24,7 +25,7 @@ public:
     void startJump(Piece* piece, Position cell, int durationMs);
 
     // קידום זמן לוגי — ללא sleep
-    void advanceTime(int milliseconds);
+    void advanceTime(int milliseconds, const Board& board);
 
     // איסוף מהלכים שהושלמו מאז ה-poll הקודם
     std::vector<CompletedMove> pollCompletedMoves();
@@ -54,4 +55,6 @@ private:
 
     void resolveCollisions();
     void resolveJumpInterceptions();
+    void resolvePathCollisions(const Board& board);
+
 };
