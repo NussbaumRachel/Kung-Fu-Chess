@@ -47,6 +47,7 @@ cv::Point PieceRenderer::computePiecePixel(const PieceInfo& info, int cellSize) 
         return {baseX, baseY};
     }
     case PieceState::Idle:
+    case PieceState::Resting: 
     case PieceState::Captured:
     default:
         return {baseX, baseY};

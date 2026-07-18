@@ -49,7 +49,7 @@ private:
                           int toRow, int toCol) const;
 
         // Cooldown tracker: Piece* → remainingRestMs
-    std::unordered_map<const Piece*, int> restTimers_;
+    std::unordered_map<Piece*, int> restTimers_;
 
     static constexpr int REST_AFTER_MOVE_MS = 2000;
     static constexpr int REST_AFTER_JUMP_MS = 500;
@@ -57,6 +57,6 @@ private:
     // עזרים:
     void startResting(Piece* piece, int durationMs);
     void advanceRestTimers(int milliseconds);
-    bool isResting(const Piece* piece) const;
+    bool isResting(Piece* piece) const;
 
 };

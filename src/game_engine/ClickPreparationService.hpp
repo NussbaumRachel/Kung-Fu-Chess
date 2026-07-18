@@ -27,5 +27,6 @@ public:
         const RuleEngine& ruleEngine,
         const std::optional<Position>& selectedCell,
         GameState currentState,
-        int row, int col) const;
+        int row, int col,
+        bool isPieceResting = false) const;
 };

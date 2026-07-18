@@ -26,12 +26,21 @@ void GameEngine::handleCellClick(int row, int col)
     if (!board_.isInsideBoard(row, col))
         return;
 
+            // בדיקה: האם התא מכיל כלי במנוחה?
+    bool pieceIsResting = false;
+    if (!board_.isEmptyCell(row, col))
+    {
+        Piece* clickedPiece = board_.getCell(row, col);
+        if (clickedPiece)
+            pieceIsResting = isResting(clickedPiece);
+    }
+
     ClickContext ctx = clickPrepService_.prepare(
         board_, arbiter_, ruleEngine_,
         stateMachine_.getSelectedCell(),
         stateMachine_.getState(),
-        row, col);
-
+        row, col,
+        pieceIsResting);  
     GameState currentState = stateMachine_.getState();
 
     GameDecision d = stateMachine_.evaluate(
@@ -99,6 +108,8 @@ void GameEngine::handleJump(int row, int col)
         return;
 
     Piece* piece = board_.getCell(row, col);
+    if (isResting(piece))
+        return;
     arbiter_.startJump(piece, Position{row, col}, JUMP_DURATION_MS);
     piece->setState(PieceState::Jumping);
     stateMachine_.setSelectedCell(std::nullopt);
@@ -109,27 +120,43 @@ void GameEngine::advanceTime(int milliseconds)
 {
     arbiter_.advanceTime(milliseconds);
 
-    // טיפול בקפיצות שהושלמו
+    // ── 1. טיפול בקפיצות שהושלמו ──
     for (const auto& jump : arbiter_.pollCompletedJumps())
     {
         if (jump.piece)
-            jump.piece->setState(PieceState::Idle);
-    }
-
-    // טיפול במהלכים שהושלמו
-    for (const CompletedMove& cm : arbiter_.pollCompletedMoves())
-    {
-        MoveCompletionResult result = moveCompletionService_.completeMove(cm);
-        if (result.gameOver)
         {
-            handleGameOver(result.winner);
-            return;   // המשחק נגמר — לא ממשיכים
+            startResting(jump.piece, REST_AFTER_JUMP_MS);  // 500ms מנוחה
         }
     }
 
-    // חזרה למצב בחירה אם הכל שקט
+    // ── 2. טיפול במהלכים שהושלמו ──
+    for (const CompletedMove& cm : arbiter_.pollCompletedMoves())
+    {
+        MoveCompletionResult result = moveCompletionService_.completeMove(cm);
+        
+        // הכלי המבצע נח אחרי המהלך (אם לא בוטל/יורט)
+        if (!cm.wasCancelled && cm.piece)
+        {
+            // צריך למצוא את הכלי במיקומו החדש (אחרי executeMove)
+            Piece* movedPiece = board_.getCell(cm.to.row, cm.to.col);
+            if (movedPiece)
+                startResting(movedPiece, REST_AFTER_MOVE_MS);  // 2000ms מנוחה
+        }
+
+        if (result.gameOver)
+        {
+            handleGameOver(result.winner);
+            return;
+        }
+    }
+
+    // ── 3. קידום טיימרי מנוחה ──
+    advanceRestTimers(milliseconds);
+
+    // ── 4. חזרה למצב בחירה ──
     maybeReturnToSelection();
 }
+
 void GameEngine::maybeReturnToSelection()
 {
     if (!arbiter_.hasActiveMoves() && !arbiter_.hasActiveJumps())
@@ -259,7 +286,7 @@ void GameEngine::advanceRestTimers(int milliseconds)
         }
     }
 }
-bool GameEngine::isResting(const Piece* piece) const
+bool GameEngine::isResting(Piece* piece) const
 {
     return restTimers_.find(piece) != restTimers_.end();
 }

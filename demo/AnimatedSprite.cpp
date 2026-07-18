@@ -19,6 +19,7 @@ std::string AnimatedSprite::pieceStateToFolder(int pieceState)
         case 0: return "idle";
         case 1: return "move";
         case 2: return "jump";
+        case 3: return "rest";      // חדש
         default: return "idle";
     }
 }

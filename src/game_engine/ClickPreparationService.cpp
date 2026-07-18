@@ -11,7 +11,8 @@ ClickContext ClickPreparationService::prepare(
     const RuleEngine& ruleEngine,
     const std::optional<Position>& selectedCell,
     GameState currentState,
-    int row, int col) const
+    int row, int col,
+    bool isPieceResting) const
 {
     ClickContext ctx;
     ctx.row = row;
@@ -19,7 +20,7 @@ ClickContext ClickPreparationService::prepare(
 
     ctx.isEmpty = board.isEmptyCell(row, col);
 
-    ctx.isInvolved = arbiter.isPieceInvolved(row, col);
+    ctx.isInvolved = arbiter.isPieceInvolved(row, col) || isPieceResting;
 
     if (!ctx.isEmpty && selectedCell.has_value())
     {
