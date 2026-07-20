@@ -305,6 +305,7 @@ void RealTimeArbiter::resolvePathCollisions(Board& board)
     }
 
     // ── התנגשות בין מהלך לכלי נייח על הלוח ──
+       // ── התנגשות בין מהלך לכלי נייח על הלוח ──
     for (Move& move : activeMoves_)
     {
         if (move.isCancelled() || move.isFinished())
@@ -313,38 +314,41 @@ void RealTimeArbiter::resolvePathCollisions(Board& board)
         Piece* movingPiece = move.getPiece();
         if (!movingPiece) continue;
 
-        const auto& path = move.getPath();
+        // בודקים רק את התא שהכלי נמצא בו עכשיו
+        Position currentCell = move.getCurrentCell();
 
-        for (size_t idx = 1; idx < path.size(); ++idx)
+        // לא בודקים את תא המקור — הכלי עוד לא זז משם
+        if (currentCell == move.getFrom())
+            continue;
+
+        if (board.isEmptyCell(currentCell.row, currentCell.col))
+            continue;
+
+        Piece* otherPiece = board.getCell(currentCell.row, currentCell.col);
+        if (!otherPiece) continue;
+        if (otherPiece == movingPiece) continue;
+
+        bool sameColor = (otherPiece->getColor() == movingPiece->getColor());
+
+        if (sameColor)
         {
-            const Position& cell = path[idx];
-
-            if (board.isEmptyCell(cell.row, cell.col))
-                continue;
-
-            Piece* stationaryPiece = board.getCell(cell.row, cell.col);
-            if (!stationaryPiece) continue;
-            if (stationaryPiece == movingPiece) continue;
-
-            bool sameColor = (stationaryPiece->getColor() == movingPiece->getColor());
-
-            if (sameColor)
+            // חבר חוסם — עצור לפניו
+            const auto& path = move.getPath();
+            for (size_t i = 0; i < path.size(); ++i)
             {
-                // חבר חוסם — עצור במשבצת הקודמת
-                int prevIdx = static_cast<int>(idx) - 1;
-                if (prevIdx > 0)
-                    move.stopAtCell(path[prevIdx]);
-                else
-                    move.cancel();
-                break;  // עצרנו — לא ממשיכים לבדוק את שאר המסלול
-            }
-            else
-            {
-                // אויב נייח — אוכלים אותו עכשיו
-                stationaryPiece->setState(PieceState::Captured);
-                board.takeCell(cell.row, cell.col);  // מסיר מהלוח
-                // ממשיכים — האויב הוסר, המהלך ממשיך
+                if (path[i] == currentCell && i > 0)
+                {
+                    move.stopAtCell(path[i - 1]);
+                    break;
+                }
             }
         }
+        else
+        {
+            // אויב — אוכלים אותו
+            otherPiece->setState(PieceState::Captured);
+            board.takeCell(currentCell.row, currentCell.col);
+        }
     }
+
 }

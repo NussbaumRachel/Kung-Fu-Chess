@@ -40,4 +40,7 @@ private:
     std::string windowName_;
 
     void drawGameOverlay(const GameSnapshot& snapshot);
+    void drawScoreHUD(const GameSnapshot& snapshot);
+    void drawMoveHistoryPanel(const GameSnapshot& snapshot);
+
 };

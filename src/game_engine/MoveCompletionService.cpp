@@ -54,7 +54,10 @@ MoveCompletionResult MoveCompletionService::completeMove(
         completedMove.from,
         completedMove.to
     );
-
+    if (captured) {
+    result.pointsAwarded = pieceValue(captured->getType());
+    result.scoringColor = completedMove.piece->getColor(); // the capturer
+    }
     if (targetIsKing)
     {
         // captured (שהוא ה-King) ימחק אוטומטית כאן

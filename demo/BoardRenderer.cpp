@@ -27,12 +27,7 @@ bool BoardRenderer::loadBackground(const std::string& filePath)
         background_.read(filePath);
         background_.resize_to(DemoConfig::BOARD_WIDTH_PX, DemoConfig::BOARD_HEIGHT_PX);
 
-        // וידוא 3 ערוצים
-        if (background_.channels() == 4)
-        {
-            cv::cvtColor(background_.get_mat(), background_.get_mat(),
-                         cv::COLOR_BGRA2BGR);
-        }
+        // Keep alpha channel for proper transparency compositing
 
         backgroundLoaded_ = true;
         std::cout << "[BoardRenderer] Background loaded: " << filePath << '\n';
@@ -55,17 +50,24 @@ void BoardRenderer::drawCellHighlight(Img& canvas, const Position& cell,
                                       const cv::Vec3b& color, double alpha) const
 {
     cv::Point tl = cellToPixelTopLeft(cell, DemoConfig::CELL_SIZE);
+    int sz = DemoConfig::CELL_SIZE;
 
-    Img overlay = Img::create(DemoConfig::CELL_SIZE, DemoConfig::CELL_SIZE, 3);
-    overlay.fill_rect(0, 0, DemoConfig::CELL_SIZE, DemoConfig::CELL_SIZE,
-                      cv::Scalar(color[0], color[1], color[2]));
-
-    // שימוש ב-blend_overlay: מיזוג על גבי canvas
-    // אבל blend_overlay עובד על כל התמונה — נשתמש ב-cv::addWeighted על ROI
     cv::Mat& canvasMat = canvas.get_mat();
-    cv::Rect roi(tl.x, tl.y, DemoConfig::CELL_SIZE, DemoConfig::CELL_SIZE);
+    cv::Rect roi(tl.x, tl.y, sz, sz);
+    if (roi.x + roi.width > canvasMat.cols || roi.y + roi.height > canvasMat.rows)
+        return;
+
     cv::Mat roiImg = canvasMat(roi);
-    cv::addWeighted(overlay.get_mat(), alpha, roiImg, 1.0 - alpha, 0, roiImg);
+    for (int y = 0; y < sz; ++y) {
+        for (int x = 0; x < sz; ++x) {
+            cv::Vec4b& dst = roiImg.at<cv::Vec4b>(y, x);
+            double a = alpha;
+            dst[0] = static_cast<uchar>(dst[0] * (1.0 - a) + color[0] * a);
+            dst[1] = static_cast<uchar>(dst[1] * (1.0 - a) + color[1] * a);
+            dst[2] = static_cast<uchar>(dst[2] * (1.0 - a) + color[2] * a);
+            // leave dst[3] (alpha) unchanged
+        }
+    }
 }
 
 // ════════════════════════════════════════════
@@ -79,12 +81,13 @@ void BoardRenderer::draw(Img& canvas,
     if (canvas.width() != DemoConfig::BOARD_WIDTH_PX ||
         canvas.height() != DemoConfig::BOARD_HEIGHT_PX)
     {
-        canvas = Img::create(DemoConfig::BOARD_WIDTH_PX, DemoConfig::BOARD_HEIGHT_PX, 3);
+        canvas = Img::create(DemoConfig::BOARD_WIDTH_PX, DemoConfig::BOARD_HEIGHT_PX, 4);
     }
 
     if (backgroundLoaded_)
     {
-        canvas = background_.clone();
+        canvas = Img::create(DemoConfig::BOARD_WIDTH_PX, DemoConfig::BOARD_HEIGHT_PX, 4);
+        background_.draw_on(canvas, 0, 0);
     }
 
     for (const auto& cell : highlightedCells)

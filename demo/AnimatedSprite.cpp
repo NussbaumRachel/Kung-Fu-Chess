@@ -1,4 +1,5 @@
 #include "AnimatedSprite.hpp"
+#include "config/PieceConfigReader.hpp"
 #include <iostream>
 #include <filesystem>
 #include <fstream>
@@ -19,7 +20,7 @@ std::string AnimatedSprite::pieceStateToFolder(int pieceState)
         case 0: return "idle";
         case 1: return "move";
         case 2: return "jump";
-        case 3: return "rest";      // חדש
+        case 3: return "long_rest";      // חדש
         default: return "idle";
     }
 }
@@ -32,68 +33,16 @@ bool AnimatedSprite::parseConfig(const std::string& jsonPath, Config& cfg)
 {
     std::ifstream file(jsonPath);
     if (!file.is_open()) return false;
+    file.close();  // PieceConfigReader יפתח מחדש
 
-    std::stringstream ss;
-    ss << file.rdbuf();
-    std::string content = ss.str();
-
-    // חילוץ fps
-    auto pos = content.find("\"frames_per_sec\"");
-    if (pos != std::string::npos)
-    {
-        auto colon = content.find(':', pos);
-        if (colon != std::string::npos)
-        {
-            cfg.fps = std::stod(content.substr(colon + 1));
-        }
-    }
-
-    // is_loop
-    pos = content.find("\"is_loop\"");
-    if (pos != std::string::npos)
-    {
-        auto colon = content.find(':', pos);
-        if (colon != std::string::npos)
-        {
-            std::string val = content.substr(colon + 1);
-            // מסיר white-space
-            val.erase(0, val.find_first_not_of(" \t\n\r:"));
-            cfg.loop = (val.find("true") != std::string::npos);
-        }
-    }
-
-    // speed
-    pos = content.find("\"speed_m_per_sec\"");
-    if (pos != std::string::npos)
-    {
-        auto colon = content.find(':', pos);
-        if (colon != std::string::npos)
-        {
-            std::string val = content.substr(colon + 1);
-            val.erase(std::remove_if(val.begin(), val.end(),
-                [](char c) { return c == ' ' || c == ',' || c == '\n' || c == '\r'; }),
-                val.end());
-            if (!val.empty())
-                cfg.speedMps = std::stod(val);
-        }
-    }
-
-    // next_state
-    pos = content.find("\"next_state_when_finished\"");
-    if (pos != std::string::npos)
-    {
-        auto colon = content.find(':', pos);
-        if (colon != std::string::npos)
-        {
-            auto startQuote = content.find('"', colon + 1);
-            auto endQuote   = content.find('"', startQuote + 1);
-            if (startQuote != std::string::npos && endQuote != std::string::npos)
-                cfg.nextState = content.substr(startQuote + 1, endQuote - startQuote - 1);
-        }
-    }
+    cfg.fps      = PieceConfigReader::readDouble(jsonPath, "frames_per_sec", 6.0);
+    cfg.loop     = PieceConfigReader::readBool(jsonPath, "is_loop", true);
+    cfg.speedMps = PieceConfigReader::readDouble(jsonPath, "speed_m_per_sec", 0.0);
+    cfg.nextState = PieceConfigReader::readString(jsonPath, "next_state_when_finished", "");
 
     return true;
 }
+
 
 // ════════════════════════════════════════════════
 //  load — טעינת תיקיית כלי

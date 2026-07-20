@@ -3,6 +3,8 @@
 #include "game_engine/GameEngine.hpp"
 #include "controllerClick/GameController.hpp"
 #include "text_io/BoardParser.hpp"
+#include "config/PieceSpeedConfig.hpp"
+
 #include "img.hpp"
 #include <iostream>
 #include <string>
@@ -45,9 +47,12 @@ int main(int argc, char* argv[])
         {"wR","wN","wB","wQ","wK","wB","wN","wR"}
     });
     
-    // ── 4. Engine + Controller ──
-    GameEngine engine(std::move(board));
+        // ── 4. Engine + Controller ──
+    PieceSpeedConfig speedCfg;
+    speedCfg.load(assetsPath + "/pieces");
+    GameEngine engine(std::move(board), speedCfg);
     GameController controller(engine);
+
 
     // ── 5. Mouse callback ──
     renderer.setClickCallback([&controller, &renderer](int row, int col) {

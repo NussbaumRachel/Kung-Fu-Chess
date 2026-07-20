@@ -48,6 +48,8 @@ set(DEMO_SOURCES
     PieceRenderer.cpp
     MouseHandler.cpp
 
+    ${CMAKE_SOURCE_DIR}/src/config/PieceConfigReader.cpp
+    ${CMAKE_SOURCE_DIR}/src/config/PieceSpeedConfig.cpp
 
     # Model
     ${CMAKE_SOURCE_DIR}/src/model/Piece.cpp

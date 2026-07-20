@@ -8,11 +8,13 @@
 
 #include <optional>
 
-struct MoveCompletionResult
-{
+struct MoveCompletionResult {
     bool gameOver = false;
     std::optional<Color> winner;
+    int pointsAwarded = 0;      // NEW: how many points this move earned
+    Color scoringColor;          // NEW: which color earned them (the capturing color)
 };
+
 
 
 class MoveCompletionService

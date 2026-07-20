@@ -19,7 +19,11 @@ void MouseHandler::onMouse(int event, int x, int y, int flags, void* userdata)
     auto* self = static_cast<MouseHandler*>(userdata);
     if (!self || !self->callback_) return;
 
-    Position cell = GameController::pixelsToCell(x, y, self->cellSize_);
+    int boardX = x - DemoConfig::PANEL_WIDTH_PX;
+    std::cout << "Mouse: x=" << x << " y=" << y << " boardX=" << boardX
+              << " row=" << (y / self->cellSize_) << " col=" << (boardX / self->cellSize_) << '\n';
+    Position cell = GameController::pixelsToCell(boardX, y, self->cellSize_);
+
     if (cell.row < 0 || cell.row >= DemoConfig::BOARD_ROWS ||
         cell.col < 0 || cell.col >= DemoConfig::BOARD_COLS)
         return;

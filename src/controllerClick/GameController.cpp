@@ -38,6 +38,7 @@ Position GameController::pixelsToCell(int pixelX, int pixelY, int cellSize)
     };
 }
 
+
 void GameController::handlePrint(std::ostream& output) const
 {
     engine_.getBoard().print();

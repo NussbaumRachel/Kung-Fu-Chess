@@ -53,8 +53,23 @@ void Img::draw_on(Img& other_img, int x, int y) const
     if (img.empty() || other_img.img.empty())
         throw std::runtime_error("Both images must be loaded before drawing.");
 
-    cv::Mat source_img = img;
+    cv::Mat source_img;
+    // If channels differ, convert to a temporary copy so we don't mutate the original
+    if (img.channels() != other_img.img.channels())
+    {
+        if (img.channels() == 3 && other_img.img.channels() == 4)
+            cv::cvtColor(img, source_img, cv::COLOR_BGR2BGRA);
+        else if (img.channels() == 4 && other_img.img.channels() == 3)
+            cv::cvtColor(img, source_img, cv::COLOR_BGRA2BGR);
+        else
+            source_img = img;
+    }
+    else
+    {
+        source_img = img;
+    }
     cv::Mat target_img = other_img.img;
+
 
     // התאמת ערוצים
     if (source_img.channels() != target_img.channels())
@@ -75,21 +90,25 @@ void Img::draw_on(Img& other_img, int x, int y) const
 
     cv::Mat roi = target_img(cv::Rect(x, y, w, h));
 
-    if (source_img.channels() == 4)
+        if (source_img.channels() == 4)
     {
-        std::vector<cv::Mat> channels;
-        cv::split(source_img, channels);
+        std::vector<cv::Mat> srcChannels;
+        cv::split(source_img, srcChannels);
         cv::Mat alpha;
-        channels[3].convertTo(alpha, CV_32F, 1.0 / 255.0);
+        srcChannels[3].convertTo(alpha, CV_32F, 1.0 / 255.0);
+
+        std::vector<cv::Mat> roiChannels;
+        cv::split(roi, roiChannels);
 
         for (int c = 0; c < 3; ++c)
         {
-            roi.col(c).convertTo(roi.col(c), CV_32F);
-            channels[c].convertTo(channels[c], CV_32F);
-            // BGRA → BGR blending
-            roi.col(c) = channels[c].mul(alpha) + roi.col(c).mul(1.0 - alpha);
-            roi.col(c).convertTo(roi.col(c), CV_8U);
+            roiChannels[c].convertTo(roiChannels[c], CV_32F);
+            srcChannels[c].convertTo(srcChannels[c], CV_32F);
+            roiChannels[c] = srcChannels[c].mul(alpha) + roiChannels[c].mul(1.0 - alpha);
+            roiChannels[c].convertTo(roiChannels[c], CV_8U);
         }
+
+        cv::merge(roiChannels, roi);
     }
     else
     {
@@ -134,7 +153,8 @@ Img Img::create(int width, int height, int channels)
 {
     Img result;
     int type = (channels == 4) ? CV_8UC4 : CV_8UC3;
-    result.img = cv::Mat(height, width, type, cv::Scalar(0, 0, 0, 0));
+    result.img = cv::Mat(height, width, type,
+        (channels == 4) ? cv::Scalar(0, 0, 0, 255) : cv::Scalar(0, 0, 0));
     return result;
 }
 

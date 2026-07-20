@@ -47,7 +47,8 @@ cv::Point PieceRenderer::computePiecePixel(const PieceInfo& info, int cellSize) 
         return {baseX, baseY};
     }
     case PieceState::Idle:
-    case PieceState::Resting: 
+    case PieceState::long_rest: 
+    case PieceState::Short_rest: 
     case PieceState::Captured:
     default:
         return {baseX, baseY};
@@ -74,45 +75,68 @@ void PieceRenderer::drawSpriteCentered(Img& canvas, const Img& sprite,
     int topX = center.x - newW / 2;
     int topY = center.y - newH / 2;
 
-    if (topX < 0) topX = 0;
-    if (topY < 0) topY = 0;
-    if (topX + newW > canvas.width())  topX = canvas.width()  - newW;
-    if (topY + newH > canvas.height()) topY = canvas.height() - newH;
-
-    try
+        try
     {
         resized.draw_on(canvas, topX, topY);
     }
     catch (const std::exception&)
     {
-        // fallback: העתקה ישירה
+        // fallback: manual alpha blending for 4-channel canvases
         cv::Mat& canvasMat = canvas.get_mat();
         const cv::Mat& spriteMat = resized.get_mat();
         cv::Rect roi(topX, topY, newW, newH);
         if (roi.x + roi.width <= canvasMat.cols && roi.y + roi.height <= canvasMat.rows)
         {
             cv::Mat roiImg = canvasMat(roi);
-            if (spriteMat.channels() == 4)
+            int srcCh = spriteMat.channels();
+            int dstCh = roiImg.channels();
+
+            for (int y = 0; y < spriteMat.rows; ++y)
             {
-                for (int y = 0; y < spriteMat.rows; ++y)
+                for (int x = 0; x < spriteMat.cols; ++x)
                 {
-                    for (int x = 0; x < spriteMat.cols; ++x)
+                    if (srcCh == 4)
                     {
                         const cv::Vec4b& src = spriteMat.at<cv::Vec4b>(y, x);
-                        cv::Vec3b& dst = roiImg.at<cv::Vec3b>(y, x);
                         double alpha = src[3] / 255.0;
-                        dst[0] = static_cast<uchar>(dst[0] * (1.0 - alpha) + src[0] * alpha);
-                        dst[1] = static_cast<uchar>(dst[1] * (1.0 - alpha) + src[1] * alpha);
-                        dst[2] = static_cast<uchar>(dst[2] * (1.0 - alpha) + src[2] * alpha);
+                        if (dstCh == 4)
+                        {
+                            cv::Vec4b& dst = roiImg.at<cv::Vec4b>(y, x);
+                            dst[0] = static_cast<uchar>(dst[0] * (1.0 - alpha) + src[0] * alpha);
+                            dst[1] = static_cast<uchar>(dst[1] * (1.0 - alpha) + src[1] * alpha);
+                            dst[2] = static_cast<uchar>(dst[2] * (1.0 - alpha) + src[2] * alpha);
+                            dst[3] = 255;
+                        }
+                        else
+                        {
+                            cv::Vec3b& dst = roiImg.at<cv::Vec3b>(y, x);
+                            dst[0] = static_cast<uchar>(dst[0] * (1.0 - alpha) + src[0] * alpha);
+                            dst[1] = static_cast<uchar>(dst[1] * (1.0 - alpha) + src[1] * alpha);
+                            dst[2] = static_cast<uchar>(dst[2] * (1.0 - alpha) + src[2] * alpha);
+                        }
+                    }
+                    else
+                    {
+                        if (dstCh == 4)
+                        {
+                            const cv::Vec3b& src = spriteMat.at<cv::Vec3b>(y, x);
+                            cv::Vec4b& dst = roiImg.at<cv::Vec4b>(y, x);
+                            dst[0] = src[0];
+                            dst[1] = src[1];
+                            dst[2] = src[2];
+                            dst[3] = 255;
+                        }
+                        else
+                        {
+                            spriteMat.copyTo(roiImg);
+                            return;
+                        }
                     }
                 }
             }
-            else
-            {
-                spriteMat.copyTo(roiImg);
-            }
         }
     }
+
 }
 
 void PieceRenderer::drawPieces(Img& canvas, const GameSnapshot& snapshot, int cellSize,

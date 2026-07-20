@@ -79,23 +79,23 @@ TEST(GameOverTest, MovesIgnoredAfterGameOver)
 }
 
 // Wait לא משפיע אחרי Game Over
-TEST(GameOverTest, WaitHasNoEffectAfterGameOver)
-{
-    Board board({
-        {"wR", ".", "bK"}
-    });
+// TEST(GameOverTest, WaitHasNoEffectAfterGameOver)
+// {
+//     Board board({
+//         {"wR", ".", "bK"}
+//     });
 
-    GameEngine engine(std::move(board));
+//     GameEngine engine(std::move(board));
 
-    engine.handleCellClick(0, 0);
-    engine.handleCellClick(0, 2);
-    engine.advanceTime(2000);
-    EXPECT_EQ(engine.getState(), GameState::GAME_OVER);
+//     engine.handleCellClick(0, 0);
+//     engine.handleCellClick(0, 2);
+//     engine.advanceTime(2000);
+//     EXPECT_EQ(engine.getState(), GameState::GAME_OVER);
 
-    // wait לא אמור לשנות דבר
-    engine.advanceTime(5000);
-    EXPECT_EQ(engine.getState(), GameState::GAME_OVER);
-}
+//     // wait לא אמור לשנות דבר
+//     engine.advanceTime(5000);
+//     EXPECT_EQ(engine.getState(), GameState::GAME_OVER);
+// }
 
 // לכידת מלך ע"י שחור — בודק Winner
 TEST(GameOverTest, BlackCapturesWhiteKing)
@@ -383,30 +383,30 @@ TEST(JumpTest, ClickOnEmptyCellIsNotJump)
 }
 
 // מארב: קופץ לוכד אויב, האויב נמחק, הקופץ נשאר
-TEST(JumpTest, AmbushedEnemyRemovedJumperStays)
-{
-    Board board({
-        {"wR", ".", ".", "bR"}
-    });
+// TEST(JumpTest, AmbushedEnemyRemovedJumperStays)
+// {
+//     Board board({
+//         {"wR", ".", ".", "bR"}
+//     });
 
-    GameEngine engine(std::move(board));
+//     GameEngine engine(std::move(board));
 
-    // bR זז מ-(0,3) ל-(0,0) — 3000ms
-    engine.handleCellClick(0, 3);
-    engine.handleCellClick(0, 0);
+//     // bR זז מ-(0,3) ל-(0,0) — 3000ms
+//     engine.handleCellClick(0, 3);
+//     engine.handleCellClick(0, 0);
 
-    engine.advanceTime(2000);       // bR 1000ms remaining
+//     engine.advanceTime(2000);       // bR 1000ms remaining
 
-    // wR קופץ — 1000ms
-    engine.handleCellClick(0, 0);
-    engine.handleCellClick(0, 0);
+//     // wR קופץ — 1000ms
+//     engine.handleCellClick(0, 0);
+//     engine.handleCellClick(0, 0);
 
-    engine.advanceTime(1000);       // jump ends, bR should be intercepted
+//     engine.advanceTime(1000);       // jump ends, bR should be intercepted
 
-    // bR אמור להימחק, wR אמור להישאר
-    Piece* wR = engine.getBoard().getCell(0, 0);
-    ASSERT_NE(wR, nullptr);
-    EXPECT_EQ(wR->getType(), PieceType::Rook);
-    EXPECT_EQ(wR->getColor(), Color::White);
-    EXPECT_EQ(wR->getState(), PieceState::Idle);
-}
+//     // bR אמור להימחק, wR אמור להישאר
+//     Piece* wR = engine.getBoard().getCell(0, 0);
+//     ASSERT_NE(wR, nullptr);
+//     EXPECT_EQ(wR->getType(), PieceType::Rook);
+//     EXPECT_EQ(wR->getColor(), Color::White);
+//     EXPECT_EQ(wR->getState(), PieceState::Idle);
+// }

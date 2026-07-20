@@ -13,7 +13,8 @@ enum class PieceState
     Idle,
     Moving,
     Jumping,
-    Resting,    
+    long_rest,  
+    Short_rest,  
     Captured
 };
 

@@ -20,6 +20,8 @@ struct DemoConfig
     // ── מימדי חלון (נגזרים) ──
     static constexpr int   BOARD_WIDTH_PX  = CELL_SIZE * BOARD_COLS;   // 800
     static constexpr int   BOARD_HEIGHT_PX = CELL_SIZE * BOARD_ROWS;   // 800
+    static constexpr int   PANEL_WIDTH_PX  = 150;
+    static constexpr int   CANVAS_WIDTH_PX = BOARD_WIDTH_PX + PANEL_WIDTH_PX * 2;  // 1100
 
     // ── FPS ≈ 60 ──
     static constexpr int   FRAME_DELAY_MS  = 16;
