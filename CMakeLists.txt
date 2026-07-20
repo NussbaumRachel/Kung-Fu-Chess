@@ -1,7 +1,10 @@
 cmake_minimum_required(VERSION 3.15)
 
 project(KungFuChess LANGUAGES CXX)
-
+if(WIN32)
+    add_compile_definitions(_WIN32_WINNT=0x0A00)
+endif()
+find_package(Boost CONFIG REQUIRED COMPONENTS system)
 set(CMAKE_CXX_STANDARD 17)
 set(CMAKE_CXX_STANDARD_REQUIRED ON)
 
@@ -70,7 +73,11 @@ set(ALL_SOURCES
     ${SOURCE_TEXT_IO}
     ${SOURCE_CONFIG}
 )
-
+set(SOURCE_NETWORK
+    src/network/JsonProtocol.cpp
+    src/network/GameServer.cpp
+    src/network/ClientSession.cpp
+)
 # ── קובץ הבדיקות ──
 set(TEST_SOURCES
     tests/PieceMovementTests.cpp
@@ -84,13 +91,66 @@ set(COMMON_INCLUDE_DIR src)
 # ══════════════════════════════════════════
 #  Binary: kungfuchess
 # ══════════════════════════════════════════
+include(FetchContent)
+
+
+
+FetchContent_Declare(
+    nlohmann_json
+    GIT_REPOSITORY https://github.com/nlohmann/json.git
+    GIT_TAG v3.11.3
+)
+
+FetchContent_MakeAvailable(
+    nlohmann_json
+)
+
 add_executable(kungfuchess
     ${SOURCE_ENTRY_POINT}
     ${ALL_SOURCES}
 )
 
 target_include_directories(kungfuchess PRIVATE ${COMMON_INCLUDE_DIR})
+add_executable(kungfuchess_server
+    src/network/network_main_server.cpp
+    ${ALL_SOURCES}
+    ${SOURCE_NETWORK}
+)
 
+target_include_directories(kungfuchess_server
+    PRIVATE
+    ${COMMON_INCLUDE_DIR}
+)
+target_link_libraries(kungfuchess_server
+    PRIVATE
+    nlohmann_json::nlohmann_json
+)
+target_link_libraries(kungfuchess_server
+    PRIVATE
+    Boost::system
+    nlohmann_json::nlohmann_json
+)
+add_executable(kungfuchess_client
+    src/network/network_main_client.cpp
+    ${ALL_SOURCES}
+    ${SOURCE_NETWORK}
+)
+
+target_include_directories(kungfuchess_client
+    PRIVATE
+    ${COMMON_INCLUDE_DIR}
+)
+
+
+target_link_libraries(kungfuchess_client
+    PRIVATE
+    nlohmann_json::nlohmann_json
+)
+target_link_libraries(kungfuchess_client
+    PRIVATE
+    Boost::system
+    nlohmann_json::nlohmann_json
+)
 # ══════════════════════════════════════════
 #  Googletest (תלות חיצונית)
 # ══════════════════════════════════════════
