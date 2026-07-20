@@ -45,6 +45,17 @@ int main()
             << std::endl;
 
 
+        // Read initial snapshot
+        {
+            boost::beast::flat_buffer buf;
+            ws.read(buf);
+            std::string msg =
+                boost::beast::buffers_to_string(buf.data());
+            std::cout << "Received: " << msg << std::endl;
+            buf.consume(buf.size());
+        }
+
+
         std::string message;
 
 

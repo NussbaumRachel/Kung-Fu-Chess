@@ -1,10 +1,13 @@
 #include "GameServer.hpp"
 #include "ClientSession.hpp"
+#include "controllerClick/GameController.hpp"
+#include "game_engine/GameSnapshot.hpp"
+#include "network/JsonProtocol.hpp"
 
 #include <iostream>
 
 
-GameServer::GameServer(uint16_t port)
+GameServer::GameServer(uint16_t port, GameController& controller)
     :
     ioContext_(),
     acceptor_(
@@ -13,7 +16,8 @@ GameServer::GameServer(uint16_t port)
             boost::asio::ip::tcp::v4(),
             port
         )
-    )
+    ),
+    controller_(controller)
 {
     std::cout
         << "Server listening on port "
@@ -27,6 +31,14 @@ void GameServer::run()
     acceptNext();
 
     ioContext_.run();
+}
+
+
+void GameServer::onSessionReady(std::shared_ptr<ClientSession> session)
+{
+    GameSnapshot snap = controller_.getSnapshot();
+    std::string json = JsonProtocol::serializeSnapshot(snap);
+    session->send(json);
 }
 
 
@@ -61,7 +73,7 @@ void GameServer::acceptNext()
             }
 
 
-            // ממשיכים להאזין לחיבורים נוספים
+            // continue listening
             acceptNext();
         }
     );

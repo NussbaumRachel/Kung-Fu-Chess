@@ -8,15 +8,18 @@
 
 
 class ClientSession;
+class GameController;
 
 
 class GameServer
 {
 public:
 
-    explicit GameServer(uint16_t port);
+    GameServer(uint16_t port, GameController& controller);
 
     void run();
+
+    void onSessionReady(std::shared_ptr<ClientSession> session);
 
 
 private:
@@ -29,4 +32,6 @@ private:
     boost::asio::io_context ioContext_;
 
     boost::asio::ip::tcp::acceptor acceptor_;
+
+    GameController& controller_;
 };

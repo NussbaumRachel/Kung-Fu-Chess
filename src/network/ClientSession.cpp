@@ -45,7 +45,11 @@ void ClientSession::doHandshake()
                 << std::endl;
 
 
+            self->server_.onSessionReady(self);
+
+
             self->read();
+
         }
     );
 }
