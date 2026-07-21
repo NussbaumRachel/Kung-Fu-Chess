@@ -75,6 +75,7 @@ set(DEMO_SOURCES
 
     # Arbiter
     ${CMAKE_SOURCE_DIR}/src/arbiter/RealTimeArbiter.cpp
+    ${CMAKE_SOURCE_DIR}/src/arbiter/CollisionResolver.cpp
 
 
     # Game engine
@@ -83,6 +84,10 @@ set(DEMO_SOURCES
     ${CMAKE_SOURCE_DIR}/src/game_engine/GameEngine.cpp
     ${CMAKE_SOURCE_DIR}/src/game_engine/MoveCompletionService.cpp
     ${CMAKE_SOURCE_DIR}/src/game_engine/ClickPreparationService.cpp
+    ${CMAKE_SOURCE_DIR}/src/game_engine/ScoreTracker.cpp
+    ${CMAKE_SOURCE_DIR}/src/game_engine/MoveRecorder.cpp
+    ${CMAKE_SOURCE_DIR}/src/game_engine/CooldownService.cpp
+    ${CMAKE_SOURCE_DIR}/src/game_engine/SnapshotBuilder.cpp
     ${CMAKE_SOURCE_DIR}/src/game_engine/ClickPreparationService.hpp
     ${CMAKE_SOURCE_DIR}/src/game_engine/ClickContext.hpp
     ${CMAKE_SOURCE_DIR}/src/game_engine/GameSnapshot.hpp

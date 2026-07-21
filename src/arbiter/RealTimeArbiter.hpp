@@ -3,6 +3,7 @@
 #include "movement/Move.hpp"
 #include "model/Position.hpp"
 #include "movement/CompletedMove.hpp"
+#include "arbiter/CollisionResolver.hpp"
 #include <vector>
 #include "model/Board.hpp"   // או forward declaration אם מספיק
 
@@ -47,14 +48,15 @@ public:
     std::vector<JumpEntry> pollCompletedJumps();
 
 private:
+    CollisionResolver collisionResolver_;
     std::vector<Move> activeMoves_;
     std::vector<CompletedMove> completedMoves_;
 
     std::vector<JumpEntry> activeJumps_;
     std::vector<JumpEntry> completedJumps_;
 
-    void resolveCollisions();
-    void resolveJumpInterceptions();
-    void resolvePathCollisions(Board& board);
+    // void resolveCollisions();
+    // void resolveJumpInterceptions();
+    // void resolvePathCollisions(Board& board);
 
 };

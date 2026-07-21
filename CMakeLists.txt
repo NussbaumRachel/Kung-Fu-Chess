@@ -38,6 +38,7 @@ set(SOURCE_RULE_ENGINE
 
 set(SOURCE_ARBITER
     src/arbiter/RealTimeArbiter.cpp
+    src/arbiter/CollisionResolver.cpp
 )
 
 set(SOURCE_GAME_ENGINE
@@ -46,16 +47,16 @@ set(SOURCE_GAME_ENGINE
     src/game_engine/MoveCompletionService.cpp
     src/game_engine/GameEngine.cpp
     src/game_engine/ClickPreparationService.cpp
+    src/game_engine/ScoreTracker.cpp
+    src/game_engine/MoveRecorder.cpp
+    src/game_engine/CooldownService.cpp
+    src/game_engine/SnapshotBuilder.cpp
 )
 
 set(SOURCE_CONTROLLER
     src/controllerClick/GameController.cpp
 )
 
-set(SOURCE_CONFIG
-    src/config/PieceSpeedConfig.cpp
-    src/config/PieceConfigReader.cpp
-)
 
 set(SOURCE_TEXT_IO
     src/text_io/BoardParser.cpp

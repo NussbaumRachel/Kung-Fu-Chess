@@ -24,14 +24,17 @@ void RealTimeArbiter::advanceTime(int milliseconds, Board& board)
     completedMoves_.clear();
     completedJumps_.clear();
 
-    resolveCollisions();
+    // resolveCollisions();
 
     // ── יירוטים: קופץ לוכד אויב שמגיע לתא שלו ──
     // חייב לרוץ לפני שה-jumps מתעדכנים, כדי שקפיצות שעדיין פעילות
     // (גם אם הן עומדות להסתיים באותו tick) יוכלו ליירט מהלכים.
-    resolveJumpInterceptions();
-    resolvePathCollisions(board);       // שלב 3: התנגשות במסלול (חדש)
-
+    // resolveJumpInterceptions();
+    // resolvePathCollisions(board);       // שלב 3: התנגשות במסלול (חדש)
+    collisionResolver_.resolve(
+    activeMoves_,
+    activeJumps_,
+    board);
     // ── עדכון Moves ──
     for (auto it = activeMoves_.begin(); it != activeMoves_.end(); )
     {
@@ -160,195 +163,195 @@ const std::vector<JumpEntry>& RealTimeArbiter::getActiveJumps() const
 
 // ──────────────── Collisions ────────────────
 
-void RealTimeArbiter::resolveCollisions()
-{
-    for (size_t i = 0; i < activeMoves_.size(); ++i)
-    {
-        for (size_t j = i + 1; j < activeMoves_.size(); ++j)
-        {
-            Move& first = activeMoves_[i];
-            Move& second = activeMoves_[j];
+// void RealTimeArbiter::resolveCollisions()
+// {
+//     for (size_t i = 0; i < activeMoves_.size(); ++i)
+//     {
+//         for (size_t j = i + 1; j < activeMoves_.size(); ++j)
+//         {
+//             Move& first = activeMoves_[i];
+//             Move& second = activeMoves_[j];
 
-            if (first.isCancelled() || second.isCancelled())
-                continue;
+//             if (first.isCancelled() || second.isCancelled())
+//                 continue;
 
-            Piece* firstPiece = first.getPiece();
-            Piece* secondPiece = second.getPiece();
+//             Piece* firstPiece = first.getPiece();
+//             Piece* secondPiece = second.getPiece();
 
-            if (firstPiece == nullptr || secondPiece == nullptr)
-                continue;
+//             if (firstPiece == nullptr || secondPiece == nullptr)
+//                 continue;
 
-            // התנגשות בין כלים מיריבים באותו יעד
-            if (firstPiece->getColor() != secondPiece->getColor())
-            {
-                if (first.getTo() == second.getTo())
-                {
-                    if (first.getRemainingMs() <= second.getRemainingMs())
-                        second.cancel();
-                    else
-                        first.cancel();
-                }
-            }
-        }
-    }
-}
+//             // התנגשות בין כלים מיריבים באותו יעד
+//             if (firstPiece->getColor() != secondPiece->getColor())
+//             {
+//                 if (first.getTo() == second.getTo())
+//                 {
+//                     if (first.getRemainingMs() <= second.getRemainingMs())
+//                         second.cancel();
+//                     else
+//                         first.cancel();
+//                 }
+//             }
+//         }
+//     }
+// }
 
 // ──────────────── Jump Interceptions ────────────────
 
-void RealTimeArbiter::resolveJumpInterceptions()
-{
-    for (auto& jump : activeJumps_)
-    {
-        for (auto& move : activeMoves_)
-        {
-            if (move.isCancelled() || move.isFinished())
-                continue;
+// void RealTimeArbiter::resolveJumpInterceptions()
+// {
+//     for (auto& jump : activeJumps_)
+//     {
+//         for (auto& move : activeMoves_)
+//         {
+//             if (move.isCancelled() || move.isFinished())
+//                 continue;
 
-            // בודק האם אויב בתנועה מגיע לתא של הקופץ
-            if (move.getTo() == jump.cell &&
-                move.getPiece() != nullptr &&
-                move.getPiece()->getColor() != jump.piece->getColor())
-            {
-                // הקופץ לוכד את האויב — האויב מבוטל
-                move.cancel();
-                move.setIntercepted();
-            }
-        }
-    }
-}
-void RealTimeArbiter::resolvePathCollisions(Board& board)
-{
-    // ── התנגשות בין שני מהלכים פעילים ──
-    for (size_t i = 0; i < activeMoves_.size(); ++i)
-    {
-        for (size_t j = i + 1; j < activeMoves_.size(); ++j)
-        {
-            Move& move1 = activeMoves_[i];
-            Move& move2 = activeMoves_[j];
+//             // בודק האם אויב בתנועה מגיע לתא של הקופץ
+//             if (move.getTo() == jump.cell &&
+//                 move.getPiece() != nullptr &&
+//                 move.getPiece()->getColor() != jump.piece->getColor())
+//             {
+//                 // הקופץ לוכד את האויב — האויב מבוטל
+//                 move.cancel();
+//                 move.setIntercepted();
+//             }
+//         }
+//     }
+// }
+// void RealTimeArbiter::resolvePathCollisions(Board& board)
+// {
+//     // ── התנגשות בין שני מהלכים פעילים ──
+//     for (size_t i = 0; i < activeMoves_.size(); ++i)
+//     {
+//         for (size_t j = i + 1; j < activeMoves_.size(); ++j)
+//         {
+//             Move& move1 = activeMoves_[i];
+//             Move& move2 = activeMoves_[j];
 
-            if (move1.isCancelled() || move2.isCancelled())
-                continue;
-            if (move1.isFinished() || move2.isFinished())
-                continue;
+//             if (move1.isCancelled() || move2.isCancelled())
+//                 continue;
+//             if (move1.isFinished() || move2.isFinished())
+//                 continue;
 
-            Piece* p1 = move1.getPiece();
-            Piece* p2 = move2.getPiece();
-            if (!p1 || !p2) continue;
+//             Piece* p1 = move1.getPiece();
+//             Piece* p2 = move2.getPiece();
+//             if (!p1 || !p2) continue;
 
-            bool sameColor = (p1->getColor() == p2->getColor());
+//             bool sameColor = (p1->getColor() == p2->getColor());
 
-            const auto& path1 = move1.getPath();
-            const auto& path2 = move2.getPath();
+//             const auto& path1 = move1.getPath();
+//             const auto& path2 = move2.getPath();
 
-            int actualElapsed1 = move1.getDurationMs() - move1.getRemainingMs();
-            int actualElapsed2 = move2.getDurationMs() - move2.getRemainingMs();
+//             int actualElapsed1 = move1.getDurationMs() - move1.getRemainingMs();
+//             int actualElapsed2 = move2.getDurationMs() - move2.getRemainingMs();
 
-            for (const Position& cell : path1)
-            {
-                double progress1 = move1.getProgressAtCell(cell);
-                double progress2 = move2.getProgressAtCell(cell);
+//             for (const Position& cell : path1)
+//             {
+//                 double progress1 = move1.getProgressAtCell(cell);
+//                 double progress2 = move2.getProgressAtCell(cell);
 
-                if (progress1 < 0.0 || progress2 < 0.0)
-                    continue;
+//                 if (progress1 < 0.0 || progress2 < 0.0)
+//                     continue;
 
-                // זמן שנותר ms מהרגע הנוכחי עד להגעה למשבצת
-                int elapsedToCell1 = static_cast<int>(progress1 * move1.getDurationMs());
-                int elapsedToCell2 = static_cast<int>(progress2 * move2.getDurationMs());
-                int remaining1 = elapsedToCell1 - actualElapsed1;
-                int remaining2 = elapsedToCell2 - actualElapsed2;
-                if (remaining1 < 0) remaining1 = 0;
-                if (remaining2 < 0) remaining2 = 0;
+//                 // זמן שנותר ms מהרגע הנוכחי עד להגעה למשבצת
+//                 int elapsedToCell1 = static_cast<int>(progress1 * move1.getDurationMs());
+//                 int elapsedToCell2 = static_cast<int>(progress2 * move2.getDurationMs());
+//                 int remaining1 = elapsedToCell1 - actualElapsed1;
+//                 int remaining2 = elapsedToCell2 - actualElapsed2;
+//                 if (remaining1 < 0) remaining1 = 0;
+//                 if (remaining2 < 0) remaining2 = 0;
 
-                int diff = std::abs(remaining1 - remaining2);
-                int threshold = std::max(move1.getMsPerStep(), move2.getMsPerStep()) / 2;
+//                 int diff = std::abs(remaining1 - remaining2);
+//                 int threshold = std::max(move1.getMsPerStep(), move2.getMsPerStep()) / 2;
 
-                if (diff <= threshold)
-                {
-                    if (sameColor)
-                    {
-                        // ידידותי — מי שמגיע מאוחר יותר נעצר במשבצת הקודמת
-                        if (remaining1 > remaining2)
-                        {
-                            int idx = static_cast<int>(progress1 * (path1.size() - 1));
-                            if (idx > 0)
-                                move1.stopAtCell(path1[idx - 1]);
-                            else
-                                move1.cancel();
-                        }
-                        else
-                        {
-                            int idx = static_cast<int>(progress2 * (path2.size() - 1));
-                            if (idx > 0)
-                                move2.stopAtCell(path2[idx - 1]);
-                            else
-                                move2.cancel();
-                        }
-                    }
-                    else
-                    {
-                        // אויב — מי שמגיע ראשון אוכל את השני
-                        if (remaining1 <= remaining2)
-                        {
-                            move2.cancel();
-                            move2.setIntercepted();
-                        }
-                        else
-                        {
-                            move1.cancel();
-                            move1.setIntercepted();
-                        }
-                    }
-                    break;  // מצאנו התנגשות — עבור לזוג הבא
-                }
-            }
-        }
-    }
+//                 if (diff <= threshold)
+//                 {
+//                     if (sameColor)
+//                     {
+//                         // ידידותי — מי שמגיע מאוחר יותר נעצר במשבצת הקודמת
+//                         if (remaining1 > remaining2)
+//                         {
+//                             int idx = static_cast<int>(progress1 * (path1.size() - 1));
+//                             if (idx > 0)
+//                                 move1.stopAtCell(path1[idx - 1]);
+//                             else
+//                                 move1.cancel();
+//                         }
+//                         else
+//                         {
+//                             int idx = static_cast<int>(progress2 * (path2.size() - 1));
+//                             if (idx > 0)
+//                                 move2.stopAtCell(path2[idx - 1]);
+//                             else
+//                                 move2.cancel();
+//                         }
+//                     }
+//                     else
+//                     {
+//                         // אויב — מי שמגיע ראשון אוכל את השני
+//                         if (remaining1 <= remaining2)
+//                         {
+//                             move2.cancel();
+//                             move2.setIntercepted();
+//                         }
+//                         else
+//                         {
+//                             move1.cancel();
+//                             move1.setIntercepted();
+//                         }
+//                     }
+//                     break;  // מצאנו התנגשות — עבור לזוג הבא
+//                 }
+//             }
+//         }
+//     }
 
-    // ── התנגשות בין מהלך לכלי נייח על הלוח ──
-       // ── התנגשות בין מהלך לכלי נייח על הלוח ──
-    for (Move& move : activeMoves_)
-    {
-        if (move.isCancelled() || move.isFinished())
-            continue;
+//     // ── התנגשות בין מהלך לכלי נייח על הלוח ──
+//        // ── התנגשות בין מהלך לכלי נייח על הלוח ──
+//     for (Move& move : activeMoves_)
+//     {
+//         if (move.isCancelled() || move.isFinished())
+//             continue;
 
-        Piece* movingPiece = move.getPiece();
-        if (!movingPiece) continue;
+//         Piece* movingPiece = move.getPiece();
+//         if (!movingPiece) continue;
 
-        // בודקים רק את התא שהכלי נמצא בו עכשיו
-        Position currentCell = move.getCurrentCell();
+//         // בודקים רק את התא שהכלי נמצא בו עכשיו
+//         Position currentCell = move.getCurrentCell();
 
-        // לא בודקים את תא המקור — הכלי עוד לא זז משם
-        if (currentCell == move.getFrom())
-            continue;
+//         // לא בודקים את תא המקור — הכלי עוד לא זז משם
+//         if (currentCell == move.getFrom())
+//             continue;
 
-        if (board.isEmptyCell(currentCell.row, currentCell.col))
-            continue;
+//         if (board.isEmptyCell(currentCell.row, currentCell.col))
+//             continue;
 
-        Piece* otherPiece = board.getCell(currentCell.row, currentCell.col);
-        if (!otherPiece) continue;
-        if (otherPiece == movingPiece) continue;
+//         Piece* otherPiece = board.getCell(currentCell.row, currentCell.col);
+//         if (!otherPiece) continue;
+//         if (otherPiece == movingPiece) continue;
 
-        bool sameColor = (otherPiece->getColor() == movingPiece->getColor());
+//         bool sameColor = (otherPiece->getColor() == movingPiece->getColor());
 
-        if (sameColor)
-        {
-            // חבר חוסם — עצור לפניו
-            const auto& path = move.getPath();
-            for (size_t i = 0; i < path.size(); ++i)
-            {
-                if (path[i] == currentCell && i > 0)
-                {
-                    move.stopAtCell(path[i - 1]);
-                    break;
-                }
-            }
-        }
-        else
-        {
-            // אויב — אוכלים אותו
-            otherPiece->setState(PieceState::Captured);
-            board.takeCell(currentCell.row, currentCell.col);
-        }
-    }
+//         if (sameColor)
+//         {
+//             // חבר חוסם — עצור לפניו
+//             const auto& path = move.getPath();
+//             for (size_t i = 0; i < path.size(); ++i)
+//             {
+//                 if (path[i] == currentCell && i > 0)
+//                 {
+//                     move.stopAtCell(path[i - 1]);
+//                     break;
+//                 }
+//             }
+//         }
+//         else
+//         {
+//             // אויב — אוכלים אותו
+//             otherPiece->setState(PieceState::Captured);
+//             board.takeCell(currentCell.row, currentCell.col);
+//         }
+//     }
 
-}
+// }
