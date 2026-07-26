@@ -1,14 +1,23 @@
-#include "GameServer.hpp"
-#include "ClientSession.hpp"
+#include "network/GameServer.hpp"
+
+#include "network/ClientSession.hpp"
+#include "network/JsonProtocol.hpp"
+#include "network/Messages.hpp"
+
 #include "controllerClick/GameController.hpp"
 #include "game_engine/GameSnapshot.hpp"
-#include "network/JsonProtocol.hpp"
-#include <nlohmann/json.hpp>
-#include <iostream>
+
+#include <boost/asio.hpp>
+
 #include <chrono>
+#include <iostream>
+#include <memory>
+#include <string>
+#include <utility>
 
-
-GameServer::GameServer(uint16_t port, GameController& controller)
+GameServer::GameServer(
+    uint16_t port,
+    GameController& controller)
     :
     ioContext_(),
     acceptor_(
@@ -27,7 +36,6 @@ GameServer::GameServer(uint16_t port, GameController& controller)
         << std::endl;
 }
 
-
 void GameServer::run()
 {
     acceptNext();
@@ -35,114 +43,211 @@ void GameServer::run()
     ioContext_.run();
 }
 
-
-void GameServer::onSessionReady(std::shared_ptr<ClientSession> session)
+void GameServer::onSessionReady(
+    std::shared_ptr<ClientSession> session)
 {
     sessions_.insert(session);
 
-    // Assign color: first=White, second=Black, rest=spectator
-    std::string colorStr;
-    if (nextColor_ == 0) {
-        colorStr = "White";
-    } else if (nextColor_ == 1) {
-        colorStr = "Black";
-    } else {
-        colorStr = "Spectator";
-    }
-    nextColor_++;
+    std::string assignedColor;
 
-    std::cout << "Player joined as " << colorStr << std::endl;
-
-    // Send initial welcome + snapshot
+    if (nextColor_ == 0)
     {
-        nlohmann::json welcome;
-        welcome["type"] = "welcome";
-        welcome["color"] = colorStr;
-        session->send(welcome.dump());
+        assignedColor = "White";
+    }
+    else if (nextColor_ == 1)
+    {
+        assignedColor = "Black";
+    }
+    else
+    {
+        assignedColor = "Spectator";
     }
 
-    GameSnapshot snap = controller_.getSnapshot();
-    std::string json = JsonProtocol::serializeSnapshot(snap);
-    session->send(json);
+    ++nextColor_;
+
+    std::cout
+        << "Player joined as "
+        << assignedColor
+        << std::endl;
+
+    const WelcomeMessage welcome{
+        assignedColor
+    };
+
+    session->send(
+        JsonProtocol::serializeWelcome(welcome)
+    );
+
+    const GameSnapshot snapshot =
+        controller_.getSnapshot();
+
+    session->send(
+        JsonProtocol::serializeSnapshot(snapshot)
+    );
 }
 
-
-void GameServer::onMessage(std::shared_ptr<ClientSession> session,
-                           const std::string& message)
+void GameServer::onMessage(
+    std::shared_ptr<ClientSession> session,
+    const std::string& message)
 {
-    std::cout << "SERVER RECEIVED: " << message << std::endl;
+    std::cout
+        << "SERVER RECEIVED: "
+        << message
+        << std::endl;
+
     try
     {
-        auto j = nlohmann::json::parse(message);
-        std::string type = j.value("type", "");
+        const MessageType messageType =
+            JsonProtocol::getMessageType(message);
 
-        if (type == "click")
+        switch (messageType)
         {
-            int row = j.value("row", -1);
-            int col = j.value("col", -1);
-            if (row >= 0 && col >= 0)
+            case MessageType::Click:
             {
-                std::cout << "Click: (" << row << ", " << col << ")" << std::endl;
-                controller_.handleCellClick(row, col);
+                const ClickMessage click =
+                    JsonProtocol::deserializeClick(message);
+
+                if (click.row < 0 || click.col < 0)
+                {
+                    const ErrorMessage error{
+                        "Click coordinates must be non-negative"
+                    };
+
+                    session->send(
+                        JsonProtocol::serializeError(error)
+                    );
+
+                    return;
+                }
+
+                std::cout
+                    << "Click: ("
+                    << click.row
+                    << ", "
+                    << click.col
+                    << ")"
+                    << std::endl;
+
+                controller_.handleCellClick(
+                    click.row,
+                    click.col
+                );
+
+                break;
+            }
+
+            case MessageType::Welcome:
+            case MessageType::Snapshot:
+            case MessageType::Error:
+            {
+                const ErrorMessage error{
+                    "Message type is not accepted from clients"
+                };
+
+                session->send(
+                    JsonProtocol::serializeError(error)
+                );
+
+                break;
+            }
+
+            case MessageType::Unknown:
+            default:
+            {
+                const ErrorMessage error{
+                    "Unknown message type"
+                };
+
+                session->send(
+                    JsonProtocol::serializeError(error)
+                );
+
+                break;
             }
         }
     }
-    catch (const std::exception& e)
+    catch (const std::exception& exception)
     {
-        std::cerr << "Message parse error: " << e.what() << std::endl;
+        std::cerr
+            << "Message parse error: "
+            << exception.what()
+            << std::endl;
+
+        const ErrorMessage error{
+            exception.what()
+        };
+
+        session->send(
+            JsonProtocol::serializeError(error)
+        );
     }
 }
 
-
-void GameServer::onSessionClosed(std::shared_ptr<ClientSession> session)
+void GameServer::onSessionClosed(
+    std::shared_ptr<ClientSession> session)
 {
     sessions_.erase(session);
-    std::cout << "Player disconnected" << std::endl;
-}
 
+    std::cout
+        << "Player disconnected"
+        << std::endl;
+}
 
 void GameServer::startGameLoop()
 {
-    tickTimer_.expires_after(std::chrono::milliseconds(TICK_MS));
-    tickTimer_.async_wait([this](boost::system::error_code ec) {
-        if (!ec)
-            tick();
-    });
-}
+    tickTimer_.expires_after(
+        std::chrono::milliseconds(TICK_MS)
+    );
 
+    tickTimer_.async_wait(
+        [this](boost::system::error_code error)
+        {
+            if (!error)
+                tick();
+        }
+    );
+}
 
 void GameServer::tick()
 {
     controller_.handleWait(TICK_MS);
 
-    // Broadcast snapshot to all sessions
-    GameSnapshot snap = controller_.getSnapshot();
-    std::string json = JsonProtocol::serializeSnapshot(snap);
+    const GameSnapshot snapshot =
+        controller_.getSnapshot();
+
+    const std::string serializedSnapshot =
+        JsonProtocol::serializeSnapshot(snapshot);
 
     for (const auto& session : sessions_)
-        session->send(json);
+    {
+        session->send(serializedSnapshot);
+    }
 
-    // Reschedule
-    tickTimer_.expires_after(std::chrono::milliseconds(TICK_MS));
-    tickTimer_.async_wait([this](boost::system::error_code ec) {
-        if (!ec)
-            tick();
-    });
+    tickTimer_.expires_after(
+        std::chrono::milliseconds(TICK_MS)
+    );
+
+    tickTimer_.async_wait(
+        [this](boost::system::error_code error)
+        {
+            if (!error)
+                tick();
+        }
+    );
 }
-
 
 void GameServer::acceptNext()
 {
     acceptor_.async_accept(
-        [this](boost::system::error_code ec,
-               boost::asio::ip::tcp::socket socket)
+        [this](
+            boost::system::error_code error,
+            boost::asio::ip::tcp::socket socket)
         {
-            if (!ec)
+            if (!error)
             {
                 std::cout
                     << "New TCP connection"
                     << std::endl;
-
 
                 auto session =
                     std::make_shared<ClientSession>(
@@ -150,17 +255,15 @@ void GameServer::acceptNext()
                         *this
                     );
 
-
                 session->start();
             }
             else
             {
                 std::cout
                     << "Accept error: "
-                    << ec.message()
+                    << error.message()
                     << std::endl;
             }
-
 
             acceptNext();
         }

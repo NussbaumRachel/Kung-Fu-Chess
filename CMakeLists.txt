@@ -88,6 +88,9 @@ set(SOURCE_NETWORK
     src/network/GameServer.cpp
     src/network/ClientSession.cpp
 )
+set(SOURCE_NETWORK_CLIENT
+    src/network/NetworkClient.cpp
+)
 # ── קובץ הבדיקות ──
 set(TEST_SOURCES
     tests/PieceMovementTests.cpp
@@ -144,9 +147,9 @@ add_executable(kungfuchess_client
     src/network/network_main_client.cpp
     ${ALL_SOURCES}
     ${SOURCE_NETWORK}
+    ${SOURCE_NETWORK_CLIENT}
     ${SOURCE_GUI}
 )
-
 target_include_directories(kungfuchess_client
     PRIVATE
     ${COMMON_INCLUDE_DIR}
