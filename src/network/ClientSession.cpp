@@ -72,6 +72,8 @@ void ClientSession::read()
                     << ec.message()
                     << std::endl;
 
+                self->server_.onSessionClosed(self);
+
                 return;
             }
 
@@ -88,6 +90,9 @@ void ClientSession::read()
                 << std::endl;
 
 
+            self->server_.onMessage(self, message);
+
+
             self->buffer_.consume(
                 self->buffer_.size()
             );
@@ -99,16 +104,45 @@ void ClientSession::read()
 }
 
 
-void ClientSession::send(
-    const std::string& message
-)
+void ClientSession::send(const std::string& message)
+{
+    auto msgPtr = std::make_shared<std::string>(message);
+    bool shouldWrite = false;
+    {
+        std::lock_guard<std::mutex> lk(writeMutex_);
+        writeQueue_.push(msgPtr);
+        if (!writing_)
+        {
+            writing_ = true;
+            shouldWrite = true;
+        }
+    }
+    if (shouldWrite)
+        writeNext();
+}
+
+
+void ClientSession::writeNext()
 {
     auto self = shared_from_this();
 
+    std::shared_ptr<std::string> msgPtr;
+    {
+        std::lock_guard<std::mutex> lk(writeMutex_);
+        if (writeQueue_.empty())
+        {
+            writing_ = false;
+            return;
+        }
+        msgPtr = writeQueue_.front();
+        writeQueue_.pop();
+    }
 
+    // msgPtr is captured by the lambda, keeping the string data alive
+    // for the duration of the async_write.
     ws_.async_write(
-        boost::asio::buffer(message),
-        [self](boost::system::error_code ec,
+        boost::asio::buffer(*msgPtr),
+        [self, msgPtr](boost::system::error_code ec,
                std::size_t bytes)
         {
             if (ec)
@@ -118,6 +152,16 @@ void ClientSession::send(
                     << ec.message()
                     << std::endl;
             }
+
+            bool hasMore = false;
+            {
+                std::lock_guard<std::mutex> lk(self->writeMutex_);
+                hasMore = !self->writeQueue_.empty();
+                if (!hasMore)
+                    self->writing_ = false;
+            }
+            if (hasMore)
+                self->writeNext();
         }
     );
 }

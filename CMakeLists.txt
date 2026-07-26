@@ -57,7 +57,16 @@ set(SOURCE_CONTROLLER
     src/controllerClick/GameController.cpp
 )
 
-
+set(SOURCE_GUI
+    demo/img.cpp
+    demo/AnimatedSprite.cpp
+    demo/AnimationManager.cpp
+    demo/AssetManager.cpp
+    demo/ChessRenderer.cpp
+    demo/BoardRenderer.cpp
+    demo/PieceRenderer.cpp
+    demo/MouseHandler.cpp
+)
 set(SOURCE_TEXT_IO
     src/text_io/BoardParser.cpp
     src/text_io/TextTestRunner.cpp
@@ -135,6 +144,7 @@ add_executable(kungfuchess_client
     src/network/network_main_client.cpp
     ${ALL_SOURCES}
     ${SOURCE_NETWORK}
+    ${SOURCE_GUI}
 )
 
 target_include_directories(kungfuchess_client
@@ -152,6 +162,30 @@ target_link_libraries(kungfuchess_client
     Boost::system
     nlohmann_json::nlohmann_json
 )
+# ── Network client with OpenCV GUI ──
+# Requires OpenCV (same setup as demo)
+set(OPENCV_DIR "${CMAKE_SOURCE_DIR}/OpenCV_451" CACHE PATH "Path to OpenCV 4.5.1 installation")
+set(OPENCV_INCLUDE_DIR "${OPENCV_DIR}/include")
+set(OPENCV_LIB_DIR "${OPENCV_DIR}/bin")
+
+if(EXISTS "${OPENCV_INCLUDE_DIR}/opencv2/core.hpp")
+    find_package(OpenCV QUIET)
+    if(NOT OpenCV_FOUND)
+        set(OpenCV_INCLUDE_DIRS "${OPENCV_INCLUDE_DIR}")
+        set(OpenCV_LIBS
+            optimized "${OPENCV_LIB_DIR}/opencv_world451.lib"
+            debug "${OPENCV_LIB_DIR}/opencv_world451d.lib"
+        )
+    endif()
+
+    target_include_directories(kungfuchess_client PRIVATE
+        ${CMAKE_SOURCE_DIR}/demo
+        ${OpenCV_INCLUDE_DIRS}
+    )
+    target_link_directories(kungfuchess_client PRIVATE ${OPENCV_LIB_DIR})
+    target_link_libraries(kungfuchess_client PRIVATE ${OpenCV_LIBS})
+endif()
+
 # ══════════════════════════════════════════
 #  Googletest (תלות חיצונית)
 # ══════════════════════════════════════════

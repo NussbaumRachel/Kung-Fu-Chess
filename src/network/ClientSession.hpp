@@ -6,6 +6,8 @@
 
 #include <memory>
 #include <string>
+#include <queue>
+#include <mutex>
 
 
 class GameServer;
@@ -33,6 +35,8 @@ private:
 
     void read();
 
+    void writeNext();
+
 
 private:
 
@@ -44,4 +48,10 @@ private:
     boost::beast::flat_buffer buffer_;
 
     GameServer& server_;
+
+    // Write queue prevents overlapping async_write calls.
+    // shared_ptr<string> keeps data alive during async_write.
+    std::mutex writeMutex_;
+    std::queue<std::shared_ptr<std::string>> writeQueue_;
+    bool writing_ = false;
 };
