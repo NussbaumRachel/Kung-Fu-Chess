@@ -61,7 +61,28 @@ PlayerRole ClientSession::role() const
 {
     return role_;
 }
+void ClientSession::authenticate(
+    std::string username)
+{
+    username_ = std::move(username);
+    authenticated_ = true;
+}
 
+void ClientSession::clearAuthentication()
+{
+    username_.clear();
+    authenticated_ = false;
+}
+
+bool ClientSession::isAuthenticated() const
+{
+    return authenticated_;
+}
+
+const std::string& ClientSession::username() const
+{
+    return username_;
+}
 void ClientSession::doHandshake()
 {
     const auto self = shared_from_this();

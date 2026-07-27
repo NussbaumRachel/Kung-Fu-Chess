@@ -16,7 +16,8 @@ class ClientSession
     : public std::enable_shared_from_this<ClientSession>
 {
 public:
-    using SessionPtr = std::shared_ptr<ClientSession>;
+    using SessionPtr =
+        std::shared_ptr<ClientSession>;
 
     using ReadyHandler =
         std::function<void(SessionPtr)>;
@@ -45,6 +46,16 @@ public:
 
     [[nodiscard]]
     PlayerRole role() const;
+
+    void authenticate(std::string username);
+
+    void clearAuthentication();
+
+    [[nodiscard]]
+    bool isAuthenticated() const;
+
+    [[nodiscard]]
+    const std::string& username() const;
 
 private:
     void doHandshake();
@@ -75,5 +86,9 @@ private:
     bool writing_ = false;
     bool closedNotified_ = false;
 
-    PlayerRole role_ = PlayerRole::Spectator;
+    PlayerRole role_ =
+        PlayerRole::Spectator;
+
+    bool authenticated_ = false;
+    std::string username_;
 };

@@ -137,7 +137,31 @@ void ClientMessageProcessor::processControlMessage(
 
                 break;
             }
+            case MessageType::LoginResult:
+            {
+                const LoginResultMessage result =
+                    JsonProtocol::deserializeLoginResult(
+                        message
+                    );
 
+                if (result.success)
+                {
+                    std::cout
+                        << "Logged in as: "
+                        << result.username
+                        << std::endl;
+                }
+                else
+                {
+                    std::cerr
+                        << "Login failed: "
+                        << result.message
+                        << std::endl;
+                }
+
+                break;
+            }
+            case MessageType::Login:
             case MessageType::Click:
             case MessageType::Snapshot:
             case MessageType::Unknown:

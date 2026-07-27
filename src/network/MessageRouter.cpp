@@ -4,6 +4,7 @@
 #include "network/JsonProtocol.hpp"
 #include "network/Messages.hpp"
 #include "network/PlayerRole.hpp"
+#include "network/SessionManager.hpp"
 
 #include "controllerClick/GameController.hpp"
 #include "game_engine/GameSnapshot.hpp"
@@ -13,11 +14,14 @@
 #include <memory>
 #include <optional>
 #include <string>
+#include <utility>
 
 MessageRouter::MessageRouter(
-    GameController& controller
+    GameController& controller,
+    LoginHandler loginHandler
 )
-    : controller_(controller)
+    : controller_(controller),
+      loginHandler_(std::move(loginHandler))
 {
 }
 
@@ -42,13 +46,28 @@ void MessageRouter::route(
 
         switch (messageType)
         {
+            case MessageType::Login:
+            {
+                handleLogin(
+                    session,
+                    message
+                );
+
+                break;
+            }
+
             case MessageType::Click:
             {
-                handleClick(session, message);
+                handleClick(
+                    session,
+                    message
+                );
+
                 break;
             }
 
             case MessageType::Welcome:
+            case MessageType::LoginResult:
             case MessageType::Snapshot:
             case MessageType::Error:
             {
@@ -86,11 +105,60 @@ void MessageRouter::route(
     }
 }
 
+void MessageRouter::handleLogin(
+    const std::shared_ptr<ClientSession>& session,
+    const std::string& message)
+{
+    const LoginMessage login =
+        JsonProtocol::deserializeLogin(
+            message
+        );
+
+    if (!loginHandler_)
+    {
+        sendError(
+            session,
+            "Login service is unavailable"
+        );
+
+        return;
+    }
+
+    const LoginAttemptResult result =
+        loginHandler_(
+            session,
+            login.username
+        );
+
+    const LoginResultMessage response{
+        result.success,
+        result.success
+            ? login.username
+            : "",
+        result.message
+    };
+
+    session->send(
+        JsonProtocol::serializeLoginResult(
+            response
+        )
+    );
+}
+
 void MessageRouter::handleClick(
     const std::shared_ptr<ClientSession>& session,
-    const std::string& message
-)
+    const std::string& message)
 {
+    if (!session->isAuthenticated())
+    {
+        sendError(
+            session,
+            "Login is required before playing"
+        );
+
+        return;
+    }
+
     const ClickMessage click =
         JsonProtocol::deserializeClick(message);
 
@@ -151,17 +219,8 @@ bool MessageRouter::authorizeClick(
     int row,
     int col,
     const GameSnapshot& snapshot,
-    std::string& rejectionReason
-)
+    std::string& rejectionReason)
 {
-    if (!session)
-    {
-        rejectionReason =
-            "Invalid client session";
-
-        return false;
-    }
-
     const std::optional<Color> playerColor =
         playerRoleToColor(
             session->role()
@@ -175,10 +234,6 @@ bool MessageRouter::authorizeClick(
         return false;
     }
 
-    /*
-     * אין כלי נבחר:
-     * הלחיצה יכולה לבחור רק כלי של השחקן.
-     */
     if (!snapshot.selectedCell.has_value())
     {
         const PieceInfo* clickedPiece =
@@ -210,10 +265,6 @@ bool MessageRouter::authorizeClick(
         return true;
     }
 
-    /*
-     * יש כלי נבחר:
-     * רק ה-session שיצר את הבחירה רשאי להמשיך.
-     */
     const std::shared_ptr<ClientSession> owner =
         selectionOwner_.lock();
 
@@ -233,10 +284,6 @@ bool MessageRouter::authorizeClick(
         return false;
     }
 
-    /*
-     * בדיקת הגנה נוספת:
-     * גם הכלי הנבחר עצמו חייב להיות בצבע השחקן.
-     */
     const Position& selectedCell =
         snapshot.selectedCell.value();
 
@@ -266,29 +313,20 @@ bool MessageRouter::authorizeClick(
         return false;
     }
 
-    /*
-     * מכאן הלחיצה יכולה להיות:
-     *
-     * - יעד ריק
-     * - כלי יריב לצורך לכידה
-     * - הכלי הנבחר עצמו לצורך Jump
-     * - כלי נוסף של אותו שחקן לצורך SwitchPiece
-     *
-     * החוקיות עצמה נשארת באחריות מנוע המשחק.
-     */
     return true;
 }
 
 const PieceInfo* MessageRouter::findPieceAt(
     const GameSnapshot& snapshot,
     int row,
-    int col
-) const
+    int col) const
 {
-    for (const PieceInfo& piece : snapshot.pieces)
+    for (const PieceInfo& piece :
+         snapshot.pieces)
     {
         if (
-            piece.state != PieceState::Captured &&
+            piece.state !=
+                PieceState::Captured &&
             piece.cell.row == row &&
             piece.cell.col == col
         )
@@ -303,8 +341,7 @@ const PieceInfo* MessageRouter::findPieceAt(
 void MessageRouter::updateSelectionOwner(
     const std::shared_ptr<ClientSession>& session,
     const GameSnapshot& snapshotBefore,
-    const GameSnapshot& snapshotAfter
-)
+    const GameSnapshot& snapshotAfter)
 {
     const bool hadSelection =
         snapshotBefore.selectedCell.has_value();
@@ -312,39 +349,21 @@ void MessageRouter::updateSelectionOwner(
     const bool hasSelection =
         snapshotAfter.selectedCell.has_value();
 
-    /*
-     * נוצרה בחירה חדשה.
-     */
     if (!hadSelection && hasSelection)
     {
         selectionOwner_ = session;
         return;
     }
 
-    /*
-     * הבחירה בוטלה או שהמהלך התחיל.
-     */
     if (hadSelection && !hasSelection)
     {
         selectionOwner_.reset();
         return;
     }
 
-    /*
-     * עדיין קיימת בחירה.
-     *
-     * זה יכול להיות:
-     * - בחירה שלא השתנתה
-     * - SwitchPiece
-     *
-     * הבעלות נשארת של אותו session.
-     */
     if (hasSelection)
     {
-        const std::shared_ptr<ClientSession> owner =
-            selectionOwner_.lock();
-
-        if (!owner)
+        if (selectionOwner_.expired())
             selectionOwner_ = session;
 
         return;
@@ -354,31 +373,17 @@ void MessageRouter::updateSelectionOwner(
 }
 
 void MessageRouter::clearExpiredSelectionOwner(
-    const GameSnapshot& snapshot
-)
+    const GameSnapshot& snapshot)
 {
     if (!snapshot.selectedCell.has_value())
     {
         selectionOwner_.reset();
-        return;
-    }
-
-    /*
-     * אם ה-session נותק וה-weak_ptr פג,
-     * לא משייכים אוטומטית את הבחירה לשחקן אחר.
-     */
-    if (selectionOwner_.expired())
-    {
-        std::cerr
-            << "Selected piece belongs to a disconnected session"
-            << std::endl;
     }
 }
 
 void MessageRouter::sendError(
     const std::shared_ptr<ClientSession>& session,
-    const std::string& errorMessage
-)
+    const std::string& errorMessage)
 {
     if (!session)
         return;

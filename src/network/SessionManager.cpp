@@ -5,6 +5,8 @@
 #include "network/Messages.hpp"
 #include "network/PlayerRole.hpp"
 
+#include <algorithm>
+#include <cctype>
 #include <iostream>
 #include <memory>
 #include <string>
@@ -44,6 +46,68 @@ void SessionManager::broadcast(
     {
         session->send(message);
     }
+}
+
+LoginAttemptResult SessionManager::tryLogin(
+    const SessionPtr& session,
+    const std::string& username)
+{
+    if (!session)
+    {
+        return {
+            false,
+            "Invalid client session"
+        };
+    }
+
+    if (session->isAuthenticated())
+    {
+        return {
+            false,
+            "This client is already logged in"
+        };
+    }
+
+    if (!isValidUsername(username))
+    {
+        return {
+            false,
+            "Username must contain 3 to 20 letters, digits or underscores"
+        };
+    }
+
+    const auto existing =
+        usersByName_.find(username);
+
+    if (existing != usersByName_.end())
+    {
+        const std::shared_ptr<ClientSession>
+            existingSession =
+                existing->second.lock();
+
+        if (existingSession)
+        {
+            return {
+                false,
+                "Username is already in use"
+            };
+        }
+
+        usersByName_.erase(existing);
+    }
+
+    session->authenticate(username);
+    usersByName_[username] = session;
+
+    std::cout
+        << "User logged in: "
+        << username
+        << std::endl;
+
+    return {
+        true,
+        "Login successful"
+    };
 }
 
 void SessionManager::acceptNext()
@@ -142,6 +206,7 @@ void SessionManager::handleSessionReady(
 void SessionManager::handleSessionClosed(
     SessionPtr session)
 {
+    releaseUsername(session);
     sessions_.erase(session);
 
     std::cout
@@ -165,4 +230,68 @@ PlayerRole SessionManager::assignRole()
 
     ++nextRoleIndex_;
     return PlayerRole::Spectator;
+}
+
+void SessionManager::releaseUsername(
+    const SessionPtr& session)
+{
+    if (
+        !session ||
+        !session->isAuthenticated()
+    )
+    {
+        return;
+    }
+
+    const std::string username =
+        session->username();
+
+    const auto found =
+        usersByName_.find(username);
+
+    if (found != usersByName_.end())
+    {
+        const std::shared_ptr<ClientSession>
+            registeredSession =
+                found->second.lock();
+
+        if (
+            !registeredSession ||
+            registeredSession.get() ==
+                session.get()
+        )
+        {
+            usersByName_.erase(found);
+        }
+    }
+
+    session->clearAuthentication();
+
+    std::cout
+        << "Username released: "
+        << username
+        << std::endl;
+}
+
+bool SessionManager::isValidUsername(
+    const std::string& username)
+{
+    if (
+        username.size() < 3 ||
+        username.size() > 20
+    )
+    {
+        return false;
+    }
+
+    return std::all_of(
+        username.begin(),
+        username.end(),
+        [](unsigned char character)
+        {
+            return
+                std::isalnum(character) != 0 ||
+                character == '_';
+        }
+    );
 }

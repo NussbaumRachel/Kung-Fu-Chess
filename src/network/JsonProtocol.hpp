@@ -8,29 +8,67 @@ class JsonProtocol
 {
 public:
     [[nodiscard]]
-    static MessageType getMessageType(const std::string& jsonText);
+    static MessageType getMessageType(
+        const std::string& jsonText
+    );
 
     [[nodiscard]]
-    static std::string serializeWelcome(const WelcomeMessage& message);
+    static std::string serializeWelcome(
+        const WelcomeMessage& message
+    );
 
     [[nodiscard]]
-    static WelcomeMessage deserializeWelcome(const std::string& jsonText);
+    static WelcomeMessage deserializeWelcome(
+        const std::string& jsonText
+    );
 
     [[nodiscard]]
-    static std::string serializeClick(const ClickMessage& message);
+    static std::string serializeLogin(
+        const LoginMessage& message
+    );
 
     [[nodiscard]]
-    static ClickMessage deserializeClick(const std::string& jsonText);
+    static LoginMessage deserializeLogin(
+        const std::string& jsonText
+    );
 
     [[nodiscard]]
-    static std::string serializeSnapshot(const GameSnapshot& snapshot);
+    static std::string serializeLoginResult(
+        const LoginResultMessage& message
+    );
 
     [[nodiscard]]
-    static SnapshotMessage deserializeSnapshot(const std::string& jsonText);
+    static LoginResultMessage deserializeLoginResult(
+        const std::string& jsonText
+    );
 
     [[nodiscard]]
-    static std::string serializeError(const ErrorMessage& message);
+    static std::string serializeClick(
+        const ClickMessage& message
+    );
 
     [[nodiscard]]
-    static ErrorMessage deserializeError(const std::string& jsonText);
+    static ClickMessage deserializeClick(
+        const std::string& jsonText
+    );
+
+    [[nodiscard]]
+    static std::string serializeSnapshot(
+        const GameSnapshot& snapshot
+    );
+
+    [[nodiscard]]
+    static SnapshotMessage deserializeSnapshot(
+        const std::string& jsonText
+    );
+
+    [[nodiscard]]
+    static std::string serializeError(
+        const ErrorMessage& message
+    );
+
+    [[nodiscard]]
+    static ErrorMessage deserializeError(
+        const std::string& jsonText
+    );
 };

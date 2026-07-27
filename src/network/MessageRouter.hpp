@@ -1,5 +1,6 @@
 #pragma once
-
+#include "network/LoginAttemptResult.hpp"
+#include <functional>
 #include <memory>
 #include <string>
 
@@ -12,8 +13,15 @@ struct PieceInfo;
 class MessageRouter
 {
 public:
-    explicit MessageRouter(
-        GameController& controller
+    using LoginHandler =
+        std::function<LoginAttemptResult(
+            const std::shared_ptr<ClientSession>&,
+            const std::string&
+        )>;
+
+    MessageRouter(
+        GameController& controller,
+        LoginHandler loginHandler
     );
 
     void route(
@@ -22,6 +30,11 @@ public:
     );
 
 private:
+    void handleLogin(
+        const std::shared_ptr<ClientSession>& session,
+        const std::string& message
+    );
+
     void handleClick(
         const std::shared_ptr<ClientSession>& session,
         const std::string& message
@@ -60,10 +73,8 @@ private:
 
 private:
     GameController& controller_;
+    LoginHandler loginHandler_;
 
-    /*
-     * selectedCell הוא גלובלי במנוע המשחק.
-     * לכן השרת שומר איזה session יצר את הבחירה.
-     */
-    std::weak_ptr<ClientSession> selectionOwner_;
+    std::weak_ptr<ClientSession>
+        selectionOwner_;
 };

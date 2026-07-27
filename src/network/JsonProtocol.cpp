@@ -305,13 +305,21 @@ void requireMessageType(
 
 } // namespace
 
-MessageType JsonProtocol::getMessageType(const std::string& jsonText)
+MessageType JsonProtocol::getMessageType(
+    const std::string& jsonText)
 {
     const Json json = Json::parse(jsonText);
-    const std::string type = json.value("type", "");
+    const std::string type =
+        json.value("type", "");
 
     if (type == "welcome")
         return MessageType::Welcome;
+
+    if (type == "login")
+        return MessageType::Login;
+
+    if (type == "login_result")
+        return MessageType::LoginResult;
 
     if (type == "click")
         return MessageType::Click;
@@ -347,7 +355,71 @@ WelcomeMessage JsonProtocol::deserializeWelcome(
 
     return message;
 }
+std::string JsonProtocol::serializeLogin(
+    const LoginMessage& message)
+{
+    const Json json{
+        {"type", "login"},
+        {"username", message.username}
+    };
 
+    return json.dump();
+}
+
+LoginMessage JsonProtocol::deserializeLogin(
+    const std::string& jsonText)
+{
+    const Json json = Json::parse(jsonText);
+
+    requireMessageType(
+        json,
+        "login"
+    );
+
+    LoginMessage message;
+    message.username =
+        json.at("username").get<std::string>();
+
+    return message;
+}
+
+std::string JsonProtocol::serializeLoginResult(
+    const LoginResultMessage& message)
+{
+    const Json json{
+        {"type", "login_result"},
+        {"success", message.success},
+        {"username", message.username},
+        {"message", message.message}
+    };
+
+    return json.dump();
+}
+
+LoginResultMessage
+JsonProtocol::deserializeLoginResult(
+    const std::string& jsonText)
+{
+    const Json json = Json::parse(jsonText);
+
+    requireMessageType(
+        json,
+        "login_result"
+    );
+
+    LoginResultMessage message;
+
+    message.success =
+        json.at("success").get<bool>();
+
+    message.username =
+        json.value("username", "");
+
+    message.message =
+        json.value("message", "");
+
+    return message;
+}
 std::string JsonProtocol::serializeClick(
     const ClickMessage& message)
 {

@@ -3,11 +3,12 @@
 #include "game_engine/GameSnapshot.hpp"
 
 #include <string>
-#include <utility>
 
 enum class MessageType
 {
     Welcome,
+    Login,
+    LoginResult,
     Click,
     Snapshot,
     Error,
@@ -17,6 +18,18 @@ enum class MessageType
 struct WelcomeMessage
 {
     std::string color;
+};
+
+struct LoginMessage
+{
+    std::string username;
+};
+
+struct LoginResultMessage
+{
+    bool success = false;
+    std::string username;
+    std::string message;
 };
 
 struct ClickMessage

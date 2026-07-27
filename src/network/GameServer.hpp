@@ -28,13 +28,17 @@ private:
     );
 
 private:
+    /*
+     * סדר השדות חשוב:
+     * C++ בונה אותם לפי סדר ההכרזה כאן.
+     */
     boost::asio::io_context ioContext_;
 
-    MessageRouter messageRouter_;
+    GameController& controller_;
 
     SessionManager sessionManager_;
 
-    GameLoop gameLoop_;
+    MessageRouter messageRouter_;
 
-    GameController& controller_;
+    GameLoop gameLoop_;
 };

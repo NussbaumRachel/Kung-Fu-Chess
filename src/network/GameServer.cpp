@@ -2,6 +2,7 @@
 
 #include "network/ClientSession.hpp"
 #include "network/JsonProtocol.hpp"
+#include "network/LoginAttemptResult.hpp"
 
 #include "controllerClick/GameController.hpp"
 #include "game_engine/GameSnapshot.hpp"
@@ -15,7 +16,8 @@ GameServer::GameServer(
     GameController& controller
 )
     : ioContext_(),
-      messageRouter_(controller),
+      controller_(controller),
+
       sessionManager_(
           ioContext_,
           port,
@@ -38,16 +40,33 @@ GameServer::GameServer(
               );
           }
       ),
+
+      messageRouter_(
+          controller_,
+
+          [this](
+              const std::shared_ptr<ClientSession>& session,
+              const std::string& username)
+              -> LoginAttemptResult
+          {
+              return sessionManager_.tryLogin(
+                  session,
+                  username
+              );
+          }
+      ),
+
       gameLoop_(
           ioContext_,
-          controller,
+          controller_,
 
           [this](const std::string& message)
           {
-              sessionManager_.broadcast(message);
+              sessionManager_.broadcast(
+                  message
+              );
           }
-      ),
-      controller_(controller)
+      )
 {
 }
 
@@ -69,6 +88,8 @@ void GameServer::onSessionReady(
         controller_.getSnapshot();
 
     session->send(
-        JsonProtocol::serializeSnapshot(snapshot)
+        JsonProtocol::serializeSnapshot(
+            snapshot
+        )
     );
 }

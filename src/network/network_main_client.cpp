@@ -15,7 +15,25 @@
 
 namespace
 {
+void enqueueLogin(
+    SharedState& shared,
+    const std::string& username)
+{
+    const LoginMessage login{
+        username
+    };
 
+    std::string serializedLogin =
+        JsonProtocol::serializeLogin(login);
+
+    std::lock_guard<std::mutex> lock(
+        shared.outgoingMtx
+    );
+
+    shared.outgoingMessages.push(
+        std::move(serializedLogin)
+    );
+}
 std::string resolveAssetsPath(
     int argc,
     char* argv[]
@@ -136,6 +154,15 @@ void enqueueClick(
 
 int main(int argc, char* argv[])
 {
+    if (argc < 3)
+    {
+        std::cerr
+            << "Usage: kungfuchess_client "
+            << "<assets-path> <username>"
+            << std::endl;
+
+        return 1;
+    }
     const std::string assetsPath =
         resolveAssetsPath(argc, argv);
 
@@ -143,7 +170,8 @@ int main(int argc, char* argv[])
         << "Assets path: "
         << assetsPath
         << std::endl;
-
+    const std::string username =
+    argv[2];
     ChessRenderer renderer;
 
     if (!renderer.initialize(assetsPath))
@@ -183,7 +211,10 @@ int main(int argc, char* argv[])
 
         return 1;
     }
-
+    enqueueLogin(
+    shared,
+    username
+    );
     renderer.setClickCallback(
         [&shared](int row, int col)
         {
