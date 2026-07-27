@@ -87,9 +87,13 @@ set(SOURCE_NETWORK
     src/network/JsonProtocol.cpp
     src/network/GameServer.cpp
     src/network/ClientSession.cpp
+    src/network/SessionManager.cpp
+    src/network/MessageRouter.cpp
+    src/network/GameLoop.cpp
 )
 set(SOURCE_NETWORK_CLIENT
     src/network/NetworkClient.cpp
+    src/network/ClientMessageProcessor.cpp
 )
 # ── קובץ הבדיקות ──
 set(TEST_SOURCES
