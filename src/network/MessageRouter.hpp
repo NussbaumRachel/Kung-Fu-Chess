@@ -1,12 +1,11 @@
 #pragma once
 
-#include "network/PlayerRole.hpp"
-
 #include <memory>
 #include <string>
 
 class ClientSession;
 class GameController;
+
 struct GameSnapshot;
 struct PieceInfo;
 
@@ -33,8 +32,9 @@ private:
         const std::shared_ptr<ClientSession>& session,
         int row,
         int col,
+        const GameSnapshot& snapshot,
         std::string& rejectionReason
-    ) const;
+    );
 
     [[nodiscard]]
     const PieceInfo* findPieceAt(
@@ -43,6 +43,16 @@ private:
         int col
     ) const;
 
+    void updateSelectionOwner(
+        const std::shared_ptr<ClientSession>& session,
+        const GameSnapshot& snapshotBefore,
+        const GameSnapshot& snapshotAfter
+    );
+
+    void clearExpiredSelectionOwner(
+        const GameSnapshot& snapshot
+    );
+
     void sendError(
         const std::shared_ptr<ClientSession>& session,
         const std::string& errorMessage
@@ -50,4 +60,10 @@ private:
 
 private:
     GameController& controller_;
+
+    /*
+     * selectedCell הוא גלובלי במנוע המשחק.
+     * לכן השרת שומר איזה session יצר את הבחירה.
+     */
+    std::weak_ptr<ClientSession> selectionOwner_;
 };

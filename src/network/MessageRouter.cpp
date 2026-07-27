@@ -75,7 +75,7 @@ void MessageRouter::route(
     catch (const std::exception& exception)
     {
         std::cerr
-            << "Message parse error: "
+            << "Message processing error: "
             << exception.what()
             << std::endl;
 
@@ -104,6 +104,13 @@ void MessageRouter::handleClick(
         return;
     }
 
+    const GameSnapshot snapshotBefore =
+        controller_.getSnapshot();
+
+    clearExpiredSelectionOwner(
+        snapshotBefore
+    );
+
     std::string rejectionReason;
 
     if (
@@ -111,6 +118,7 @@ void MessageRouter::handleClick(
             session,
             click.row,
             click.col,
+            snapshotBefore,
             rejectionReason
         )
     )
@@ -127,14 +135,24 @@ void MessageRouter::handleClick(
         click.row,
         click.col
     );
+
+    const GameSnapshot snapshotAfter =
+        controller_.getSnapshot();
+
+    updateSelectionOwner(
+        session,
+        snapshotBefore,
+        snapshotAfter
+    );
 }
 
 bool MessageRouter::authorizeClick(
     const std::shared_ptr<ClientSession>& session,
     int row,
     int col,
+    const GameSnapshot& snapshot,
     std::string& rejectionReason
-) const
+)
 {
     if (!session)
     {
@@ -144,11 +162,10 @@ bool MessageRouter::authorizeClick(
         return false;
     }
 
-    const PlayerRole role =
-        session->role();
-
     const std::optional<Color> playerColor =
-        playerRoleToColor(role);
+        playerRoleToColor(
+            session->role()
+        );
 
     if (!playerColor.has_value())
     {
@@ -158,18 +175,18 @@ bool MessageRouter::authorizeClick(
         return false;
     }
 
-    const GameSnapshot snapshot =
-        controller_.getSnapshot();
-
     /*
-     * No piece is currently selected:
-     * this click must select one of the player's
-     * own pieces.
+     * אין כלי נבחר:
+     * הלחיצה יכולה לבחור רק כלי של השחקן.
      */
     if (!snapshot.selectedCell.has_value())
     {
         const PieceInfo* clickedPiece =
-            findPieceAt(snapshot, row, col);
+            findPieceAt(
+                snapshot,
+                row,
+                col
+            );
 
         if (clickedPiece == nullptr)
         {
@@ -179,7 +196,10 @@ bool MessageRouter::authorizeClick(
             return false;
         }
 
-        if (clickedPiece->color != playerColor.value())
+        if (
+            clickedPiece->color !=
+            playerColor.value()
+        )
         {
             rejectionReason =
                 "You cannot select an opponent's piece";
@@ -191,9 +211,31 @@ bool MessageRouter::authorizeClick(
     }
 
     /*
-     * A piece is already selected globally.
-     * Only the owner of that selected piece may
-     * complete, cancel or switch the action.
+     * יש כלי נבחר:
+     * רק ה-session שיצר את הבחירה רשאי להמשיך.
+     */
+    const std::shared_ptr<ClientSession> owner =
+        selectionOwner_.lock();
+
+    if (!owner)
+    {
+        rejectionReason =
+            "The current selection has no valid owner";
+
+        return false;
+    }
+
+    if (owner.get() != session.get())
+    {
+        rejectionReason =
+            "Another player is currently selecting a move";
+
+        return false;
+    }
+
+    /*
+     * בדיקת הגנה נוספת:
+     * גם הכלי הנבחר עצמו חייב להיות בצבע השחקן.
      */
     const Position& selectedCell =
         snapshot.selectedCell.value();
@@ -213,37 +255,27 @@ bool MessageRouter::authorizeClick(
         return false;
     }
 
-    if (selectedPiece->color != playerColor.value())
+    if (
+        selectedPiece->color !=
+        playerColor.value()
+    )
     {
         rejectionReason =
-            "Another player's action is currently in progress";
+            "The selected piece does not belong to you";
 
         return false;
     }
 
     /*
-     * When clicking another friendly piece,
-     * it must also belong to this player.
+     * מכאן הלחיצה יכולה להיות:
      *
-     * An empty cell or an opponent piece may be
-     * a legal destination; GameController and the
-     * game engine decide whether the move itself
-     * is valid.
+     * - יעד ריק
+     * - כלי יריב לצורך לכידה
+     * - הכלי הנבחר עצמו לצורך Jump
+     * - כלי נוסף של אותו שחקן לצורך SwitchPiece
+     *
+     * החוקיות עצמה נשארת באחריות מנוע המשחק.
      */
-    const PieceInfo* clickedPiece =
-        findPieceAt(snapshot, row, col);
-
-    if (
-        clickedPiece != nullptr &&
-        clickedPiece->color ==
-            selectedPiece->color
-    )
-    {
-        return
-            clickedPiece->color ==
-            playerColor.value();
-    }
-
     return true;
 }
 
@@ -266,6 +298,81 @@ const PieceInfo* MessageRouter::findPieceAt(
     }
 
     return nullptr;
+}
+
+void MessageRouter::updateSelectionOwner(
+    const std::shared_ptr<ClientSession>& session,
+    const GameSnapshot& snapshotBefore,
+    const GameSnapshot& snapshotAfter
+)
+{
+    const bool hadSelection =
+        snapshotBefore.selectedCell.has_value();
+
+    const bool hasSelection =
+        snapshotAfter.selectedCell.has_value();
+
+    /*
+     * נוצרה בחירה חדשה.
+     */
+    if (!hadSelection && hasSelection)
+    {
+        selectionOwner_ = session;
+        return;
+    }
+
+    /*
+     * הבחירה בוטלה או שהמהלך התחיל.
+     */
+    if (hadSelection && !hasSelection)
+    {
+        selectionOwner_.reset();
+        return;
+    }
+
+    /*
+     * עדיין קיימת בחירה.
+     *
+     * זה יכול להיות:
+     * - בחירה שלא השתנתה
+     * - SwitchPiece
+     *
+     * הבעלות נשארת של אותו session.
+     */
+    if (hasSelection)
+    {
+        const std::shared_ptr<ClientSession> owner =
+            selectionOwner_.lock();
+
+        if (!owner)
+            selectionOwner_ = session;
+
+        return;
+    }
+
+    selectionOwner_.reset();
+}
+
+void MessageRouter::clearExpiredSelectionOwner(
+    const GameSnapshot& snapshot
+)
+{
+    if (!snapshot.selectedCell.has_value())
+    {
+        selectionOwner_.reset();
+        return;
+    }
+
+    /*
+     * אם ה-session נותק וה-weak_ptr פג,
+     * לא משייכים אוטומטית את הבחירה לשחקן אחר.
+     */
+    if (selectionOwner_.expired())
+    {
+        std::cerr
+            << "Selected piece belongs to a disconnected session"
+            << std::endl;
+    }
 }
 
 void MessageRouter::sendError(
