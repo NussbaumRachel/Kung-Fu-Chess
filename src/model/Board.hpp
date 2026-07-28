@@ -19,9 +19,8 @@ public:
     using Row = std::vector<std::unique_ptr<Piece>>;
     using Grid = std::vector<Row>;
 
-    Board() = default;
-    ~Board() = default;
-
+    Board();
+    ~Board();
     // העתקה — שכפול עמוק (דרך PieceFactory)
     Board(const Board& other);
     Board& operator=(const Board& other);
@@ -30,8 +29,8 @@ public:
     Board clone() const;
 
     // העברה
-    Board(Board&& other) noexcept = default;
-    Board& operator=(Board&& other) noexcept = default;
+    Board(Board&& other) noexcept;
+    Board& operator=(Board&& other) noexcept;;
 
     // בונה לוח מתוך גריד טקסטואלי
     explicit Board(const std::vector<std::vector<std::string>>& stringGrid);

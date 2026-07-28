@@ -1,7 +1,13 @@
 #include "model/Board.hpp"
 #include "model/Piece.hpp"
 #include "movement/PieceFactory.hpp"
+Board::Board() = default;
 
+Board::~Board() = default;
+
+Board::Board(Board&& other) noexcept = default;
+
+Board& Board::operator=(Board&& other) noexcept = default;
 // ──────────────── העתקה ────────────────
 
 void Board::copyFrom(const Board& other)

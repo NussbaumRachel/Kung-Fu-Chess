@@ -1,10 +1,9 @@
 #pragma once
 
 #include "network/LoginAttemptResult.hpp"
-#include "network/PlayerRole.hpp"
+
 #include <boost/asio.hpp>
 
-#include <cstddef>
 #include <cstdint>
 #include <functional>
 #include <memory>
@@ -13,7 +12,6 @@
 #include <unordered_map>
 
 class ClientSession;
-
 
 class SessionManager
 {
@@ -30,18 +28,18 @@ public:
             const std::string&
         )>;
 
+    using ClosedHandler =
+        std::function<void(SessionPtr)>;
+
     SessionManager(
         boost::asio::io_context& ioContext,
         std::uint16_t port,
         ReadyHandler onReady,
-        MessageHandler onMessage
+        MessageHandler onMessage,
+        ClosedHandler onClosed
     );
 
     void start();
-
-    void broadcast(
-        const std::string& message
-    );
 
     [[nodiscard]]
     LoginAttemptResult tryLogin(
@@ -60,9 +58,6 @@ private:
         SessionPtr session
     );
 
-    [[nodiscard]]
-    PlayerRole assignRole();
-
     void releaseUsername(
         const SessionPtr& session
     );
@@ -77,6 +72,7 @@ private:
 
     ReadyHandler onReady_;
     MessageHandler onMessage_;
+    ClosedHandler onClosed_;
 
     std::set<SessionPtr> sessions_;
 
@@ -84,6 +80,4 @@ private:
         std::string,
         std::weak_ptr<ClientSession>
     > usersByName_;
-
-    std::size_t nextRoleIndex_ = 0;
 };

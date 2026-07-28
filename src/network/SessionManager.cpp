@@ -1,9 +1,6 @@
 #include "network/SessionManager.hpp"
 
 #include "network/ClientSession.hpp"
-#include "network/JsonProtocol.hpp"
-#include "network/Messages.hpp"
-#include "network/PlayerRole.hpp"
 
 #include <algorithm>
 #include <cctype>
@@ -16,7 +13,8 @@ SessionManager::SessionManager(
     boost::asio::io_context& ioContext,
     std::uint16_t port,
     ReadyHandler onReady,
-    MessageHandler onMessage
+    MessageHandler onMessage,
+    ClosedHandler onClosed
 )
     : acceptor_(
           ioContext,
@@ -26,7 +24,8 @@ SessionManager::SessionManager(
           )
       ),
       onReady_(std::move(onReady)),
-      onMessage_(std::move(onMessage))
+      onMessage_(std::move(onMessage)),
+      onClosed_(std::move(onClosed))
 {
     std::cout
         << "Server listening on port "
@@ -37,15 +36,6 @@ SessionManager::SessionManager(
 void SessionManager::start()
 {
     acceptNext();
-}
-
-void SessionManager::broadcast(
-    const std::string& message)
-{
-    for (const SessionPtr& session : sessions_)
-    {
-        session->send(message);
-    }
 }
 
 LoginAttemptResult SessionManager::tryLogin(
@@ -175,29 +165,10 @@ void SessionManager::acceptNext()
 void SessionManager::handleSessionReady(
     SessionPtr session)
 {
-    const PlayerRole assignedRole =
-        assignRole();
-
-    session->setRole(assignedRole);
+    if (!session)
+        return;
 
     sessions_.insert(session);
-
-    const std::string roleName{
-        playerRoleToString(assignedRole)
-    };
-
-    std::cout
-        << "Client joined as "
-        << roleName
-        << std::endl;
-
-    const WelcomeMessage welcome{
-        roleName
-    };
-
-    session->send(
-        JsonProtocol::serializeWelcome(welcome)
-    );
 
     if (onReady_)
         onReady_(std::move(session));
@@ -206,30 +177,19 @@ void SessionManager::handleSessionReady(
 void SessionManager::handleSessionClosed(
     SessionPtr session)
 {
+    if (!session)
+        return;
+
     releaseUsername(session);
+
+    if (onClosed_)
+        onClosed_(session);
+
     sessions_.erase(session);
 
     std::cout
         << "Client disconnected"
         << std::endl;
-}
-
-PlayerRole SessionManager::assignRole()
-{
-    if (nextRoleIndex_ == 0)
-    {
-        ++nextRoleIndex_;
-        return PlayerRole::White;
-    }
-
-    if (nextRoleIndex_ == 1)
-    {
-        ++nextRoleIndex_;
-        return PlayerRole::Black;
-    }
-
-    ++nextRoleIndex_;
-    return PlayerRole::Spectator;
 }
 
 void SessionManager::releaseUsername(

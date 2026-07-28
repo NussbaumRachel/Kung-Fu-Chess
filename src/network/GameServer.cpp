@@ -1,11 +1,7 @@
 #include "network/GameServer.hpp"
 
 #include "network/ClientSession.hpp"
-#include "network/JsonProtocol.hpp"
 #include "network/LoginAttemptResult.hpp"
-
-#include "controllerClick/GameController.hpp"
-#include "game_engine/GameSnapshot.hpp"
 
 #include <memory>
 #include <string>
@@ -13,10 +9,10 @@
 
 GameServer::GameServer(
     std::uint16_t port,
-    GameController& controller
+    Board boardTemplate,
+    PieceSpeedConfig speedConfig
 )
     : ioContext_(),
-      controller_(controller),
 
       sessionManager_(
           ioContext_,
@@ -34,15 +30,25 @@ GameServer::GameServer(
               std::shared_ptr<ClientSession> session,
               const std::string& message)
           {
-              messageRouter_.route(
+              onSessionMessage(
                   std::move(session),
                   message
+              );
+          },
+
+          [this](
+              std::shared_ptr<ClientSession> session)
+          {
+              onSessionClosed(
+                  std::move(session)
               );
           }
       ),
 
-      messageRouter_(
-          controller_,
+      roomManager_(
+          ioContext_,
+          std::move(boardTemplate),
+          std::move(speedConfig),
 
           [this](
               const std::shared_ptr<ClientSession>& session,
@@ -54,18 +60,6 @@ GameServer::GameServer(
                   username
               );
           }
-      ),
-
-      gameLoop_(
-          ioContext_,
-          controller_,
-
-          [this](const std::string& message)
-          {
-              sessionManager_.broadcast(
-                  message
-              );
-          }
       )
 {
 }
@@ -73,7 +67,7 @@ GameServer::GameServer(
 void GameServer::run()
 {
     sessionManager_.start();
-    gameLoop_.start();
+    roomManager_.start();
 
     ioContext_.run();
 }
@@ -81,15 +75,25 @@ void GameServer::run()
 void GameServer::onSessionReady(
     std::shared_ptr<ClientSession> session)
 {
-    if (!session)
-        return;
+    roomManager_.addToDefaultRoom(
+        session
+    );
+}
 
-    const GameSnapshot snapshot =
-        controller_.getSnapshot();
+void GameServer::onSessionMessage(
+    std::shared_ptr<ClientSession> session,
+    const std::string& message)
+{
+    roomManager_.routeMessage(
+        session,
+        message
+    );
+}
 
-    session->send(
-        JsonProtocol::serializeSnapshot(
-            snapshot
-        )
+void GameServer::onSessionClosed(
+    std::shared_ptr<ClientSession> session)
+{
+    roomManager_.removeSession(
+        session
     );
 }

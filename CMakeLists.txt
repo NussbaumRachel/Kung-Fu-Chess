@@ -90,6 +90,8 @@ set(SOURCE_NETWORK
     src/network/SessionManager.cpp
     src/network/MessageRouter.cpp
     src/network/GameLoop.cpp
+    src/network/Room.cpp
+    src/network/RoomManager.cpp
 )
 set(SOURCE_NETWORK_CLIENT
     src/network/NetworkClient.cpp
