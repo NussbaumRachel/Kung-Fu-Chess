@@ -1,0 +1,58 @@
+# syntax=docker/dockerfile:1
+
+# =========================================================
+# Build stage
+# =========================================================
+FROM ubuntu:24.04 AS builder
+
+ENV DEBIAN_FRONTEND=noninteractive
+
+RUN apt-get update && apt-get install -y --no-install-recommends \
+    build-essential \
+    cmake \
+    ca-certificates \
+    libboost-system-dev \
+    nlohmann-json3-dev \
+    && update-ca-certificates \
+    && rm -rf /var/lib/apt/lists/*
+
+WORKDIR /source
+
+COPY . .
+
+RUN cmake \
+    -S . \
+    -B /source/docker-build \
+    -DCMAKE_BUILD_TYPE=Release
+
+RUN cmake \
+    --build /source/docker-build \
+    --target kungfuchess_server \
+    --parallel
+
+# =========================================================
+# Runtime stage
+# =========================================================
+FROM ubuntu:24.04 AS runtime
+
+ENV DEBIAN_FRONTEND=noninteractive
+
+RUN apt-get update && apt-get install -y --no-install-recommends \
+    libboost-system1.83.0 \
+    ca-certificates \
+    && update-ca-certificates \
+    && rm -rf /var/lib/apt/lists/*
+
+WORKDIR /app
+
+COPY --from=builder \
+    /source/docker-build/kungfuchess_server \
+    /app/kungfuchess_server
+
+COPY --from=builder \
+    /source/demo/assets \
+    /app/assets
+    
+EXPOSE 8080
+
+CMD ["/app/kungfuchess_server", "/app/assets"]

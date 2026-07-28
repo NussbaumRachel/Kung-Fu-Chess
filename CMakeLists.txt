@@ -93,6 +93,7 @@ set(SOURCE_NETWORK
     src/network/Room.cpp
     src/network/RoomManager.cpp
 )
+
 set(SOURCE_NETWORK_CLIENT
     src/network/NetworkClient.cpp
     src/network/ClientMessageProcessor.cpp
@@ -110,20 +111,20 @@ set(COMMON_INCLUDE_DIR src)
 # ══════════════════════════════════════════
 #  Binary: kungfuchess
 # ══════════════════════════════════════════
-include(FetchContent)
+# include(FetchContent)
 
 
 
-FetchContent_Declare(
-    nlohmann_json
-    GIT_REPOSITORY https://github.com/nlohmann/json.git
-    GIT_TAG v3.11.3
-)
+# FetchContent_Declare(
+#     nlohmann_json
+#     GIT_REPOSITORY https://github.com/nlohmann/json.git
+#     GIT_TAG v3.11.3
+# )
 
-FetchContent_MakeAvailable(
-    nlohmann_json
-)
-
+# FetchContent_MakeAvailable(
+#     nlohmann_json
+# )
+find_package(nlohmann_json CONFIG REQUIRED)
 add_executable(kungfuchess
     ${SOURCE_ENTRY_POINT}
     ${ALL_SOURCES}
@@ -226,4 +227,4 @@ add_test(NAME chess_tests COMMAND chess_tests)
 # ══════════════════════════════════════════
 #  תיקיית DEMO (אם נדרש)
 # ══════════════════════════════════════════
-add_subdirectory(DEMO)
+add_subdirectory(demo)
