@@ -2,6 +2,7 @@
 
 #include "network/ClientSession.hpp"
 #include "network/LoginAttemptResult.hpp"
+#include "network/Messages.hpp"
 
 #include <memory>
 #include <string>
@@ -48,8 +49,10 @@ GameServer::GameServer(
       roomManager_(
           ioContext_,
           std::move(boardTemplate),
-          std::move(speedConfig),
+          std::move(speedConfig)
+      ),
 
+      messageRouter_(
           [this](
               const std::shared_ptr<ClientSession>& session,
               const std::string& username)
@@ -58,6 +61,16 @@ GameServer::GameServer(
               return sessionManager_.tryLogin(
                   session,
                   username
+              );
+          },
+
+          [this](
+              const std::shared_ptr<ClientSession>& session,
+              const ClickMessage& click)
+          {
+              roomManager_.handleClick(
+                  session,
+                  click
               );
           }
       )
@@ -84,8 +97,8 @@ void GameServer::onSessionMessage(
     std::shared_ptr<ClientSession> session,
     const std::string& message)
 {
-    roomManager_.routeMessage(
-        session,
+    messageRouter_.route(
+        std::move(session),
         message
     );
 }

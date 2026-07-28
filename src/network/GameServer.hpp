@@ -2,6 +2,7 @@
 
 #include "config/PieceSpeedConfig.hpp"
 #include "model/Board.hpp"
+#include "network/MessageRouter.hpp"
 #include "network/RoomManager.hpp"
 #include "network/SessionManager.hpp"
 
@@ -40,12 +41,13 @@ private:
 
 private:
     /*
-     * סדר השדות חשוב:
-     * C++ בונה אותם לפי סדר ההכרזה כאן.
+     * סדר הבנייה הוא סדר ההכרזה.
      */
     boost::asio::io_context ioContext_;
 
     SessionManager sessionManager_;
 
     RoomManager roomManager_;
+
+    MessageRouter messageRouter_;
 };

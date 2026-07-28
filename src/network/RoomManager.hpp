@@ -2,7 +2,7 @@
 
 #include "config/PieceSpeedConfig.hpp"
 #include "model/Board.hpp"
-#include "network/MessageRouter.hpp"
+#include "network/Messages.hpp"
 
 #include <boost/asio.hpp>
 
@@ -22,8 +22,7 @@ public:
     RoomManager(
         boost::asio::io_context& ioContext,
         Board boardTemplate,
-        PieceSpeedConfig speedConfig,
-        MessageRouter::LoginHandler loginHandler
+        PieceSpeedConfig speedConfig
     );
 
     ~RoomManager();
@@ -46,9 +45,9 @@ public:
         const SessionPtr& session
     );
 
-    void routeMessage(
+    void handleClick(
         const SessionPtr& session,
-        const std::string& message
+        const ClickMessage& click
     );
 
 private:
@@ -60,6 +59,11 @@ private:
         const SessionPtr& session
     ) const;
 
+    void sendError(
+        const SessionPtr& session,
+        const std::string& errorMessage
+    ) const;
+
 private:
     static constexpr const char*
         DEFAULT_ROOM_ID = "default";
@@ -69,8 +73,6 @@ private:
     Board boardTemplate_;
 
     PieceSpeedConfig speedConfig_;
-
-    MessageRouter::LoginHandler loginHandler_;
 
     std::unordered_map<
         std::string,

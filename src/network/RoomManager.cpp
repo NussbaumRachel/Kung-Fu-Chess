@@ -2,7 +2,6 @@
 
 #include "network/ClientSession.hpp"
 #include "network/JsonProtocol.hpp"
-#include "network/Messages.hpp"
 #include "network/Room.hpp"
 
 #include <memory>
@@ -12,8 +11,7 @@
 RoomManager::RoomManager(
     boost::asio::io_context& ioContext,
     Board boardTemplate,
-    PieceSpeedConfig speedConfig,
-    MessageRouter::LoginHandler loginHandler
+    PieceSpeedConfig speedConfig
 )
     : ioContext_(ioContext),
       boardTemplate_(
@@ -21,9 +19,6 @@ RoomManager::RoomManager(
       ),
       speedConfig_(
           std::move(speedConfig)
-      ),
-      loginHandler_(
-          std::move(loginHandler)
       )
 {
     rooms_.emplace(
@@ -32,8 +27,7 @@ RoomManager::RoomManager(
             DEFAULT_ROOM_ID,
             ioContext_,
             boardTemplate_.clone(),
-            speedConfig_,
-            loginHandler_
+            speedConfig_
         )
     );
 }
@@ -80,14 +74,9 @@ void RoomManager::addToDefaultRoom(
         !found->second
     )
     {
-        const ErrorMessage error{
+        sendError(
+            session,
             "Default room is unavailable"
-        };
-
-        session->send(
-            JsonProtocol::serializeError(
-                error
-            )
         );
 
         return;
@@ -133,9 +122,9 @@ void RoomManager::removeSession(
     roomIdBySession_.erase(found);
 }
 
-void RoomManager::routeMessage(
+void RoomManager::handleClick(
     const SessionPtr& session,
-    const std::string& message)
+    const ClickMessage& click)
 {
     if (!session)
     {
@@ -147,22 +136,17 @@ void RoomManager::routeMessage(
 
     if (!room)
     {
-        const ErrorMessage error{
+        sendError(
+            session,
             "Client is not assigned to a room"
-        };
-
-        session->send(
-            JsonProtocol::serializeError(
-                error
-            )
         );
 
         return;
     }
 
-    room->routeMessage(
+    room->handleClick(
         session,
-        message
+        click
     );
 }
 
@@ -228,4 +212,24 @@ const Room* RoomManager::findRoomForSession(
     }
 
     return roomFound->second.get();
+}
+
+void RoomManager::sendError(
+    const SessionPtr& session,
+    const std::string& errorMessage) const
+{
+    if (!session)
+    {
+        return;
+    }
+
+    const ErrorMessage error{
+        errorMessage
+    };
+
+    session->send(
+        JsonProtocol::serializeError(
+            error
+        )
+    );
 }
