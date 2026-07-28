@@ -11,6 +11,10 @@ enum class MessageType
     LoginResult,
     Click,
     Snapshot,
+    CreateRoom,
+    JoinRoom,
+    LeaveRoom,
+    RoomResult,
     Error,
     Unknown
 };
@@ -41,6 +45,28 @@ struct ClickMessage
 struct SnapshotMessage
 {
     GameSnapshot snapshot;
+};
+
+struct CreateRoomMessage
+{
+    std::string roomId;
+};
+
+struct JoinRoomMessage
+{
+    std::string roomId;
+};
+
+struct LeaveRoomMessage
+{
+};
+
+struct RoomResultMessage
+{
+    bool success = false;
+    std::string action;
+    std::string roomId;
+    std::string message;
 };
 
 struct ErrorMessage

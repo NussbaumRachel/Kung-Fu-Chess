@@ -11,13 +11,25 @@
 
 MessageRouter::MessageRouter(
     LoginHandler loginHandler,
-    ClickHandler clickHandler
+    ClickHandler clickHandler,
+    CreateRoomHandler createRoomHandler,
+    JoinRoomHandler joinRoomHandler,
+    LeaveRoomHandler leaveRoomHandler
 )
     : loginHandler_(
           std::move(loginHandler)
       ),
       clickHandler_(
           std::move(clickHandler)
+      ),
+      createRoomHandler_(
+          std::move(createRoomHandler)
+      ),
+      joinRoomHandler_(
+          std::move(joinRoomHandler)
+      ),
+      leaveRoomHandler_(
+          std::move(leaveRoomHandler)
       )
 {
 }
@@ -64,9 +76,40 @@ void MessageRouter::route(
                 break;
             }
 
+            case MessageType::CreateRoom:
+            {
+                handleCreateRoom(
+                    session,
+                    message
+                );
+
+                break;
+            }
+
+            case MessageType::JoinRoom:
+            {
+                handleJoinRoom(
+                    session,
+                    message
+                );
+
+                break;
+            }
+
+            case MessageType::LeaveRoom:
+            {
+                handleLeaveRoom(
+                    session,
+                    message
+                );
+
+                break;
+            }
+
             case MessageType::Welcome:
             case MessageType::LoginResult:
             case MessageType::Snapshot:
+            case MessageType::RoomResult:
             case MessageType::Error:
             {
                 sendError(
@@ -147,13 +190,8 @@ void MessageRouter::handleClick(
     const SessionPtr& session,
     const std::string& message)
 {
-    if (!session->isAuthenticated())
+    if (!requireAuthentication(session))
     {
-        sendError(
-            session,
-            "Login is required before playing"
-        );
-
         return;
     }
 
@@ -188,6 +226,164 @@ void MessageRouter::handleClick(
     clickHandler_(
         session,
         click
+    );
+}
+
+void MessageRouter::handleCreateRoom(
+    const SessionPtr& session,
+    const std::string& message)
+{
+    if (!requireAuthentication(session))
+    {
+        return;
+    }
+
+    const CreateRoomMessage request =
+        JsonProtocol::deserializeCreateRoom(
+            message
+        );
+
+    if (!createRoomHandler_)
+    {
+        sendError(
+            session,
+            "Room creation service is unavailable"
+        );
+
+        return;
+    }
+
+    const RoomOperationResult result =
+        createRoomHandler_(
+            session,
+            request.roomId
+        );
+
+    sendRoomResult(
+        session,
+        "create",
+        request.roomId,
+        result
+    );
+}
+
+void MessageRouter::handleJoinRoom(
+    const SessionPtr& session,
+    const std::string& message)
+{
+    if (!requireAuthentication(session))
+    {
+        return;
+    }
+
+    const JoinRoomMessage request =
+        JsonProtocol::deserializeJoinRoom(
+            message
+        );
+
+    if (!joinRoomHandler_)
+    {
+        sendError(
+            session,
+            "Room joining service is unavailable"
+        );
+
+        return;
+    }
+
+    const RoomOperationResult result =
+        joinRoomHandler_(
+            session,
+            request.roomId
+        );
+
+    sendRoomResult(
+        session,
+        "join",
+        request.roomId,
+        result
+    );
+}
+
+void MessageRouter::handleLeaveRoom(
+    const SessionPtr& session,
+    const std::string& message)
+{
+    if (!requireAuthentication(session))
+    {
+        return;
+    }
+
+    static_cast<void>(
+        JsonProtocol::deserializeLeaveRoom(
+            message
+        )
+    );
+
+    if (!leaveRoomHandler_)
+    {
+        sendError(
+            session,
+            "Room leaving service is unavailable"
+        );
+
+        return;
+    }
+
+    const RoomOperationResult result =
+        leaveRoomHandler_(
+            session
+        );
+
+    sendRoomResult(
+        session,
+        "leave",
+        "",
+        result
+    );
+}
+
+bool MessageRouter::requireAuthentication(
+    const SessionPtr& session) const
+{
+    if (
+        session &&
+        session->isAuthenticated()
+    )
+    {
+        return true;
+    }
+
+    sendError(
+        session,
+        "Login is required before using this action"
+    );
+
+    return false;
+}
+
+void MessageRouter::sendRoomResult(
+    const SessionPtr& session,
+    const std::string& action,
+    const std::string& roomId,
+    const RoomOperationResult& result) const
+{
+    if (!session)
+    {
+        return;
+    }
+
+    const RoomResultMessage response{
+        result.success,
+        action,
+        roomId,
+        result.message
+    };
+
+    session->send(
+        JsonProtocol::serializeRoomResult(
+            response
+        )
     );
 }
 

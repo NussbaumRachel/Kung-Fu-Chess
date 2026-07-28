@@ -10,30 +10,144 @@
 #include <filesystem>
 #include <iostream>
 #include <mutex>
+#include <optional>
+#include <stdexcept>
 #include <string>
 #include <thread>
+#include <utility>
 
 namespace
 {
-void enqueueLogin(
-    SharedState& shared,
-    const std::string& username)
+
+enum class StartupRoomActionType
 {
-    const LoginMessage login{
-        username
-    };
+    None,
+    Create,
+    Join,
+    Leave
+};
 
-    std::string serializedLogin =
-        JsonProtocol::serializeLogin(login);
+struct StartupRoomAction
+{
+    StartupRoomActionType type =
+        StartupRoomActionType::None;
 
+    std::string roomId;
+};
+
+void enqueueSerializedMessage(
+    SharedState& shared,
+    std::string message
+)
+{
     std::lock_guard<std::mutex> lock(
         shared.outgoingMtx
     );
 
     shared.outgoingMessages.push(
-        std::move(serializedLogin)
+        std::move(message)
     );
 }
+
+void enqueueLogin(
+    SharedState& shared,
+    const std::string& username
+)
+{
+    const LoginMessage login{
+        username
+    };
+
+    enqueueSerializedMessage(
+        shared,
+        JsonProtocol::serializeLogin(login)
+    );
+}
+
+void enqueueClick(
+    SharedState& shared,
+    int row,
+    int col
+)
+{
+    const ClickMessage click{
+        row,
+        col
+    };
+
+    enqueueSerializedMessage(
+        shared,
+        JsonProtocol::serializeClick(click)
+    );
+
+    std::cout
+        << "CLICK: ("
+        << row
+        << ","
+        << col
+        << ")"
+        << std::endl;
+}
+
+void enqueueRoomAction(
+    SharedState& shared,
+    const StartupRoomAction& action
+)
+{
+    switch (action.type)
+    {
+        case StartupRoomActionType::Create:
+        {
+            const CreateRoomMessage message{
+                action.roomId
+            };
+
+            enqueueSerializedMessage(
+                shared,
+                JsonProtocol::serializeCreateRoom(
+                    message
+                )
+            );
+
+            return;
+        }
+
+        case StartupRoomActionType::Join:
+        {
+            const JoinRoomMessage message{
+                action.roomId
+            };
+
+            enqueueSerializedMessage(
+                shared,
+                JsonProtocol::serializeJoinRoom(
+                    message
+                )
+            );
+
+            return;
+        }
+
+        case StartupRoomActionType::Leave:
+        {
+            enqueueSerializedMessage(
+                shared,
+                JsonProtocol::serializeLeaveRoom(
+                    LeaveRoomMessage{}
+                )
+            );
+
+            return;
+        }
+
+        case StartupRoomActionType::None:
+        default:
+        {
+            return;
+        }
+    }
+}
+
 std::string resolveAssetsPath(
     int argc,
     char* argv[]
@@ -44,10 +158,14 @@ std::string resolveAssetsPath(
     std::string assetsPath = "assets";
 
     if (argc >= 2)
+    {
         assetsPath = argv[1];
+    }
 
     if (fs::exists(assetsPath))
+    {
         return assetsPath;
+    }
 
     const std::string alternatePath =
         (
@@ -60,9 +178,74 @@ std::string resolveAssetsPath(
         ).string();
 
     if (fs::exists(alternatePath))
+    {
         return alternatePath;
+    }
 
     return assetsPath;
+}
+
+StartupRoomAction parseRoomAction(
+    int argc,
+    char* argv[]
+)
+{
+    if (argc == 3)
+    {
+        return {};
+    }
+
+    const std::string action =
+        argv[3];
+
+    if (action == "create")
+    {
+        if (argc != 5)
+        {
+            throw std::invalid_argument(
+                "The create action requires a room ID"
+            );
+        }
+
+        return {
+            StartupRoomActionType::Create,
+            argv[4]
+        };
+    }
+
+    if (action == "join")
+    {
+        if (argc != 5)
+        {
+            throw std::invalid_argument(
+                "The join action requires a room ID"
+            );
+        }
+
+        return {
+            StartupRoomActionType::Join,
+            argv[4]
+        };
+    }
+
+    if (action == "leave")
+    {
+        if (argc != 4)
+        {
+            throw std::invalid_argument(
+                "The leave action does not accept a room ID"
+            );
+        }
+
+        return {
+            StartupRoomActionType::Leave,
+            {}
+        };
+    }
+
+    throw std::invalid_argument(
+        "Unknown room action: " + action
+    );
 }
 
 bool waitForConnection(
@@ -79,15 +262,22 @@ bool waitForConnection(
                 shared.mtx
             );
 
-            connected = shared.connected;
-            running = shared.running;
+            connected =
+                shared.connected;
+
+            running =
+                shared.running;
         }
 
         if (connected)
+        {
             return true;
+        }
 
         if (!running)
+        {
             return false;
+        }
 
         std::this_thread::sleep_for(
             std::chrono::milliseconds(50)
@@ -117,36 +307,21 @@ void requestStop(
     shared.running = false;
 }
 
-void enqueueClick(
-    SharedState& shared,
-    int row,
-    int col
-)
+void printUsage()
 {
-    const ClickMessage click{
-        row,
-        col
-    };
-
-    std::string serializedClick =
-        JsonProtocol::serializeClick(click);
-
-    {
-        std::lock_guard<std::mutex> lock(
-            shared.outgoingMtx
-        );
-
-        shared.outgoingMessages.push(
-            std::move(serializedClick)
-        );
-    }
-
-    std::cout
-        << "CLICK: ("
-        << row
-        << ","
-        << col
-        << ")"
+    std::cerr
+        << "Usage:\n"
+        << "  kungfuchess_client "
+        << "<assets-path> <username>\n"
+        << "  kungfuchess_client "
+        << "<assets-path> <username> "
+        << "create <room-id>\n"
+        << "  kungfuchess_client "
+        << "<assets-path> <username> "
+        << "join <room-id>\n"
+        << "  kungfuchess_client "
+        << "<assets-path> <username> "
+        << "leave"
         << std::endl;
 }
 
@@ -154,24 +329,47 @@ void enqueueClick(
 
 int main(int argc, char* argv[])
 {
-    if (argc < 3)
+    if (argc < 3 || argc > 5)
+    {
+        printUsage();
+        return 1;
+    }
+
+    StartupRoomAction roomAction;
+
+    try
+    {
+        roomAction =
+            parseRoomAction(
+                argc,
+                argv
+            );
+    }
+    catch (const std::exception& exception)
     {
         std::cerr
-            << "Usage: kungfuchess_client "
-            << "<assets-path> <username>"
+            << exception.what()
             << std::endl;
+
+        printUsage();
 
         return 1;
     }
+
     const std::string assetsPath =
-        resolveAssetsPath(argc, argv);
+        resolveAssetsPath(
+            argc,
+            argv
+        );
+
+    const std::string username =
+        argv[2];
 
     std::cout
         << "Assets path: "
         << assetsPath
         << std::endl;
-    const std::string username =
-    argv[2];
+
     ChessRenderer renderer;
 
     if (!renderer.initialize(assetsPath))
@@ -203,7 +401,9 @@ int main(int argc, char* argv[])
         networkClient.stop();
 
         if (networkThread.joinable())
+        {
             networkThread.join();
+        }
 
         std::cerr
             << "Failed to connect"
@@ -211,10 +411,21 @@ int main(int argc, char* argv[])
 
         return 1;
     }
+
+    /*
+     * תור היציאה הוא FIFO:
+     * ה-login נשלח לפני פעולת החדר.
+     */
     enqueueLogin(
-    shared,
-    username
+        shared,
+        username
     );
+
+    enqueueRoomAction(
+        shared,
+        roomAction
+    );
+
     renderer.setClickCallback(
         [&shared](int row, int col)
         {
@@ -243,7 +454,8 @@ int main(int argc, char* argv[])
             break;
         }
 
-        const int key = Img::wait_key(16);
+        const int key =
+            Img::wait_key(16);
 
         if (key == 27)
         {
@@ -258,7 +470,9 @@ int main(int argc, char* argv[])
     networkClient.stop();
 
     if (networkThread.joinable())
+    {
         networkThread.join();
+    }
 
     return 0;
 }

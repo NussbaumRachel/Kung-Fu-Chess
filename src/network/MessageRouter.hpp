@@ -2,6 +2,7 @@
 
 #include "network/LoginAttemptResult.hpp"
 #include "network/Messages.hpp"
+#include "network/RoomOperationResult.hpp"
 
 #include <functional>
 #include <memory>
@@ -27,9 +28,29 @@ public:
             const ClickMessage&
         )>;
 
+    using CreateRoomHandler =
+        std::function<RoomOperationResult(
+            const SessionPtr&,
+            const std::string&
+        )>;
+
+    using JoinRoomHandler =
+        std::function<RoomOperationResult(
+            const SessionPtr&,
+            const std::string&
+        )>;
+
+    using LeaveRoomHandler =
+        std::function<RoomOperationResult(
+            const SessionPtr&
+        )>;
+
     MessageRouter(
         LoginHandler loginHandler,
-        ClickHandler clickHandler
+        ClickHandler clickHandler,
+        CreateRoomHandler createRoomHandler,
+        JoinRoomHandler joinRoomHandler,
+        LeaveRoomHandler leaveRoomHandler
     );
 
     void route(
@@ -48,6 +69,33 @@ private:
         const std::string& message
     );
 
+    void handleCreateRoom(
+        const SessionPtr& session,
+        const std::string& message
+    );
+
+    void handleJoinRoom(
+        const SessionPtr& session,
+        const std::string& message
+    );
+
+    void handleLeaveRoom(
+        const SessionPtr& session,
+        const std::string& message
+    );
+
+    [[nodiscard]]
+    bool requireAuthentication(
+        const SessionPtr& session
+    ) const;
+
+    void sendRoomResult(
+        const SessionPtr& session,
+        const std::string& action,
+        const std::string& roomId,
+        const RoomOperationResult& result
+    ) const;
+
     void sendError(
         const SessionPtr& session,
         const std::string& errorMessage
@@ -57,4 +105,10 @@ private:
     LoginHandler loginHandler_;
 
     ClickHandler clickHandler_;
+
+    CreateRoomHandler createRoomHandler_;
+
+    JoinRoomHandler joinRoomHandler_;
+
+    LeaveRoomHandler leaveRoomHandler_;
 };

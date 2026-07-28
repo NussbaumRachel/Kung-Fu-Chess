@@ -11,6 +11,7 @@
 
 #include <boost/asio.hpp>
 
+#include <cstddef>
 #include <memory>
 #include <set>
 #include <string>
@@ -51,6 +52,12 @@ public:
     bool contains(
         const SessionPtr& session
     ) const;
+
+    [[nodiscard]]
+    bool empty() const;
+
+    [[nodiscard]]
+    std::size_t sessionCount() const;
 
     [[nodiscard]]
     const std::string& id() const;

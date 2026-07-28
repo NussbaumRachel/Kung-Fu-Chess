@@ -4,6 +4,7 @@
 #include "network/JsonProtocol.hpp"
 #include "network/PlayerRole.hpp"
 
+#include <cstddef>
 #include <iostream>
 #include <memory>
 #include <optional>
@@ -78,6 +79,7 @@ void Room::addSession(
     const std::string roleName{
         playerRoleToString(role)
     };
+
     std::cout
         << "Client joined room '"
         << id_
@@ -215,6 +217,16 @@ bool Room::contains(
 
     return sessions_.find(session) !=
            sessions_.end();
+}
+
+bool Room::empty() const
+{
+    return sessions_.empty();
+}
+
+std::size_t Room::sessionCount() const
+{
+    return sessions_.size();
 }
 
 const std::string& Room::id() const

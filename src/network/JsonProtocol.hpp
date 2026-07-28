@@ -63,6 +63,46 @@ public:
     );
 
     [[nodiscard]]
+    static std::string serializeCreateRoom(
+        const CreateRoomMessage& message
+    );
+
+    [[nodiscard]]
+    static CreateRoomMessage deserializeCreateRoom(
+        const std::string& jsonText
+    );
+
+    [[nodiscard]]
+    static std::string serializeJoinRoom(
+        const JoinRoomMessage& message
+    );
+
+    [[nodiscard]]
+    static JoinRoomMessage deserializeJoinRoom(
+        const std::string& jsonText
+    );
+
+    [[nodiscard]]
+    static std::string serializeLeaveRoom(
+        const LeaveRoomMessage& message
+    );
+
+    [[nodiscard]]
+    static LeaveRoomMessage deserializeLeaveRoom(
+        const std::string& jsonText
+    );
+
+    [[nodiscard]]
+    static std::string serializeRoomResult(
+        const RoomResultMessage& message
+    );
+
+    [[nodiscard]]
+    static RoomResultMessage deserializeRoomResult(
+        const std::string& jsonText
+    );
+
+    [[nodiscard]]
     static std::string serializeError(
         const ErrorMessage& message
     );

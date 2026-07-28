@@ -3,6 +3,7 @@
 #include "network/ClientSession.hpp"
 #include "network/LoginAttemptResult.hpp"
 #include "network/Messages.hpp"
+#include "network/RoomOperationResult.hpp"
 
 #include <memory>
 #include <string>
@@ -71,6 +72,37 @@ GameServer::GameServer(
               roomManager_.handleClick(
                   session,
                   click
+              );
+          },
+
+          [this](
+              const std::shared_ptr<ClientSession>& session,
+              const std::string& roomId)
+              -> RoomOperationResult
+          {
+              return roomManager_.createRoom(
+                  session,
+                  roomId
+              );
+          },
+
+          [this](
+              const std::shared_ptr<ClientSession>& session,
+              const std::string& roomId)
+              -> RoomOperationResult
+          {
+              return roomManager_.joinRoom(
+                  session,
+                  roomId
+              );
+          },
+
+          [this](
+              const std::shared_ptr<ClientSession>& session)
+              -> RoomOperationResult
+          {
+              return roomManager_.leaveRoom(
+                  session
               );
           }
       )

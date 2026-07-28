@@ -3,9 +3,11 @@
 #include "config/PieceSpeedConfig.hpp"
 #include "model/Board.hpp"
 #include "network/Messages.hpp"
+#include "network/RoomOperationResult.hpp"
 
 #include <boost/asio.hpp>
 
+#include <cstddef>
 #include <memory>
 #include <string>
 #include <unordered_map>
@@ -41,6 +43,23 @@ public:
         const SessionPtr& session
     );
 
+    [[nodiscard]]
+    RoomOperationResult createRoom(
+        const SessionPtr& session,
+        const std::string& roomId
+    );
+
+    [[nodiscard]]
+    RoomOperationResult joinRoom(
+        const SessionPtr& session,
+        const std::string& roomId
+    );
+
+    [[nodiscard]]
+    RoomOperationResult leaveRoom(
+        const SessionPtr& session
+    );
+
     void removeSession(
         const SessionPtr& session
     );
@@ -50,14 +69,54 @@ public:
         const ClickMessage& click
     );
 
+    [[nodiscard]]
+    bool roomExists(
+        const std::string& roomId
+    ) const;
+
+    [[nodiscard]]
+    std::size_t roomCount() const;
+
+    [[nodiscard]]
+    std::string roomIdForSession(
+        const SessionPtr& session
+    ) const;
+
 private:
+    [[nodiscard]]
+    bool createRoomInternal(
+        const std::string& roomId
+    );
+
+    [[nodiscard]]
+    bool moveSessionToRoom(
+        const SessionPtr& session,
+        const std::string& roomId
+    );
+
+    void removeSessionFromCurrentRoom(
+        const SessionPtr& session,
+        bool removeEmptyRoom
+    );
+
+    void removeRoomIfEmpty(
+        const std::string& roomId
+    );
+
+    [[nodiscard]]
     Room* findRoomForSession(
         const SessionPtr& session
     );
 
+    [[nodiscard]]
     const Room* findRoomForSession(
         const SessionPtr& session
     ) const;
+
+    [[nodiscard]]
+    static bool isValidRoomId(
+        const std::string& roomId
+    );
 
     void sendError(
         const SessionPtr& session,
@@ -73,6 +132,8 @@ private:
     Board boardTemplate_;
 
     PieceSpeedConfig speedConfig_;
+
+    bool started_ = false;
 
     std::unordered_map<
         std::string,

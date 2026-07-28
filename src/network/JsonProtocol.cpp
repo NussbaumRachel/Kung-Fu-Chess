@@ -26,21 +26,31 @@ std::string colorToString(Color color)
             return "Black";
     }
 
-    throw std::runtime_error("Unsupported Color value");
+    throw std::runtime_error(
+        "Unsupported Color value"
+    );
 }
 
-Color stringToColor(const std::string& value)
+Color stringToColor(
+    const std::string& value)
 {
     if (value == "White")
+    {
         return Color::White;
+    }
 
     if (value == "Black")
+    {
         return Color::Black;
+    }
 
-    throw std::runtime_error("Invalid color value: " + value);
+    throw std::runtime_error(
+        "Invalid color value: " + value
+    );
 }
 
-std::string pieceTypeToString(PieceType type)
+std::string pieceTypeToString(
+    PieceType type)
 {
     switch (type)
     {
@@ -63,33 +73,51 @@ std::string pieceTypeToString(PieceType type)
             return "Pawn";
     }
 
-    throw std::runtime_error("Unsupported PieceType value");
+    throw std::runtime_error(
+        "Unsupported PieceType value"
+    );
 }
 
-PieceType stringToPieceType(const std::string& value)
+PieceType stringToPieceType(
+    const std::string& value)
 {
     if (value == "King")
+    {
         return PieceType::King;
+    }
 
     if (value == "Queen")
+    {
         return PieceType::Queen;
+    }
 
     if (value == "Rook")
+    {
         return PieceType::Rook;
+    }
 
     if (value == "Bishop")
+    {
         return PieceType::Bishop;
+    }
 
     if (value == "Knight")
+    {
         return PieceType::Knight;
+    }
 
     if (value == "Pawn")
+    {
         return PieceType::Pawn;
+    }
 
-    throw std::runtime_error("Invalid piece type value: " + value);
+    throw std::runtime_error(
+        "Invalid piece type value: " + value
+    );
 }
 
-std::string pieceStateToString(PieceState state)
+std::string pieceStateToString(
+    PieceState state)
 {
     switch (state)
     {
@@ -112,33 +140,51 @@ std::string pieceStateToString(PieceState state)
             return "Captured";
     }
 
-    throw std::runtime_error("Unsupported PieceState value");
+    throw std::runtime_error(
+        "Unsupported PieceState value"
+    );
 }
 
-PieceState stringToPieceState(const std::string& value)
+PieceState stringToPieceState(
+    const std::string& value)
 {
     if (value == "Idle")
+    {
         return PieceState::Idle;
+    }
 
     if (value == "Moving")
+    {
         return PieceState::Moving;
+    }
 
     if (value == "Jumping")
+    {
         return PieceState::Jumping;
+    }
 
     if (value == "long_rest")
+    {
         return PieceState::long_rest;
+    }
 
     if (value == "Short_rest")
+    {
         return PieceState::Short_rest;
+    }
 
     if (value == "Captured")
+    {
         return PieceState::Captured;
+    }
 
-    throw std::runtime_error("Invalid piece state value: " + value);
+    throw std::runtime_error(
+        "Invalid piece state value: " + value
+    );
 }
 
-Json positionToJson(const Position& position)
+Json positionToJson(
+    const Position& position)
 {
     return Json{
         {"row", position.row},
@@ -146,13 +192,25 @@ Json positionToJson(const Position& position)
     };
 }
 
-Position positionFromJson(const Json& json)
+Position positionFromJson(
+    const Json& json)
 {
     if (!json.is_object())
-        throw std::runtime_error("Position must be a JSON object");
+    {
+        throw std::runtime_error(
+            "Position must be a JSON object"
+        );
+    }
 
-    if (!json.contains("row") || !json.contains("col"))
-        throw std::runtime_error("Position must contain row and col");
+    if (
+        !json.contains("row") ||
+        !json.contains("col")
+    )
+    {
+        throw std::runtime_error(
+            "Position must contain row and col"
+        );
+    }
 
     return Position{
         json.at("row").get<int>(),
@@ -160,124 +218,237 @@ Position positionFromJson(const Json& json)
     };
 }
 
-Json optionalPositionToJson(const std::optional<Position>& position)
+Json optionalPositionToJson(
+    const std::optional<Position>& position)
 {
     if (!position.has_value())
+    {
         return nullptr;
+    }
 
-    return positionToJson(position.value());
+    return positionToJson(
+        position.value()
+    );
 }
 
-std::optional<Position> optionalPositionFromJson(const Json& json)
+std::optional<Position>
+optionalPositionFromJson(
+    const Json& json)
 {
     if (json.is_null())
+    {
         return std::nullopt;
+    }
 
     return positionFromJson(json);
 }
 
-Json optionalColorToJson(const std::optional<Color>& color)
+Json optionalColorToJson(
+    const std::optional<Color>& color)
 {
     if (!color.has_value())
+    {
         return nullptr;
+    }
 
-    return colorToString(color.value());
+    return colorToString(
+        color.value()
+    );
 }
 
-std::optional<Color> optionalColorFromJson(const Json& json)
+std::optional<Color>
+optionalColorFromJson(
+    const Json& json)
 {
     if (json.is_null())
+    {
         return std::nullopt;
+    }
 
-    return stringToColor(json.get<std::string>());
+    return stringToColor(
+        json.get<std::string>()
+    );
 }
 
-Json pieceInfoToJson(const PieceInfo& piece)
+Json pieceInfoToJson(
+    const PieceInfo& piece)
 {
     return Json{
-        {"kind", pieceTypeToString(piece.kind)},
-        {"color", colorToString(piece.color)},
-        {"pieceId", piece.pieceId},
-        {"cell", positionToJson(piece.cell)},
-        {"state", pieceStateToString(piece.state)},
-        {"progress", piece.progress},
-        {"targetCell", optionalPositionToJson(piece.targetCell)}
+        {
+            "kind",
+            pieceTypeToString(piece.kind)
+        },
+        {
+            "color",
+            colorToString(piece.color)
+        },
+        {
+            "pieceId",
+            piece.pieceId
+        },
+        {
+            "cell",
+            positionToJson(piece.cell)
+        },
+        {
+            "state",
+            pieceStateToString(piece.state)
+        },
+        {
+            "progress",
+            piece.progress
+        },
+        {
+            "targetCell",
+            optionalPositionToJson(
+                piece.targetCell
+            )
+        }
     };
 }
 
-PieceInfo pieceInfoFromJson(const Json& json)
+PieceInfo pieceInfoFromJson(
+    const Json& json)
 {
     if (!json.is_object())
-        throw std::runtime_error("PieceInfo must be a JSON object");
+    {
+        throw std::runtime_error(
+            "PieceInfo must be a JSON object"
+        );
+    }
 
     PieceInfo piece;
 
-    piece.kind = stringToPieceType(
-        json.at("kind").get<std::string>()
-    );
+    piece.kind =
+        stringToPieceType(
+            json.at("kind")
+                .get<std::string>()
+        );
 
-    piece.color = stringToColor(
-        json.at("color").get<std::string>()
-    );
+    piece.color =
+        stringToColor(
+            json.at("color")
+                .get<std::string>()
+        );
 
-    piece.pieceId = json.at("pieceId").get<int>();
-    piece.cell = positionFromJson(json.at("cell"));
+    piece.pieceId =
+        json.at("pieceId").get<int>();
 
-    piece.state = stringToPieceState(
-        json.at("state").get<std::string>()
-    );
+    piece.cell =
+        positionFromJson(
+            json.at("cell")
+        );
 
-    piece.progress = json.value("progress", 0.0);
+    piece.state =
+        stringToPieceState(
+            json.at("state")
+                .get<std::string>()
+        );
+
+    piece.progress =
+        json.value("progress", 0.0);
 
     if (json.contains("targetCell"))
-        piece.targetCell = optionalPositionFromJson(json.at("targetCell"));
+    {
+        piece.targetCell =
+            optionalPositionFromJson(
+                json.at("targetCell")
+            );
+    }
     else
-        piece.targetCell = std::nullopt;
+    {
+        piece.targetCell =
+            std::nullopt;
+    }
 
     return piece;
 }
 
-Json moveRecordToJson(const MoveRecord& record)
+Json moveRecordToJson(
+    const MoveRecord& record)
 {
     return Json{
         {"minutes", record.minutes},
         {"seconds", record.seconds},
-        {"milliseconds", record.milliseconds},
-        {"pieceType", pieceTypeToString(record.pieceType)},
-        {"color", colorToString(record.color)},
-        {"from", positionToJson(record.from)},
-        {"to", positionToJson(record.to)},
+        {
+            "milliseconds",
+            record.milliseconds
+        },
+        {
+            "pieceType",
+            pieceTypeToString(
+                record.pieceType
+            )
+        },
+        {
+            "color",
+            colorToString(record.color)
+        },
+        {
+            "from",
+            positionToJson(record.from)
+        },
+        {
+            "to",
+            positionToJson(record.to)
+        },
         {"isJump", record.isJump},
         {"isCapture", record.isCapture},
         {"givesCheck", record.givesCheck}
     };
 }
 
-MoveRecord moveRecordFromJson(const Json& json)
+MoveRecord moveRecordFromJson(
+    const Json& json)
 {
     if (!json.is_object())
-        throw std::runtime_error("MoveRecord must be a JSON object");
+    {
+        throw std::runtime_error(
+            "MoveRecord must be a JSON object"
+        );
+    }
 
     MoveRecord record;
 
-    record.minutes = json.value("minutes", 0);
-    record.seconds = json.value("seconds", 0);
-    record.milliseconds = json.value("milliseconds", 0);
+    record.minutes =
+        json.value("minutes", 0);
 
-    record.pieceType = stringToPieceType(
-        json.at("pieceType").get<std::string>()
-    );
+    record.seconds =
+        json.value("seconds", 0);
 
-    record.color = stringToColor(
-        json.at("color").get<std::string>()
-    );
+    record.milliseconds =
+        json.value("milliseconds", 0);
 
-    record.from = positionFromJson(json.at("from"));
-    record.to = positionFromJson(json.at("to"));
+    record.pieceType =
+        stringToPieceType(
+            json.at("pieceType")
+                .get<std::string>()
+        );
 
-    record.isJump = json.value("isJump", false);
-    record.isCapture = json.value("isCapture", false);
-    record.givesCheck = json.value("givesCheck", false);
+    record.color =
+        stringToColor(
+            json.at("color")
+                .get<std::string>()
+        );
+
+    record.from =
+        positionFromJson(
+            json.at("from")
+        );
+
+    record.to =
+        positionFromJson(
+            json.at("to")
+        );
+
+    record.isJump =
+        json.value("isJump", false);
+
+    record.isCapture =
+        json.value("isCapture", false);
+
+    record.givesCheck =
+        json.value("givesCheck", false);
 
     return record;
 }
@@ -287,9 +458,14 @@ void requireMessageType(
     const std::string& expectedType)
 {
     if (!json.is_object())
-        throw std::runtime_error("Network message must be a JSON object");
+    {
+        throw std::runtime_error(
+            "Network message must be a JSON object"
+        );
+    }
 
-    const std::string actualType = json.value("type", "");
+    const std::string actualType =
+        json.value("type", "");
 
     if (actualType != expectedType)
     {
@@ -303,32 +479,104 @@ void requireMessageType(
     }
 }
 
+std::string requireNonEmptyString(
+    const Json& json,
+    const std::string& fieldName)
+{
+    if (!json.contains(fieldName))
+    {
+        throw std::runtime_error(
+            "Message is missing field '" +
+            fieldName +
+            "'"
+        );
+    }
+
+    if (!json.at(fieldName).is_string())
+    {
+        throw std::runtime_error(
+            "Field '" +
+            fieldName +
+            "' must be a string"
+        );
+    }
+
+    const std::string value =
+        json.at(fieldName)
+            .get<std::string>();
+
+    if (value.empty())
+    {
+        throw std::runtime_error(
+            "Field '" +
+            fieldName +
+            "' must not be empty"
+        );
+    }
+
+    return value;
+}
+
 } // namespace
 
 MessageType JsonProtocol::getMessageType(
     const std::string& jsonText)
 {
-    const Json json = Json::parse(jsonText);
+    const Json json =
+        Json::parse(jsonText);
+
     const std::string type =
         json.value("type", "");
 
     if (type == "welcome")
+    {
         return MessageType::Welcome;
+    }
 
     if (type == "login")
+    {
         return MessageType::Login;
+    }
 
     if (type == "login_result")
+    {
         return MessageType::LoginResult;
+    }
 
     if (type == "click")
+    {
         return MessageType::Click;
+    }
 
     if (type == "snapshot")
+    {
         return MessageType::Snapshot;
+    }
+
+    if (type == "create_room")
+    {
+        return MessageType::CreateRoom;
+    }
+
+    if (type == "join_room")
+    {
+        return MessageType::JoinRoom;
+    }
+
+    if (type == "leave_room")
+    {
+        return MessageType::LeaveRoom;
+    }
+
+    if (type == "room_result")
+    {
+        return MessageType::RoomResult;
+    }
 
     if (type == "error")
+    {
         return MessageType::Error;
+    }
 
     return MessageType::Unknown;
 }
@@ -344,17 +592,27 @@ std::string JsonProtocol::serializeWelcome(
     return json.dump();
 }
 
-WelcomeMessage JsonProtocol::deserializeWelcome(
+WelcomeMessage
+JsonProtocol::deserializeWelcome(
     const std::string& jsonText)
 {
-    const Json json = Json::parse(jsonText);
-    requireMessageType(json, "welcome");
+    const Json json =
+        Json::parse(jsonText);
+
+    requireMessageType(
+        json,
+        "welcome"
+    );
 
     WelcomeMessage message;
-    message.color = json.at("color").get<std::string>();
+
+    message.color =
+        json.at("color")
+            .get<std::string>();
 
     return message;
 }
+
 std::string JsonProtocol::serializeLogin(
     const LoginMessage& message)
 {
@@ -369,7 +627,8 @@ std::string JsonProtocol::serializeLogin(
 LoginMessage JsonProtocol::deserializeLogin(
     const std::string& jsonText)
 {
-    const Json json = Json::parse(jsonText);
+    const Json json =
+        Json::parse(jsonText);
 
     requireMessageType(
         json,
@@ -377,13 +636,16 @@ LoginMessage JsonProtocol::deserializeLogin(
     );
 
     LoginMessage message;
+
     message.username =
-        json.at("username").get<std::string>();
+        json.at("username")
+            .get<std::string>();
 
     return message;
 }
 
-std::string JsonProtocol::serializeLoginResult(
+std::string
+JsonProtocol::serializeLoginResult(
     const LoginResultMessage& message)
 {
     const Json json{
@@ -400,7 +662,8 @@ LoginResultMessage
 JsonProtocol::deserializeLoginResult(
     const std::string& jsonText)
 {
-    const Json json = Json::parse(jsonText);
+    const Json json =
+        Json::parse(jsonText);
 
     requireMessageType(
         json,
@@ -420,6 +683,7 @@ JsonProtocol::deserializeLoginResult(
 
     return message;
 }
+
 std::string JsonProtocol::serializeClick(
     const ClickMessage& message)
 {
@@ -435,129 +699,377 @@ std::string JsonProtocol::serializeClick(
 ClickMessage JsonProtocol::deserializeClick(
     const std::string& jsonText)
 {
-    const Json json = Json::parse(jsonText);
-    requireMessageType(json, "click");
+    const Json json =
+        Json::parse(jsonText);
+
+    requireMessageType(
+        json,
+        "click"
+    );
 
     ClickMessage message;
-    message.row = json.at("row").get<int>();
-    message.col = json.at("col").get<int>();
+
+    message.row =
+        json.at("row").get<int>();
+
+    message.col =
+        json.at("col").get<int>();
 
     return message;
 }
 
-std::string JsonProtocol::serializeSnapshot(
+std::string
+JsonProtocol::serializeSnapshot(
     const GameSnapshot& snapshot)
 {
     Json json;
+
     json["type"] = "snapshot";
 
-    Json& data = json["data"];
+    Json& data =
+        json["data"];
 
-    data["boardWidth"] = snapshot.boardWidth;
-    data["boardHeight"] = snapshot.boardHeight;
+    data["boardWidth"] =
+        snapshot.boardWidth;
+
+    data["boardHeight"] =
+        snapshot.boardHeight;
+
     data["selectedCell"] =
-        optionalPositionToJson(snapshot.selectedCell);
-    data["gameOver"] = snapshot.gameOver;
-    data["winner"] = optionalColorToJson(snapshot.winner);
-    data["whiteScore"] = snapshot.whiteScore;
-    data["blackScore"] = snapshot.blackScore;
+        optionalPositionToJson(
+            snapshot.selectedCell
+        );
 
-    data["pieces"] = Json::array();
+    data["gameOver"] =
+        snapshot.gameOver;
 
-    for (const PieceInfo& piece : snapshot.pieces)
-        data["pieces"].push_back(pieceInfoToJson(piece));
+    data["winner"] =
+        optionalColorToJson(
+            snapshot.winner
+        );
 
-    data["whiteMoves"] = Json::array();
+    data["whiteScore"] =
+        snapshot.whiteScore;
 
-    for (const MoveRecord& record : snapshot.whiteMoves)
-        data["whiteMoves"].push_back(moveRecordToJson(record));
+    data["blackScore"] =
+        snapshot.blackScore;
 
-    data["blackMoves"] = Json::array();
+    data["pieces"] =
+        Json::array();
 
-    for (const MoveRecord& record : snapshot.blackMoves)
-        data["blackMoves"].push_back(moveRecordToJson(record));
+    for (
+        const PieceInfo& piece :
+        snapshot.pieces
+    )
+    {
+        data["pieces"].push_back(
+            pieceInfoToJson(piece)
+        );
+    }
+
+    data["whiteMoves"] =
+        Json::array();
+
+    for (
+        const MoveRecord& record :
+        snapshot.whiteMoves
+    )
+    {
+        data["whiteMoves"].push_back(
+            moveRecordToJson(record)
+        );
+    }
+
+    data["blackMoves"] =
+        Json::array();
+
+    for (
+        const MoveRecord& record :
+        snapshot.blackMoves
+    )
+    {
+        data["blackMoves"].push_back(
+            moveRecordToJson(record)
+        );
+    }
 
     return json.dump();
 }
 
-SnapshotMessage JsonProtocol::deserializeSnapshot(
+SnapshotMessage
+JsonProtocol::deserializeSnapshot(
     const std::string& jsonText)
 {
-    const Json json = Json::parse(jsonText);
-    requireMessageType(json, "snapshot");
+    const Json json =
+        Json::parse(jsonText);
 
-    if (!json.contains("data") || !json.at("data").is_object())
-        throw std::runtime_error("Snapshot message is missing data");
+    requireMessageType(
+        json,
+        "snapshot"
+    );
 
-    const Json& data = json.at("data");
+    if (
+        !json.contains("data") ||
+        !json.at("data").is_object()
+    )
+    {
+        throw std::runtime_error(
+            "Snapshot message is missing data"
+        );
+    }
+
+    const Json& data =
+        json.at("data");
 
     SnapshotMessage message;
-    GameSnapshot& snapshot = message.snapshot;
 
-    snapshot.boardWidth = data.value("boardWidth", 0);
-    snapshot.boardHeight = data.value("boardHeight", 0);
-    snapshot.gameOver = data.value("gameOver", false);
-    snapshot.whiteScore = data.value("whiteScore", 0);
-    snapshot.blackScore = data.value("blackScore", 0);
+    GameSnapshot& snapshot =
+        message.snapshot;
+
+    snapshot.boardWidth =
+        data.value("boardWidth", 0);
+
+    snapshot.boardHeight =
+        data.value("boardHeight", 0);
+
+    snapshot.gameOver =
+        data.value("gameOver", false);
+
+    snapshot.whiteScore =
+        data.value("whiteScore", 0);
+
+    snapshot.blackScore =
+        data.value("blackScore", 0);
 
     if (data.contains("selectedCell"))
     {
         snapshot.selectedCell =
-            optionalPositionFromJson(data.at("selectedCell"));
+            optionalPositionFromJson(
+                data.at("selectedCell")
+            );
     }
 
     if (data.contains("winner"))
     {
         snapshot.winner =
-            optionalColorFromJson(data.at("winner"));
+            optionalColorFromJson(
+                data.at("winner")
+            );
     }
 
     if (data.contains("pieces"))
     {
         if (!data.at("pieces").is_array())
-            throw std::runtime_error("Snapshot pieces must be an array");
+        {
+            throw std::runtime_error(
+                "Snapshot pieces must be an array"
+            );
+        }
 
-        for (const Json& pieceJson : data.at("pieces"))
+        for (
+            const Json& pieceJson :
+            data.at("pieces")
+        )
         {
             snapshot.pieces.push_back(
-                pieceInfoFromJson(pieceJson)
+                pieceInfoFromJson(
+                    pieceJson
+                )
             );
         }
     }
 
     if (data.contains("whiteMoves"))
     {
-        if (!data.at("whiteMoves").is_array())
+        if (
+            !data.at("whiteMoves")
+                .is_array()
+        )
         {
             throw std::runtime_error(
                 "Snapshot whiteMoves must be an array"
             );
         }
 
-        for (const Json& moveJson : data.at("whiteMoves"))
+        for (
+            const Json& moveJson :
+            data.at("whiteMoves")
+        )
         {
             snapshot.whiteMoves.push_back(
-                moveRecordFromJson(moveJson)
+                moveRecordFromJson(
+                    moveJson
+                )
             );
         }
     }
 
     if (data.contains("blackMoves"))
     {
-        if (!data.at("blackMoves").is_array())
+        if (
+            !data.at("blackMoves")
+                .is_array()
+        )
         {
             throw std::runtime_error(
                 "Snapshot blackMoves must be an array"
             );
         }
 
-        for (const Json& moveJson : data.at("blackMoves"))
+        for (
+            const Json& moveJson :
+            data.at("blackMoves")
+        )
         {
             snapshot.blackMoves.push_back(
-                moveRecordFromJson(moveJson)
+                moveRecordFromJson(
+                    moveJson
+                )
             );
         }
     }
+
+    return message;
+}
+
+std::string
+JsonProtocol::serializeCreateRoom(
+    const CreateRoomMessage& message)
+{
+    const Json json{
+        {"type", "create_room"},
+        {"roomId", message.roomId}
+    };
+
+    return json.dump();
+}
+
+CreateRoomMessage
+JsonProtocol::deserializeCreateRoom(
+    const std::string& jsonText)
+{
+    const Json json =
+        Json::parse(jsonText);
+
+    requireMessageType(
+        json,
+        "create_room"
+    );
+
+    CreateRoomMessage message;
+
+    message.roomId =
+        requireNonEmptyString(
+            json,
+            "roomId"
+        );
+
+    return message;
+}
+
+std::string
+JsonProtocol::serializeJoinRoom(
+    const JoinRoomMessage& message)
+{
+    const Json json{
+        {"type", "join_room"},
+        {"roomId", message.roomId}
+    };
+
+    return json.dump();
+}
+
+JoinRoomMessage
+JsonProtocol::deserializeJoinRoom(
+    const std::string& jsonText)
+{
+    const Json json =
+        Json::parse(jsonText);
+
+    requireMessageType(
+        json,
+        "join_room"
+    );
+
+    JoinRoomMessage message;
+
+    message.roomId =
+        requireNonEmptyString(
+            json,
+            "roomId"
+        );
+
+    return message;
+}
+
+std::string
+JsonProtocol::serializeLeaveRoom(
+    const LeaveRoomMessage& message)
+{
+    static_cast<void>(message);
+
+    const Json json{
+        {"type", "leave_room"}
+    };
+
+    return json.dump();
+}
+
+LeaveRoomMessage
+JsonProtocol::deserializeLeaveRoom(
+    const std::string& jsonText)
+{
+    const Json json =
+        Json::parse(jsonText);
+
+    requireMessageType(
+        json,
+        "leave_room"
+    );
+
+    return LeaveRoomMessage{};
+}
+
+std::string
+JsonProtocol::serializeRoomResult(
+    const RoomResultMessage& message)
+{
+    const Json json{
+        {"type", "room_result"},
+        {"success", message.success},
+        {"action", message.action},
+        {"roomId", message.roomId},
+        {"message", message.message}
+    };
+
+    return json.dump();
+}
+
+RoomResultMessage
+JsonProtocol::deserializeRoomResult(
+    const std::string& jsonText)
+{
+    const Json json =
+        Json::parse(jsonText);
+
+    requireMessageType(
+        json,
+        "room_result"
+    );
+
+    RoomResultMessage message;
+
+    message.success =
+        json.at("success").get<bool>();
+
+    message.action =
+        json.value("action", "");
+
+    message.roomId =
+        json.value("roomId", "");
+
+    message.message =
+        json.value("message", "");
 
     return message;
 }
@@ -573,14 +1085,23 @@ std::string JsonProtocol::serializeError(
     return json.dump();
 }
 
-ErrorMessage JsonProtocol::deserializeError(
+ErrorMessage
+JsonProtocol::deserializeError(
     const std::string& jsonText)
 {
-    const Json json = Json::parse(jsonText);
-    requireMessageType(json, "error");
+    const Json json =
+        Json::parse(jsonText);
+
+    requireMessageType(
+        json,
+        "error"
+    );
 
     ErrorMessage message;
-    message.message = json.at("message").get<std::string>();
+
+    message.message =
+        json.at("message")
+            .get<std::string>();
 
     return message;
 }

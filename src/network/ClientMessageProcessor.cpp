@@ -42,7 +42,7 @@ void ClientMessageProcessor::processPendingMessages()
 
     /*
      * החלפת התורים היא פעולה מהירה.
-     * אין parsing או rendering בזמן שה־mutex נעול.
+     * אין parsing או rendering בזמן שה-mutex נעול.
      */
     {
         std::lock_guard<std::mutex> lock(
@@ -60,17 +60,19 @@ void ClientMessageProcessor::processPendingMessages()
     while (!pendingMessages.empty())
     {
         std::string message =
-            std::move(pendingMessages.front());
+            std::move(
+                pendingMessages.front()
+            );
 
         pendingMessages.pop();
 
         /*
-         * הסיווג נשאר זול ואינו דורש JSON parsing.
-         * רק ה־snapshot האחרון נשמר.
+         * רק ה-snapshot האחרון נשמר.
          */
         if (
-            message.find("\"type\":\"snapshot\"") !=
-            std::string::npos
+            message.find(
+                "\"type\":\"snapshot\""
+            ) != std::string::npos
         )
         {
             latestSnapshotMessage =
@@ -84,7 +86,10 @@ void ClientMessageProcessor::processPendingMessages()
         }
     }
 
-    for (const std::string& message : controlMessages)
+    for (
+        const std::string& message :
+        controlMessages
+    )
     {
         processControlMessage(message);
     }
@@ -104,19 +109,22 @@ void ClientMessageProcessor::processControlMessage(
     try
     {
         const MessageType type =
-            JsonProtocol::getMessageType(message);
+            JsonProtocol::getMessageType(
+                message
+            );
 
         switch (type)
         {
             case MessageType::Welcome:
             {
                 const WelcomeMessage welcome =
-                    JsonProtocol::deserializeWelcome(
-                        message
-                    );
+                    JsonProtocol::
+                        deserializeWelcome(
+                            message
+                        );
 
                 std::cout
-                    << "Assigned color: "
+                    << "Assigned role: "
                     << welcome.color
                     << std::endl;
 
@@ -126,9 +134,10 @@ void ClientMessageProcessor::processControlMessage(
             case MessageType::Error:
             {
                 const ErrorMessage error =
-                    JsonProtocol::deserializeError(
-                        message
-                    );
+                    JsonProtocol::
+                        deserializeError(
+                            message
+                        );
 
                 std::cerr
                     << "Server error: "
@@ -137,12 +146,33 @@ void ClientMessageProcessor::processControlMessage(
 
                 break;
             }
+
             case MessageType::LoginResult:
             {
                 const LoginResultMessage result =
-                    JsonProtocol::deserializeLoginResult(
-                        message
+                    JsonProtocol::
+                        deserializeLoginResult(
+                            message
+                        );
+
+                {
+                    std::lock_guard<std::mutex> lock(
+                        sharedState_.mtx
                     );
+
+                    sharedState_.authenticated =
+                        result.success;
+
+                    if (result.success)
+                    {
+                        sharedState_.username =
+                            result.username;
+                    }
+                    else
+                    {
+                        sharedState_.username.clear();
+                    }
+                }
 
                 if (result.success)
                 {
@@ -161,9 +191,72 @@ void ClientMessageProcessor::processControlMessage(
 
                 break;
             }
+
+            case MessageType::RoomResult:
+            {
+                const RoomResultMessage result =
+                    JsonProtocol::
+                        deserializeRoomResult(
+                            message
+                        );
+
+                if (result.success)
+                {
+                    {
+                        std::lock_guard<std::mutex> lock(
+                            sharedState_.mtx
+                        );
+
+                        if (
+                            result.action == "create" ||
+                            result.action == "join"
+                        )
+                        {
+                            sharedState_.currentRoomId =
+                                result.roomId;
+                        }
+                        else if (
+                            result.action == "leave"
+                        )
+                        {
+                            sharedState_
+                                .currentRoomId
+                                .clear();
+                        }
+                    }
+
+                    std::cout
+                        << "Room action succeeded"
+                        << " [action="
+                        << result.action
+                        << ", roomId="
+                        << result.roomId
+                        << "]: "
+                        << result.message
+                        << std::endl;
+                }
+                else
+                {
+                    std::cerr
+                        << "Room action failed"
+                        << " [action="
+                        << result.action
+                        << ", roomId="
+                        << result.roomId
+                        << "]: "
+                        << result.message
+                        << std::endl;
+                }
+
+                break;
+            }
+
             case MessageType::Login:
             case MessageType::Click:
             case MessageType::Snapshot:
+            case MessageType::CreateRoom:
+            case MessageType::JoinRoom:
+            case MessageType::LeaveRoom:
             case MessageType::Unknown:
             default:
             {
@@ -203,7 +296,8 @@ void ClientMessageProcessor::processSnapshotMessage(
         renderer_.render(snapshot);
         renderer_.display();
 
-        lastSnapshot_ = std::move(snapshot);
+        lastSnapshot_ =
+            std::move(snapshot);
     }
     catch (const std::exception& exception)
     {
@@ -219,7 +313,9 @@ void ClientMessageProcessor::resetStartedAnimations(
 )
 {
     if (!lastSnapshot_.has_value())
+    {
         return;
+    }
 
     std::unordered_map<int, PieceState>
         previousStates;
@@ -228,8 +324,10 @@ void ClientMessageProcessor::resetStartedAnimations(
         lastSnapshot_->pieces.size()
     );
 
-    for (const PieceInfo& oldPiece :
-         lastSnapshot_->pieces)
+    for (
+        const PieceInfo& oldPiece :
+        lastSnapshot_->pieces
+    )
     {
         previousStates.emplace(
             oldPiece.pieceId,
@@ -237,7 +335,10 @@ void ClientMessageProcessor::resetStartedAnimations(
         );
     }
 
-    for (const PieceInfo& piece : snapshot.pieces)
+    for (
+        const PieceInfo& piece :
+        snapshot.pieces
+    )
     {
         if (
             !isAnimatedState(piece.state) ||
@@ -248,7 +349,9 @@ void ClientMessageProcessor::resetStartedAnimations(
         }
 
         const auto previous =
-            previousStates.find(piece.pieceId);
+            previousStates.find(
+                piece.pieceId
+            );
 
         if (
             previous == previousStates.end() ||
