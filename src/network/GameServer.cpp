@@ -120,9 +120,14 @@ void GameServer::run()
 void GameServer::onSessionReady(
     std::shared_ptr<ClientSession> session)
 {
-    roomManager_.addToDefaultRoom(
-        session
-    );
+    /*
+     * A newly connected session is not assigned
+     * to a game room automatically.
+     *
+     * The client must first authenticate and then
+     * explicitly create or join a room.
+     */
+    (void)session;
 }
 
 void GameServer::onSessionMessage(

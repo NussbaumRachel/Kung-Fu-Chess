@@ -1,0 +1,23 @@
+services:
+  game-server:
+    container_name: kung-fu-chess-server
+
+    build:
+      context: .
+      dockerfile: Dockerfile.server
+
+    image: kung-fu-chess-server:${IMAGE_TAG:-dev}
+
+    ports:
+      - "${SERVER_PORT:-8080}:8080"
+
+    restart: unless-stopped
+
+    healthcheck:
+      test:
+        - CMD-SHELL
+        - "kill -0 1"
+      interval: 10s
+      timeout: 3s
+      retries: 3
+      start_period: 5s
