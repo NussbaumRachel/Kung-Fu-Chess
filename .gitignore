@@ -34,5 +34,4 @@ Makefile
 
 .claude/
 _ctd26_files/
-external/
 OpenCV_451/
