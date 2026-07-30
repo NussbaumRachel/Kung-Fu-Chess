@@ -14,19 +14,19 @@
 
 class ClientSession;
 class Room;
-
+class IGameResultRepository;
 class RoomManager
 {
 public:
     using SessionPtr =
         std::shared_ptr<ClientSession>;
 
-    RoomManager(
-        boost::asio::io_context& ioContext,
-        Board boardTemplate,
-        PieceSpeedConfig speedConfig
-    );
-
+RoomManager(
+    boost::asio::io_context& ioContext,
+    Board boardTemplate,
+    PieceSpeedConfig speedConfig,
+    IGameResultRepository& gameResultRepository
+);
     ~RoomManager();
 
     RoomManager(const RoomManager&) = delete;
@@ -128,7 +128,8 @@ private:
         DEFAULT_ROOM_ID = "default";
 
     boost::asio::io_context& ioContext_;
-
+    IGameResultRepository&
+        gameResultRepository_;
     Board boardTemplate_;
 
     PieceSpeedConfig speedConfig_;

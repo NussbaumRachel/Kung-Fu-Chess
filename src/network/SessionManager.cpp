@@ -1,6 +1,9 @@
 #include "network/SessionManager.hpp"
 
 #include "network/ClientSession.hpp"
+#include "session/ISessionStore.hpp"
+#include "user/IUserRepository.hpp"
+#include "user/User.hpp"
 
 #include <algorithm>
 #include <cctype>
@@ -12,6 +15,8 @@
 SessionManager::SessionManager(
     boost::asio::io_context& ioContext,
     std::uint16_t port,
+    IUserRepository& userRepository,
+    ISessionStore& sessionStore,
     ReadyHandler onReady,
     MessageHandler onMessage,
     ClosedHandler onClosed
@@ -23,6 +28,8 @@ SessionManager::SessionManager(
               port
           )
       ),
+      userRepository_(userRepository),
+      sessionStore_(sessionStore),
       onReady_(std::move(onReady)),
       onMessage_(std::move(onMessage)),
       onClosed_(std::move(onClosed))
@@ -66,32 +73,38 @@ LoginAttemptResult SessionManager::tryLogin(
         };
     }
 
-    const auto existing =
-        usersByName_.find(username);
+    const User user =
+        userRepository_.getOrCreateByUsername(
+            username
+        );
 
-    if (existing != usersByName_.end())
+    const bool acquired =
+        sessionStore_.tryAcquire(
+            user.id,
+            session->sessionId()
+        );
+
+    if (!acquired)
     {
-        const std::shared_ptr<ClientSession>
-            existingSession =
-                existing->second.lock();
-
-        if (existingSession)
-        {
-            return {
-                false,
-                "Username is already in use"
-            };
-        }
-
-        usersByName_.erase(existing);
+        return {
+            false,
+            "Username is already in use"
+        };
     }
 
-    session->authenticate(username);
-    usersByName_[username] = session;
+    session->authenticate(
+        user.id,
+        user.username
+    );
 
     std::cout
         << "User logged in: "
-        << username
+        << user.username
+        << " (user_id="
+        << user.id
+        << ", session_id="
+        << session->sessionId()
+        << ")"
         << std::endl;
 
     return {
@@ -113,40 +126,46 @@ void SessionManager::acceptNext()
                     << "New TCP connection"
                     << std::endl;
 
-                auto session =
-                    std::make_shared<ClientSession>(
-                        std::move(socket),
+auto session =
+    std::make_shared<ClientSession>(
+        std::move(socket),
 
-                        [this](SessionPtr readySession)
-                        {
-                            handleSessionReady(
-                                std::move(readySession)
-                            );
-                        },
+        [this](SessionPtr readySession)
+        {
+            handleSessionReady(
+                std::move(readySession)
+            );
+        },
 
-                        [this](
-                            SessionPtr messageSession,
-                            const std::string& message)
-                        {
-                            if (onMessage_)
-                            {
-                                onMessage_(
-                                    std::move(
-                                        messageSession
-                                    ),
-                                    message
-                                );
-                            }
-                        },
+        [this](
+            SessionPtr messageSession,
+            const std::string& message)
+        {
+            if (onMessage_)
+            {
+                onMessage_(
+                    std::move(
+                        messageSession
+                    ),
+                    message
+                );
+            }
+        },
 
-                        [this](SessionPtr closedSession)
-                        {
-                            handleSessionClosed(
-                                std::move(closedSession)
-                            );
-                        }
-                    );
+        [this](SessionPtr refreshSession)
+        {
+            return refreshAuthentication(
+                refreshSession
+            );
+        },
 
+        [this](SessionPtr closedSession)
+        {
+            handleSessionClosed(
+                std::move(closedSession)
+            );
+        }
+    );
                 session->start();
             }
             else
@@ -166,24 +185,32 @@ void SessionManager::handleSessionReady(
     SessionPtr session)
 {
     if (!session)
+    {
         return;
+    }
 
     sessions_.insert(session);
 
     if (onReady_)
+    {
         onReady_(std::move(session));
+    }
 }
 
 void SessionManager::handleSessionClosed(
     SessionPtr session)
 {
     if (!session)
+    {
         return;
+    }
 
-    releaseUsername(session);
+    releaseAuthentication(session);
 
     if (onClosed_)
+    {
         onClosed_(session);
+    }
 
     sessions_.erase(session);
 
@@ -191,8 +218,47 @@ void SessionManager::handleSessionClosed(
         << "Client disconnected"
         << std::endl;
 }
+bool SessionManager::refreshAuthentication(
+    const SessionPtr& session)
+{
+    if (
+        !session ||
+        !session->isAuthenticated()
+    )
+    {
+        return false;
+    }
 
-void SessionManager::releaseUsername(
+    const std::optional<UserId> userId =
+        session->userId();
+
+    if (!userId.has_value())
+    {
+        return false;
+    }
+
+    const bool refreshed =
+        sessionStore_.refresh(
+            *userId,
+            session->sessionId()
+        );
+
+    if (!refreshed)
+    {
+        std::cerr
+            << "Failed to refresh session for user: "
+            << session->username()
+            << " (user_id="
+            << *userId
+            << ", session_id="
+            << session->sessionId()
+            << ")"
+            << std::endl;
+    }
+
+    return refreshed;
+}
+void SessionManager::releaseAuthentication(
     const SessionPtr& session)
 {
     if (
@@ -203,32 +269,24 @@ void SessionManager::releaseUsername(
         return;
     }
 
+    const std::optional<UserId> userId =
+        session->userId();
+
     const std::string username =
         session->username();
 
-    const auto found =
-        usersByName_.find(username);
-
-    if (found != usersByName_.end())
+    if (userId.has_value())
     {
-        const std::shared_ptr<ClientSession>
-            registeredSession =
-                found->second.lock();
-
-        if (
-            !registeredSession ||
-            registeredSession.get() ==
-                session.get()
-        )
-        {
-            usersByName_.erase(found);
-        }
+        sessionStore_.release(
+            *userId,
+            session->sessionId()
+        );
     }
 
     session->clearAuthentication();
 
     std::cout
-        << "Username released: "
+        << "Session released for user: "
         << username
         << std::endl;
 }

@@ -13,16 +13,19 @@
 GameLoop::GameLoop(
     boost::asio::io_context& ioContext,
     GameController& controller,
-    BroadcastHandler broadcastHandler
+    BroadcastHandler broadcastHandler,
+    GameOverHandler gameOverHandler
 )
     : controller_(controller),
       broadcastHandler_(
           std::move(broadcastHandler)
       ),
+      gameOverHandler_(
+          std::move(gameOverHandler)
+      ),
       timer_(ioContext)
 {
 }
-
 void GameLoop::start()
 {
     if (running_)
@@ -83,7 +86,9 @@ void GameLoop::scheduleNextTick()
 void GameLoop::tick()
 {
     if (!running_)
+    {
         return;
+    }
 
     controller_.handleWait(TICK_MS);
 
@@ -91,13 +96,28 @@ void GameLoop::tick()
         controller_.getSnapshot();
 
     const std::string serializedSnapshot =
-        JsonProtocol::serializeSnapshot(snapshot);
+        JsonProtocol::serializeSnapshot(
+            snapshot
+        );
 
     if (broadcastHandler_)
     {
         broadcastHandler_(
             serializedSnapshot
         );
+    }
+
+    if (
+        snapshot.gameOver &&
+        !gameOverHandled_
+    )
+    {
+        gameOverHandled_ = true;
+
+        if (gameOverHandler_)
+        {
+            gameOverHandler_(snapshot);
+        }
     }
 
     scheduleNextTick();

@@ -19,6 +19,12 @@ public:
 
     void processPendingMessages();
 
+    [[nodiscard]]
+    bool hasLoginResult() const;
+
+    [[nodiscard]]
+    bool loginSucceeded() const;
+
 private:
     void processControlMessage(
         const std::string& message
@@ -36,5 +42,6 @@ private:
     SharedState& sharedState_;
     ChessRenderer& renderer_;
 
+    std::optional<bool> loginSucceeded_;
     std::optional<GameSnapshot> lastSnapshot_;
 };

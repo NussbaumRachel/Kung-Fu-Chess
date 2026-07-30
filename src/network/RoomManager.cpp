@@ -1,6 +1,7 @@
 #include "network/RoomManager.hpp"
 #include "network/ClientSession.hpp"
 #include "network/JsonProtocol.hpp"
+#include "game_result/IGameResultRepository.hpp"
 #include "network/Room.hpp"
 #include <cctype>
 #include <cstddef>
@@ -12,9 +13,13 @@
 RoomManager::RoomManager(
     boost::asio::io_context& ioContext,
     Board boardTemplate,
-    PieceSpeedConfig speedConfig
+    PieceSpeedConfig speedConfig,
+    IGameResultRepository& gameResultRepository
 )
     : ioContext_(ioContext),
+      gameResultRepository_(
+          gameResultRepository
+      ),
       boardTemplate_(
           std::move(boardTemplate)
       ),
@@ -29,7 +34,6 @@ RoomManager::RoomManager(
         );
     }
 }
-
 RoomManager::~RoomManager() = default;
 
 void RoomManager::start()
@@ -329,9 +333,9 @@ bool RoomManager::createRoomInternal(
             roomId,
             ioContext_,
             boardTemplate_.clone(),
-            speedConfig_
+            speedConfig_,
+            gameResultRepository_
         );
-
     if (started_)
     {
         room->start();

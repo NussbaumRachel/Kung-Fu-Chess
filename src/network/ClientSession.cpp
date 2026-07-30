@@ -1,23 +1,36 @@
 #include "network/ClientSession.hpp"
 
-#include <boost/beast/core/buffers_to_string.hpp>
-
+#include <boost/asio/error.hpp>
+#include <exception>
+#include <chrono>
+#include <iomanip>
 #include <iostream>
-#include <memory>
-#include <mutex>
-#include <string>
+#include <random>
+#include <sstream>
 #include <utility>
+
+namespace
+{
+    constexpr auto SESSION_REFRESH_INTERVAL =
+        std::chrono::seconds(30);
+}
 
 ClientSession::ClientSession(
     boost::asio::ip::tcp::socket socket,
     ReadyHandler onReady,
     MessageHandler onMessage,
+    RefreshHandler onRefresh,
     ClosedHandler onClosed
 )
     : ws_(std::move(socket)),
+      sessionRefreshTimer_(
+          ws_.get_executor()
+      ),
       onReady_(std::move(onReady)),
       onMessage_(std::move(onMessage)),
-      onClosed_(std::move(onClosed))
+      onRefresh_(std::move(onRefresh)),
+      onClosed_(std::move(onClosed)),
+      sessionId_(generateSessionId())
 {
 }
 
@@ -49,7 +62,9 @@ void ClientSession::send(
     }
 
     if (shouldStartWriting)
+    {
         writeNext();
+    }
 }
 
 void ClientSession::setRole(PlayerRole role)
@@ -61,28 +76,79 @@ PlayerRole ClientSession::role() const
 {
     return role_;
 }
+
 void ClientSession::authenticate(
+    UserId userId,
     std::string username)
 {
+    userId_ = userId;
     username_ = std::move(username);
-    authenticated_ = true;
+
+    startSessionRefresh();
 }
 
 void ClientSession::clearAuthentication()
 {
+    cancelSessionRefresh();
+
+    userId_.reset();
     username_.clear();
-    authenticated_ = false;
 }
 
 bool ClientSession::isAuthenticated() const
 {
-    return authenticated_;
+    return userId_.has_value();
 }
 
-const std::string& ClientSession::username() const
+std::optional<UserId>
+ClientSession::userId() const
+{
+    return userId_;
+}
+
+const std::string&
+ClientSession::username() const
 {
     return username_;
 }
+
+const std::string&
+ClientSession::sessionId() const
+{
+    return sessionId_;
+}
+
+std::string ClientSession::generateSessionId()
+{
+    std::random_device randomDevice;
+
+    std::mt19937_64 generator(
+        randomDevice()
+    );
+
+    std::uniform_int_distribution<
+        unsigned long long
+    > distribution;
+
+    const unsigned long long first =
+        distribution(generator);
+
+    const unsigned long long second =
+        distribution(generator);
+
+    std::ostringstream stream;
+
+    stream
+        << std::hex
+        << std::setfill('0')
+        << std::setw(16)
+        << first
+        << std::setw(16)
+        << second;
+
+    return stream.str();
+}
+
 void ClientSession::doHandshake()
 {
     const auto self = shared_from_this();
@@ -107,7 +173,9 @@ void ClientSession::doHandshake()
                 << std::endl;
 
             if (self->onReady_)
+            {
                 self->onReady_(self);
+            }
 
             self->read();
         }
@@ -228,22 +296,146 @@ void ClientSession::writeNext()
                     !self->writeQueue_.empty();
 
                 if (!hasMoreMessages)
+                {
                     self->writing_ = false;
+                }
             }
 
             if (hasMoreMessages)
+            {
                 self->writeNext();
+            }
         }
     );
 }
 
+void ClientSession::startSessionRefresh()
+{
+    if (
+        refreshStarted_ ||
+        !isAuthenticated()
+    )
+    {
+        return;
+    }
+
+    refreshStarted_ = true;
+
+    sessionRefreshTimer_.expires_after(
+        SESSION_REFRESH_INTERVAL
+    );
+
+    const auto self = shared_from_this();
+
+    sessionRefreshTimer_.async_wait(
+        [self](
+            const boost::system::error_code& error)
+        {
+            self->refreshStarted_ = false;
+
+            if (
+                error ==
+                boost::asio::error::operation_aborted
+            )
+            {
+                return;
+            }
+
+            if (error)
+            {
+                std::cerr
+                    << "Session refresh timer failed: "
+                    << error.message()
+                    << std::endl;
+
+                self->notifyClosed();
+                return;
+            }
+
+            if (
+                !self->isAuthenticated() ||
+                !self->onRefresh_
+            )
+            {
+                return;
+            }
+
+            bool refreshed = false;
+
+            try
+            {
+                refreshed =
+                    self->onRefresh_(self);
+            }
+            catch (const std::exception& exception)
+            {
+                std::cerr
+                    << "Session refresh failed with exception"
+                    << " for session_id="
+                    << self->sessionId_
+                    << ": "
+                    << exception.what()
+                    << std::endl;
+
+                self->notifyClosed();
+                return;
+            }
+            catch (...)
+            {
+                std::cerr
+                    << "Session refresh failed with unknown exception"
+                    << " for session_id="
+                    << self->sessionId_
+                    << std::endl;
+
+                self->notifyClosed();
+                return;
+            }
+
+            if (!refreshed)
+            {
+                std::cerr
+                    << "Session refresh rejected for session_id="
+                    << self->sessionId_
+                    << std::endl;
+
+                self->notifyClosed();
+                return;
+            }
+
+            self->startSessionRefresh();
+        }
+    );
+}
+void ClientSession::cancelSessionRefresh()
+{
+    refreshStarted_ = false;
+
+    try
+    {
+        sessionRefreshTimer_.cancel();
+    }
+    catch (const boost::system::system_error& exception)
+    {
+        std::cerr
+            << "Failed to cancel session refresh timer: "
+            << exception.what()
+            << std::endl;
+    }
+}
 void ClientSession::notifyClosed()
 {
     if (closedNotified_)
+    {
         return;
+    }
 
     closedNotified_ = true;
 
+    cancelSessionRefresh();
+
     if (onClosed_)
+    {
         onClosed_(shared_from_this());
+    }
 }

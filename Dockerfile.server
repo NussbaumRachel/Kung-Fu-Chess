@@ -12,6 +12,8 @@ RUN apt-get update && apt-get install -y --no-install-recommends \
     cmake \
     ca-certificates \
     libboost-system-dev \
+    libpqxx-dev \
+    libhiredis-dev \
     nlohmann-json3-dev \
     && update-ca-certificates \
     && rm -rf /var/lib/apt/lists/*
@@ -39,6 +41,8 @@ ENV DEBIAN_FRONTEND=noninteractive
 
 RUN apt-get update && apt-get install -y --no-install-recommends \
     libboost-system1.83.0 \
+    libpqxx-7.8t64 \
+    libhiredis-dev \
     ca-certificates \
     && update-ca-certificates \
     && rm -rf /var/lib/apt/lists/*
@@ -52,7 +56,9 @@ COPY --from=builder \
 COPY --from=builder \
     /source/demo/assets \
     /app/assets
-    
+
+RUN chmod +x /app/kungfuchess_server
+
 EXPOSE 8080
 
 CMD ["/app/kungfuchess_server", "/app/assets"]

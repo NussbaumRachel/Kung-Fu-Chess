@@ -11,8 +11,10 @@
 #include <cstdint>
 #include <memory>
 #include <string>
-
+class IGameResultRepository;
 class ClientSession;
+class ISessionStore;
+class IUserRepository;
 
 class GameServer
 {
@@ -20,9 +22,11 @@ public:
     GameServer(
         std::uint16_t port,
         Board boardTemplate,
-        PieceSpeedConfig speedConfig
+        PieceSpeedConfig speedConfig,
+        IUserRepository& userRepository,
+        ISessionStore& sessionStore,
+        IGameResultRepository& gameResultRepository
     );
-
     void run();
 
 private:
@@ -40,9 +44,6 @@ private:
     );
 
 private:
-    /*
-     * סדר הבנייה הוא סדר ההכרזה.
-     */
     boost::asio::io_context ioContext_;
 
     SessionManager sessionManager_;

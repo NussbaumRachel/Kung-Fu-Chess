@@ -1,0 +1,5 @@
+if(EXISTS "C:/Kung-Fu-Chess/build-clean/chess_tests_e3b0c442_RelWithDebInfo_tests.cmake")
+  include("C:/Kung-Fu-Chess/build-clean/chess_tests_e3b0c442_RelWithDebInfo_tests.cmake")
+else()
+  add_test(chess_tests_NOT_BUILT chess_tests_NOT_BUILT)
+endif()

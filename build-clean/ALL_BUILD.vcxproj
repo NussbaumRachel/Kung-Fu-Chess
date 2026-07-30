@@ -1,0 +1,213 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<Project DefaultTargets="Build" ToolsVersion="18.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <PropertyGroup>
+    <PreferredToolArchitecture>x64</PreferredToolArchitecture>
+  </PropertyGroup>
+  <PropertyGroup>
+    <ResolveNugetPackages>false</ResolveNugetPackages>
+  </PropertyGroup>
+  <ItemGroup Label="ProjectConfigurations">
+    <ProjectConfiguration Include="Debug|x64">
+      <Configuration>Debug</Configuration>
+      <Platform>x64</Platform>
+    </ProjectConfiguration>
+    <ProjectConfiguration Include="Release|x64">
+      <Configuration>Release</Configuration>
+      <Platform>x64</Platform>
+    </ProjectConfiguration>
+    <ProjectConfiguration Include="MinSizeRel|x64">
+      <Configuration>MinSizeRel</Configuration>
+      <Platform>x64</Platform>
+    </ProjectConfiguration>
+    <ProjectConfiguration Include="RelWithDebInfo|x64">
+      <Configuration>RelWithDebInfo</Configuration>
+      <Platform>x64</Platform>
+    </ProjectConfiguration>
+  </ItemGroup>
+  <PropertyGroup Label="Globals">
+    <ProjectGuid>{91E041E6-30A2-3C19-8D20-BE91A86C13C8}</ProjectGuid>
+    <Keyword>Win32Proj</Keyword>
+    <WindowsTargetPlatformVersion>10.0.22621.0</WindowsTargetPlatformVersion>
+    <Platform>x64</Platform>
+    <ProjectName>ALL_BUILD</ProjectName>
+    <VCProjectUpgraderObjectName>NoUpgrade</VCProjectUpgraderObjectName>
+  </PropertyGroup>
+  <Import Project="$(VCTargetsPath)\Microsoft.Cpp.Default.props" />
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|x64'" Label="Configuration">
+    <ConfigurationType>Utility</ConfigurationType>
+    <CharacterSet>MultiByte</CharacterSet>
+    <PlatformToolset>v145</PlatformToolset>
+  </PropertyGroup>
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|x64'" Label="Configuration">
+    <ConfigurationType>Utility</ConfigurationType>
+    <CharacterSet>MultiByte</CharacterSet>
+    <PlatformToolset>v145</PlatformToolset>
+  </PropertyGroup>
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='MinSizeRel|x64'" Label="Configuration">
+    <ConfigurationType>Utility</ConfigurationType>
+    <CharacterSet>MultiByte</CharacterSet>
+    <PlatformToolset>v145</PlatformToolset>
+  </PropertyGroup>
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='RelWithDebInfo|x64'" Label="Configuration">
+    <ConfigurationType>Utility</ConfigurationType>
+    <CharacterSet>MultiByte</CharacterSet>
+    <PlatformToolset>v145</PlatformToolset>
+  </PropertyGroup>
+  <Import Project="$(VCTargetsPath)\Microsoft.Cpp.props" />
+  <ImportGroup Label="ExtensionSettings">
+  </ImportGroup>
+  <ImportGroup Label="PropertySheets">
+    <Import Project="$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props" Condition="exists('$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props')" Label="LocalAppDataPlatform" />
+  </ImportGroup>
+  <PropertyGroup Label="UserMacros" />
+  <PropertyGroup>
+    <_ProjectFileVersion>10.0.20506.1</_ProjectFileVersion>
+    <IntDir Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">$(Platform)\$(Configuration)\$(ProjectName)\</IntDir>
+    <IntDir Condition="'$(Configuration)|$(Platform)'=='Release|x64'">$(Platform)\$(Configuration)\$(ProjectName)\</IntDir>
+    <IntDir Condition="'$(Configuration)|$(Platform)'=='MinSizeRel|x64'">$(Platform)\$(Configuration)\$(ProjectName)\</IntDir>
+    <IntDir Condition="'$(Configuration)|$(Platform)'=='RelWithDebInfo|x64'">$(Platform)\$(Configuration)\$(ProjectName)\</IntDir>
+  </PropertyGroup>
+  <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">
+    <Midl>
+      <AdditionalIncludeDirectories>%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <OutputDirectory>$(ProjectDir)/$(IntDir)</OutputDirectory>
+      <HeaderFileName>%(Filename).h</HeaderFileName>
+      <TypeLibraryName>%(Filename).tlb</TypeLibraryName>
+      <InterfaceIdentifierFileName>%(Filename)_i.c</InterfaceIdentifierFileName>
+      <ProxyFileName>%(Filename)_p.c</ProxyFileName>
+    </Midl>
+  </ItemDefinitionGroup>
+  <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Release|x64'">
+    <Midl>
+      <AdditionalIncludeDirectories>%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <OutputDirectory>$(ProjectDir)/$(IntDir)</OutputDirectory>
+      <HeaderFileName>%(Filename).h</HeaderFileName>
+      <TypeLibraryName>%(Filename).tlb</TypeLibraryName>
+      <InterfaceIdentifierFileName>%(Filename)_i.c</InterfaceIdentifierFileName>
+      <ProxyFileName>%(Filename)_p.c</ProxyFileName>
+    </Midl>
+  </ItemDefinitionGroup>
+  <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='MinSizeRel|x64'">
+    <Midl>
+      <AdditionalIncludeDirectories>%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <OutputDirectory>$(ProjectDir)/$(IntDir)</OutputDirectory>
+      <HeaderFileName>%(Filename).h</HeaderFileName>
+      <TypeLibraryName>%(Filename).tlb</TypeLibraryName>
+      <InterfaceIdentifierFileName>%(Filename)_i.c</InterfaceIdentifierFileName>
+      <ProxyFileName>%(Filename)_p.c</ProxyFileName>
+    </Midl>
+  </ItemDefinitionGroup>
+  <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='RelWithDebInfo|x64'">
+    <Midl>
+      <AdditionalIncludeDirectories>%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <OutputDirectory>$(ProjectDir)/$(IntDir)</OutputDirectory>
+      <HeaderFileName>%(Filename).h</HeaderFileName>
+      <TypeLibraryName>%(Filename).tlb</TypeLibraryName>
+      <InterfaceIdentifierFileName>%(Filename)_i.c</InterfaceIdentifierFileName>
+      <ProxyFileName>%(Filename)_p.c</ProxyFileName>
+    </Midl>
+  </ItemDefinitionGroup>
+  <ItemGroup>
+    <CustomBuild Include="C:\Kung-Fu-Chess\CMakeLists.txt">
+      <UseUtf8Encoding>Always</UseUtf8Encoding>
+      <Message Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">Building Custom Rule C:/Kung-Fu-Chess/CMakeLists.txt</Message>
+      <Command Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">setlocal
+"C:\Program Files\CMake\bin\cmake.exe" -SC:/Kung-Fu-Chess -BC:/Kung-Fu-Chess/build-clean --check-stamp-file C:/Kung-Fu-Chess/build-clean/CMakeFiles/generate.stamp
+if %errorlevel% neq 0 goto :cmEnd
+:cmEnd
+endlocal &amp; call :cmErrorLevel %errorlevel% &amp; goto :cmDone
+:cmErrorLevel
+exit /b %1
+:cmDone
+if %errorlevel% neq 0 goto :VCEnd</Command>
+      <AdditionalInputs Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">C:\Kung-Fu-Chess\build-clean\CMakeFiles\4.4.0-rc3\CMakeCXXCompiler.cmake;C:\Kung-Fu-Chess\build-clean\CMakeFiles\4.4.0-rc3\CMakeRCCompiler.cmake;C:\Kung-Fu-Chess\build-clean\CMakeFiles\4.4.0-rc3\CMakeSystem.cmake;C:\Program Files\CMake\share\cmake-4.4\Modules\CMakeCXXInformation.cmake;C:\Program Files\CMake\share\cmake-4.4\Modules\CMakeCommonLanguageInclude.cmake;C:\Program Files\CMake\share\cmake-4.4\Modules\CMakeDependentOption.cmake;C:\Program Files\CMake\share\cmake-4.4\Modules\CMakeFindDependencyMacro.cmake;C:\Program Files\CMake\share\cmake-4.4\Modules\CMakeGenericSystem.cmake;C:\Program Files\CMake\share\cmake-4.4\Modules\CMakeInitializeConfigs.cmake;C:\Program Files\CMake\share\cmake-4.4\Modules\CMakeLanguageInformation.cmake;C:\Program Files\CMake\share\cmake-4.4\Modules\CMakeRCInformation.cmake;C:\Program Files\CMake\share\cmake-4.4\Modules\CMakeSystemSpecificInformation.cmake;C:\Program Files\CMake\share\cmake-4.4\Modules\CMakeSystemSpecificInitialize.cmake;C:\Program Files\CMake\share\cmake-4.4\Modules\Compiler\CMakeCommonCompilerMacros.cmake;C:\Program Files\CMake\share\cmake-4.4\Modules\Compiler\MSVC-CXX.cmake;C:\Program Files\CMake\share\cmake-4.4\Modules\Compiler\MSVC.cmake;C:\Program Files\CMake\share\cmake-4.4\Modules\GoogleTest.cmake;C:\Program Files\CMake\share\cmake-4.4\Modules\Internal\CMakeCXXLinkerInformation.cmake;C:\Program Files\CMake\share\cmake-4.4\Modules\Internal\CMakeCommonLinkerInformation.cmake;C:\Program Files\CMake\share\cmake-4.4\Modules\Linker\MSVC-CXX.cmake;C:\Program Files\CMake\share\cmake-4.4\Modules\Linker\MSVC.cmake;C:\Program Files\CMake\share\cmake-4.4\Modules\Platform\Linker\Windows-MSVC-CXX.cmake;C:\Program Files\CMake\share\cmake-4.4\Modules\Platform\Linker\Windows-MSVC.cmake;C:\Program Files\CMake\share\cmake-4.4\Modules\Platform\Windows-Initialize.cmake;C:\Program Files\CMake\share\cmake-4.4\Modules\Platform\Windows-MSVC-CXX.cmake;C:\Program Files\CMake\share\cmake-4.4\Modules\Platform\Windows-MSVC.cmake;C:\Program Files\CMake\share\cmake-4.4\Modules\Platform\Windows.cmake;C:\Program Files\CMake\share\cmake-4.4\Modules\Platform\WindowsPaths.cmake;C:\vcpkg\installed\x64-windows\share\boost\BoostConfig.cmake;C:\vcpkg\installed\x64-windows\share\boost\BoostConfigVersion.cmake;C:\vcpkg\installed\x64-windows\share\boost\vcpkg-cmake-wrapper.cmake;C:\vcpkg\installed\x64-windows\share\boost_assert\boost_assert-config-version.cmake;C:\vcpkg\installed\x64-windows\share\boost_assert\boost_assert-config.cmake;C:\vcpkg\installed\x64-windows\share\boost_assert\boost_assert-targets.cmake;C:\vcpkg\installed\x64-windows\share\boost_compat\boost_compat-config-version.cmake;C:\vcpkg\installed\x64-windows\share\boost_compat\boost_compat-config.cmake;C:\vcpkg\installed\x64-windows\share\boost_compat\boost_compat-targets.cmake;C:\vcpkg\installed\x64-windows\share\boost_config\boost_config-config-version.cmake;C:\vcpkg\installed\x64-windows\share\boost_config\boost_config-config.cmake;C:\vcpkg\installed\x64-windows\share\boost_config\boost_config-targets.cmake;C:\vcpkg\installed\x64-windows\share\boost_headers\boost_headers-config-version.cmake;C:\vcpkg\installed\x64-windows\share\boost_headers\boost_headers-config.cmake;C:\vcpkg\installed\x64-windows\share\boost_headers\boost_headers-targets.cmake;C:\vcpkg\installed\x64-windows\share\boost_mp11\boost_mp11-config-version.cmake;C:\vcpkg\installed\x64-windows\share\boost_mp11\boost_mp11-config.cmake;C:\vcpkg\installed\x64-windows\share\boost_mp11\boost_mp11-targets.cmake;C:\vcpkg\installed\x64-windows\share\boost_predef\boost_predef-config-version.cmake;C:\vcpkg\installed\x64-windows\share\boost_predef\boost_predef-config.cmake;C:\vcpkg\installed\x64-windows\share\boost_predef\boost_predef-targets.cmake;C:\vcpkg\installed\x64-windows\share\boost_system\boost_system-config-version.cmake;C:\vcpkg\installed\x64-windows\share\boost_system\boost_system-config.cmake;C:\vcpkg\installed\x64-windows\share\boost_system\boost_system-targets.cmake;C:\vcpkg\installed\x64-windows\share\boost_throw_exception\boost_throw_exception-config-version.cmake;C:\vcpkg\installed\x64-windows\share\boost_throw_exception\boost_throw_exception-config.cmake;C:\vcpkg\installed\x64-windows\share\boost_throw_exception\boost_throw_exception-targets.cmake;C:\vcpkg\installed\x64-windows\share\boost_variant2\boost_variant2-config-version.cmake;C:\vcpkg\installed\x64-windows\share\boost_variant2\boost_variant2-config.cmake;C:\vcpkg\installed\x64-windows\share\boost_variant2\boost_variant2-targets.cmake;C:\vcpkg\installed\x64-windows\share\boost_winapi\boost_winapi-config-version.cmake;C:\vcpkg\installed\x64-windows\share\boost_winapi\boost_winapi-config.cmake;C:\vcpkg\installed\x64-windows\share\boost_winapi\boost_winapi-targets.cmake;C:\vcpkg\scripts\buildsystems\vcpkg.cmake;%(AdditionalInputs)</AdditionalInputs>
+      <Outputs Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">C:\Kung-Fu-Chess\build-clean\CMakeFiles\generate.stamp</Outputs>
+      <LinkObjects Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">false</LinkObjects>
+      <Message Condition="'$(Configuration)|$(Platform)'=='Release|x64'">Building Custom Rule C:/Kung-Fu-Chess/CMakeLists.txt</Message>
+      <Command Condition="'$(Configuration)|$(Platform)'=='Release|x64'">setlocal
+"C:\Program Files\CMake\bin\cmake.exe" -SC:/Kung-Fu-Chess -BC:/Kung-Fu-Chess/build-clean --check-stamp-file C:/Kung-Fu-Chess/build-clean/CMakeFiles/generate.stamp
+if %errorlevel% neq 0 goto :cmEnd
+:cmEnd
+endlocal &amp; call :cmErrorLevel %errorlevel% &amp; goto :cmDone
+:cmErrorLevel
+exit /b %1
+:cmDone
+if %errorlevel% neq 0 goto :VCEnd</Command>
+      <AdditionalInputs Condition="'$(Configuration)|$(Platform)'=='Release|x64'">C:\Kung-Fu-Chess\build-clean\CMakeFiles\4.4.0-rc3\CMakeCXXCompiler.cmake;C:\Kung-Fu-Chess\build-clean\CMakeFiles\4.4.0-rc3\CMakeRCCompiler.cmake;C:\Kung-Fu-Chess\build-clean\CMakeFiles\4.4.0-rc3\CMakeSystem.cmake;C:\Program Files\CMake\share\cmake-4.4\Modules\CMakeCXXInformation.cmake;C:\Program Files\CMake\share\cmake-4.4\Modules\CMakeCommonLanguageInclude.cmake;C:\Program Files\CMake\share\cmake-4.4\Modules\CMakeDependentOption.cmake;C:\Program Files\CMake\share\cmake-4.4\Modules\CMakeFindDependencyMacro.cmake;C:\Program Files\CMake\share\cmake-4.4\Modules\CMakeGenericSystem.cmake;C:\Program Files\CMake\share\cmake-4.4\Modules\CMakeInitializeConfigs.cmake;C:\Program Files\CMake\share\cmake-4.4\Modules\CMakeLanguageInformation.cmake;C:\Program Files\CMake\share\cmake-4.4\Modules\CMakeRCInformation.cmake;C:\Program Files\CMake\share\cmake-4.4\Modules\CMakeSystemSpecificInformation.cmake;C:\Program Files\CMake\share\cmake-4.4\Modules\CMakeSystemSpecificInitialize.cmake;C:\Program Files\CMake\share\cmake-4.4\Modules\Compiler\CMakeCommonCompilerMacros.cmake;C:\Program Files\CMake\share\cmake-4.4\Modules\Compiler\MSVC-CXX.cmake;C:\Program Files\CMake\share\cmake-4.4\Modules\Compiler\MSVC.cmake;C:\Program Files\CMake\share\cmake-4.4\Modules\GoogleTest.cmake;C:\Program Files\CMake\share\cmake-4.4\Modules\Internal\CMakeCXXLinkerInformation.cmake;C:\Program Files\CMake\share\cmake-4.4\Modules\Internal\CMakeCommonLinkerInformation.cmake;C:\Program Files\CMake\share\cmake-4.4\Modules\Linker\MSVC-CXX.cmake;C:\Program Files\CMake\share\cmake-4.4\Modules\Linker\MSVC.cmake;C:\Program Files\CMake\share\cmake-4.4\Modules\Platform\Linker\Windows-MSVC-CXX.cmake;C:\Program Files\CMake\share\cmake-4.4\Modules\Platform\Linker\Windows-MSVC.cmake;C:\Program Files\CMake\share\cmake-4.4\Modules\Platform\Windows-Initialize.cmake;C:\Program Files\CMake\share\cmake-4.4\Modules\Platform\Windows-MSVC-CXX.cmake;C:\Program Files\CMake\share\cmake-4.4\Modules\Platform\Windows-MSVC.cmake;C:\Program Files\CMake\share\cmake-4.4\Modules\Platform\Windows.cmake;C:\Program Files\CMake\share\cmake-4.4\Modules\Platform\WindowsPaths.cmake;C:\vcpkg\installed\x64-windows\share\boost\BoostConfig.cmake;C:\vcpkg\installed\x64-windows\share\boost\BoostConfigVersion.cmake;C:\vcpkg\installed\x64-windows\share\boost\vcpkg-cmake-wrapper.cmake;C:\vcpkg\installed\x64-windows\share\boost_assert\boost_assert-config-version.cmake;C:\vcpkg\installed\x64-windows\share\boost_assert\boost_assert-config.cmake;C:\vcpkg\installed\x64-windows\share\boost_assert\boost_assert-targets.cmake;C:\vcpkg\installed\x64-windows\share\boost_compat\boost_compat-config-version.cmake;C:\vcpkg\installed\x64-windows\share\boost_compat\boost_compat-config.cmake;C:\vcpkg\installed\x64-windows\share\boost_compat\boost_compat-targets.cmake;C:\vcpkg\installed\x64-windows\share\boost_config\boost_config-config-version.cmake;C:\vcpkg\installed\x64-windows\share\boost_config\boost_config-config.cmake;C:\vcpkg\installed\x64-windows\share\boost_config\boost_config-targets.cmake;C:\vcpkg\installed\x64-windows\share\boost_headers\boost_headers-config-version.cmake;C:\vcpkg\installed\x64-windows\share\boost_headers\boost_headers-config.cmake;C:\vcpkg\installed\x64-windows\share\boost_headers\boost_headers-targets.cmake;C:\vcpkg\installed\x64-windows\share\boost_mp11\boost_mp11-config-version.cmake;C:\vcpkg\installed\x64-windows\share\boost_mp11\boost_mp11-config.cmake;C:\vcpkg\installed\x64-windows\share\boost_mp11\boost_mp11-targets.cmake;C:\vcpkg\installed\x64-windows\share\boost_predef\boost_predef-config-version.cmake;C:\vcpkg\installed\x64-windows\share\boost_predef\boost_predef-config.cmake;C:\vcpkg\installed\x64-windows\share\boost_predef\boost_predef-targets.cmake;C:\vcpkg\installed\x64-windows\share\boost_system\boost_system-config-version.cmake;C:\vcpkg\installed\x64-windows\share\boost_system\boost_system-config.cmake;C:\vcpkg\installed\x64-windows\share\boost_system\boost_system-targets.cmake;C:\vcpkg\installed\x64-windows\share\boost_throw_exception\boost_throw_exception-config-version.cmake;C:\vcpkg\installed\x64-windows\share\boost_throw_exception\boost_throw_exception-config.cmake;C:\vcpkg\installed\x64-windows\share\boost_throw_exception\boost_throw_exception-targets.cmake;C:\vcpkg\installed\x64-windows\share\boost_variant2\boost_variant2-config-version.cmake;C:\vcpkg\installed\x64-windows\share\boost_variant2\boost_variant2-config.cmake;C:\vcpkg\installed\x64-windows\share\boost_variant2\boost_variant2-targets.cmake;C:\vcpkg\installed\x64-windows\share\boost_winapi\boost_winapi-config-version.cmake;C:\vcpkg\installed\x64-windows\share\boost_winapi\boost_winapi-config.cmake;C:\vcpkg\installed\x64-windows\share\boost_winapi\boost_winapi-targets.cmake;C:\vcpkg\scripts\buildsystems\vcpkg.cmake;%(AdditionalInputs)</AdditionalInputs>
+      <Outputs Condition="'$(Configuration)|$(Platform)'=='Release|x64'">C:\Kung-Fu-Chess\build-clean\CMakeFiles\generate.stamp</Outputs>
+      <LinkObjects Condition="'$(Configuration)|$(Platform)'=='Release|x64'">false</LinkObjects>
+      <Message Condition="'$(Configuration)|$(Platform)'=='MinSizeRel|x64'">Building Custom Rule C:/Kung-Fu-Chess/CMakeLists.txt</Message>
+      <Command Condition="'$(Configuration)|$(Platform)'=='MinSizeRel|x64'">setlocal
+"C:\Program Files\CMake\bin\cmake.exe" -SC:/Kung-Fu-Chess -BC:/Kung-Fu-Chess/build-clean --check-stamp-file C:/Kung-Fu-Chess/build-clean/CMakeFiles/generate.stamp
+if %errorlevel% neq 0 goto :cmEnd
+:cmEnd
+endlocal &amp; call :cmErrorLevel %errorlevel% &amp; goto :cmDone
+:cmErrorLevel
+exit /b %1
+:cmDone
+if %errorlevel% neq 0 goto :VCEnd</Command>
+      <AdditionalInputs Condition="'$(Configuration)|$(Platform)'=='MinSizeRel|x64'">C:\Kung-Fu-Chess\build-clean\CMakeFiles\4.4.0-rc3\CMakeCXXCompiler.cmake;C:\Kung-Fu-Chess\build-clean\CMakeFiles\4.4.0-rc3\CMakeRCCompiler.cmake;C:\Kung-Fu-Chess\build-clean\CMakeFiles\4.4.0-rc3\CMakeSystem.cmake;C:\Program Files\CMake\share\cmake-4.4\Modules\CMakeCXXInformation.cmake;C:\Program Files\CMake\share\cmake-4.4\Modules\CMakeCommonLanguageInclude.cmake;C:\Program Files\CMake\share\cmake-4.4\Modules\CMakeDependentOption.cmake;C:\Program Files\CMake\share\cmake-4.4\Modules\CMakeFindDependencyMacro.cmake;C:\Program Files\CMake\share\cmake-4.4\Modules\CMakeGenericSystem.cmake;C:\Program Files\CMake\share\cmake-4.4\Modules\CMakeInitializeConfigs.cmake;C:\Program Files\CMake\share\cmake-4.4\Modules\CMakeLanguageInformation.cmake;C:\Program Files\CMake\share\cmake-4.4\Modules\CMakeRCInformation.cmake;C:\Program Files\CMake\share\cmake-4.4\Modules\CMakeSystemSpecificInformation.cmake;C:\Program Files\CMake\share\cmake-4.4\Modules\CMakeSystemSpecificInitialize.cmake;C:\Program Files\CMake\share\cmake-4.4\Modules\Compiler\CMakeCommonCompilerMacros.cmake;C:\Program Files\CMake\share\cmake-4.4\Modules\Compiler\MSVC-CXX.cmake;C:\Program Files\CMake\share\cmake-4.4\Modules\Compiler\MSVC.cmake;C:\Program Files\CMake\share\cmake-4.4\Modules\GoogleTest.cmake;C:\Program Files\CMake\share\cmake-4.4\Modules\Internal\CMakeCXXLinkerInformation.cmake;C:\Program Files\CMake\share\cmake-4.4\Modules\Internal\CMakeCommonLinkerInformation.cmake;C:\Program Files\CMake\share\cmake-4.4\Modules\Linker\MSVC-CXX.cmake;C:\Program Files\CMake\share\cmake-4.4\Modules\Linker\MSVC.cmake;C:\Program Files\CMake\share\cmake-4.4\Modules\Platform\Linker\Windows-MSVC-CXX.cmake;C:\Program Files\CMake\share\cmake-4.4\Modules\Platform\Linker\Windows-MSVC.cmake;C:\Program Files\CMake\share\cmake-4.4\Modules\Platform\Windows-Initialize.cmake;C:\Program Files\CMake\share\cmake-4.4\Modules\Platform\Windows-MSVC-CXX.cmake;C:\Program Files\CMake\share\cmake-4.4\Modules\Platform\Windows-MSVC.cmake;C:\Program Files\CMake\share\cmake-4.4\Modules\Platform\Windows.cmake;C:\Program Files\CMake\share\cmake-4.4\Modules\Platform\WindowsPaths.cmake;C:\vcpkg\installed\x64-windows\share\boost\BoostConfig.cmake;C:\vcpkg\installed\x64-windows\share\boost\BoostConfigVersion.cmake;C:\vcpkg\installed\x64-windows\share\boost\vcpkg-cmake-wrapper.cmake;C:\vcpkg\installed\x64-windows\share\boost_assert\boost_assert-config-version.cmake;C:\vcpkg\installed\x64-windows\share\boost_assert\boost_assert-config.cmake;C:\vcpkg\installed\x64-windows\share\boost_assert\boost_assert-targets.cmake;C:\vcpkg\installed\x64-windows\share\boost_compat\boost_compat-config-version.cmake;C:\vcpkg\installed\x64-windows\share\boost_compat\boost_compat-config.cmake;C:\vcpkg\installed\x64-windows\share\boost_compat\boost_compat-targets.cmake;C:\vcpkg\installed\x64-windows\share\boost_config\boost_config-config-version.cmake;C:\vcpkg\installed\x64-windows\share\boost_config\boost_config-config.cmake;C:\vcpkg\installed\x64-windows\share\boost_config\boost_config-targets.cmake;C:\vcpkg\installed\x64-windows\share\boost_headers\boost_headers-config-version.cmake;C:\vcpkg\installed\x64-windows\share\boost_headers\boost_headers-config.cmake;C:\vcpkg\installed\x64-windows\share\boost_headers\boost_headers-targets.cmake;C:\vcpkg\installed\x64-windows\share\boost_mp11\boost_mp11-config-version.cmake;C:\vcpkg\installed\x64-windows\share\boost_mp11\boost_mp11-config.cmake;C:\vcpkg\installed\x64-windows\share\boost_mp11\boost_mp11-targets.cmake;C:\vcpkg\installed\x64-windows\share\boost_predef\boost_predef-config-version.cmake;C:\vcpkg\installed\x64-windows\share\boost_predef\boost_predef-config.cmake;C:\vcpkg\installed\x64-windows\share\boost_predef\boost_predef-targets.cmake;C:\vcpkg\installed\x64-windows\share\boost_system\boost_system-config-version.cmake;C:\vcpkg\installed\x64-windows\share\boost_system\boost_system-config.cmake;C:\vcpkg\installed\x64-windows\share\boost_system\boost_system-targets.cmake;C:\vcpkg\installed\x64-windows\share\boost_throw_exception\boost_throw_exception-config-version.cmake;C:\vcpkg\installed\x64-windows\share\boost_throw_exception\boost_throw_exception-config.cmake;C:\vcpkg\installed\x64-windows\share\boost_throw_exception\boost_throw_exception-targets.cmake;C:\vcpkg\installed\x64-windows\share\boost_variant2\boost_variant2-config-version.cmake;C:\vcpkg\installed\x64-windows\share\boost_variant2\boost_variant2-config.cmake;C:\vcpkg\installed\x64-windows\share\boost_variant2\boost_variant2-targets.cmake;C:\vcpkg\installed\x64-windows\share\boost_winapi\boost_winapi-config-version.cmake;C:\vcpkg\installed\x64-windows\share\boost_winapi\boost_winapi-config.cmake;C:\vcpkg\installed\x64-windows\share\boost_winapi\boost_winapi-targets.cmake;C:\vcpkg\scripts\buildsystems\vcpkg.cmake;%(AdditionalInputs)</AdditionalInputs>
+      <Outputs Condition="'$(Configuration)|$(Platform)'=='MinSizeRel|x64'">C:\Kung-Fu-Chess\build-clean\CMakeFiles\generate.stamp</Outputs>
+      <LinkObjects Condition="'$(Configuration)|$(Platform)'=='MinSizeRel|x64'">false</LinkObjects>
+      <Message Condition="'$(Configuration)|$(Platform)'=='RelWithDebInfo|x64'">Building Custom Rule C:/Kung-Fu-Chess/CMakeLists.txt</Message>
+      <Command Condition="'$(Configuration)|$(Platform)'=='RelWithDebInfo|x64'">setlocal
+"C:\Program Files\CMake\bin\cmake.exe" -SC:/Kung-Fu-Chess -BC:/Kung-Fu-Chess/build-clean --check-stamp-file C:/Kung-Fu-Chess/build-clean/CMakeFiles/generate.stamp
+if %errorlevel% neq 0 goto :cmEnd
+:cmEnd
+endlocal &amp; call :cmErrorLevel %errorlevel% &amp; goto :cmDone
+:cmErrorLevel
+exit /b %1
+:cmDone
+if %errorlevel% neq 0 goto :VCEnd</Command>
+      <AdditionalInputs Condition="'$(Configuration)|$(Platform)'=='RelWithDebInfo|x64'">C:\Kung-Fu-Chess\build-clean\CMakeFiles\4.4.0-rc3\CMakeCXXCompiler.cmake;C:\Kung-Fu-Chess\build-clean\CMakeFiles\4.4.0-rc3\CMakeRCCompiler.cmake;C:\Kung-Fu-Chess\build-clean\CMakeFiles\4.4.0-rc3\CMakeSystem.cmake;C:\Program Files\CMake\share\cmake-4.4\Modules\CMakeCXXInformation.cmake;C:\Program Files\CMake\share\cmake-4.4\Modules\CMakeCommonLanguageInclude.cmake;C:\Program Files\CMake\share\cmake-4.4\Modules\CMakeDependentOption.cmake;C:\Program Files\CMake\share\cmake-4.4\Modules\CMakeFindDependencyMacro.cmake;C:\Program Files\CMake\share\cmake-4.4\Modules\CMakeGenericSystem.cmake;C:\Program Files\CMake\share\cmake-4.4\Modules\CMakeInitializeConfigs.cmake;C:\Program Files\CMake\share\cmake-4.4\Modules\CMakeLanguageInformation.cmake;C:\Program Files\CMake\share\cmake-4.4\Modules\CMakeRCInformation.cmake;C:\Program Files\CMake\share\cmake-4.4\Modules\CMakeSystemSpecificInformation.cmake;C:\Program Files\CMake\share\cmake-4.4\Modules\CMakeSystemSpecificInitialize.cmake;C:\Program Files\CMake\share\cmake-4.4\Modules\Compiler\CMakeCommonCompilerMacros.cmake;C:\Program Files\CMake\share\cmake-4.4\Modules\Compiler\MSVC-CXX.cmake;C:\Program Files\CMake\share\cmake-4.4\Modules\Compiler\MSVC.cmake;C:\Program Files\CMake\share\cmake-4.4\Modules\GoogleTest.cmake;C:\Program Files\CMake\share\cmake-4.4\Modules\Internal\CMakeCXXLinkerInformation.cmake;C:\Program Files\CMake\share\cmake-4.4\Modules\Internal\CMakeCommonLinkerInformation.cmake;C:\Program Files\CMake\share\cmake-4.4\Modules\Linker\MSVC-CXX.cmake;C:\Program Files\CMake\share\cmake-4.4\Modules\Linker\MSVC.cmake;C:\Program Files\CMake\share\cmake-4.4\Modules\Platform\Linker\Windows-MSVC-CXX.cmake;C:\Program Files\CMake\share\cmake-4.4\Modules\Platform\Linker\Windows-MSVC.cmake;C:\Program Files\CMake\share\cmake-4.4\Modules\Platform\Windows-Initialize.cmake;C:\Program Files\CMake\share\cmake-4.4\Modules\Platform\Windows-MSVC-CXX.cmake;C:\Program Files\CMake\share\cmake-4.4\Modules\Platform\Windows-MSVC.cmake;C:\Program Files\CMake\share\cmake-4.4\Modules\Platform\Windows.cmake;C:\Program Files\CMake\share\cmake-4.4\Modules\Platform\WindowsPaths.cmake;C:\vcpkg\installed\x64-windows\share\boost\BoostConfig.cmake;C:\vcpkg\installed\x64-windows\share\boost\BoostConfigVersion.cmake;C:\vcpkg\installed\x64-windows\share\boost\vcpkg-cmake-wrapper.cmake;C:\vcpkg\installed\x64-windows\share\boost_assert\boost_assert-config-version.cmake;C:\vcpkg\installed\x64-windows\share\boost_assert\boost_assert-config.cmake;C:\vcpkg\installed\x64-windows\share\boost_assert\boost_assert-targets.cmake;C:\vcpkg\installed\x64-windows\share\boost_compat\boost_compat-config-version.cmake;C:\vcpkg\installed\x64-windows\share\boost_compat\boost_compat-config.cmake;C:\vcpkg\installed\x64-windows\share\boost_compat\boost_compat-targets.cmake;C:\vcpkg\installed\x64-windows\share\boost_config\boost_config-config-version.cmake;C:\vcpkg\installed\x64-windows\share\boost_config\boost_config-config.cmake;C:\vcpkg\installed\x64-windows\share\boost_config\boost_config-targets.cmake;C:\vcpkg\installed\x64-windows\share\boost_headers\boost_headers-config-version.cmake;C:\vcpkg\installed\x64-windows\share\boost_headers\boost_headers-config.cmake;C:\vcpkg\installed\x64-windows\share\boost_headers\boost_headers-targets.cmake;C:\vcpkg\installed\x64-windows\share\boost_mp11\boost_mp11-config-version.cmake;C:\vcpkg\installed\x64-windows\share\boost_mp11\boost_mp11-config.cmake;C:\vcpkg\installed\x64-windows\share\boost_mp11\boost_mp11-targets.cmake;C:\vcpkg\installed\x64-windows\share\boost_predef\boost_predef-config-version.cmake;C:\vcpkg\installed\x64-windows\share\boost_predef\boost_predef-config.cmake;C:\vcpkg\installed\x64-windows\share\boost_predef\boost_predef-targets.cmake;C:\vcpkg\installed\x64-windows\share\boost_system\boost_system-config-version.cmake;C:\vcpkg\installed\x64-windows\share\boost_system\boost_system-config.cmake;C:\vcpkg\installed\x64-windows\share\boost_system\boost_system-targets.cmake;C:\vcpkg\installed\x64-windows\share\boost_throw_exception\boost_throw_exception-config-version.cmake;C:\vcpkg\installed\x64-windows\share\boost_throw_exception\boost_throw_exception-config.cmake;C:\vcpkg\installed\x64-windows\share\boost_throw_exception\boost_throw_exception-targets.cmake;C:\vcpkg\installed\x64-windows\share\boost_variant2\boost_variant2-config-version.cmake;C:\vcpkg\installed\x64-windows\share\boost_variant2\boost_variant2-config.cmake;C:\vcpkg\installed\x64-windows\share\boost_variant2\boost_variant2-targets.cmake;C:\vcpkg\installed\x64-windows\share\boost_winapi\boost_winapi-config-version.cmake;C:\vcpkg\installed\x64-windows\share\boost_winapi\boost_winapi-config.cmake;C:\vcpkg\installed\x64-windows\share\boost_winapi\boost_winapi-targets.cmake;C:\vcpkg\scripts\buildsystems\vcpkg.cmake;%(AdditionalInputs)</AdditionalInputs>
+      <Outputs Condition="'$(Configuration)|$(Platform)'=='RelWithDebInfo|x64'">C:\Kung-Fu-Chess\build-clean\CMakeFiles\generate.stamp</Outputs>
+      <LinkObjects Condition="'$(Configuration)|$(Platform)'=='RelWithDebInfo|x64'">false</LinkObjects>
+    </CustomBuild>
+  </ItemGroup>
+  <ItemGroup>
+  </ItemGroup>
+  <ItemGroup />
+  <ItemGroup>
+    <ProjectReference Include="C:\Kung-Fu-Chess\build-clean\ZERO_CHECK.vcxproj">
+      <Project>{C407B818-5DC4-3BCE-BCB1-56ADDBF23D28}</Project>
+      <Name>ZERO_CHECK</Name>
+      <ReferenceOutputAssembly>false</ReferenceOutputAssembly>
+      <CopyToOutputDirectory>Never</CopyToOutputDirectory>
+    </ProjectReference>
+    <ProjectReference Include="C:\Kung-Fu-Chess\build-clean\chess_tests.vcxproj">
+      <Project>{2EDFD12B-CD2B-304C-A131-5F593036E987}</Project>
+      <Name>chess_tests</Name>
+    </ProjectReference>
+    <ProjectReference Include="C:\Kung-Fu-Chess\build-clean\external\googletest-1.17.0\googlemock\gmock.vcxproj">
+      <Project>{908079B3-8CED-372D-A11F-1C68B2E883A3}</Project>
+      <Name>gmock</Name>
+    </ProjectReference>
+    <ProjectReference Include="C:\Kung-Fu-Chess\build-clean\external\googletest-1.17.0\googlemock\gmock_main.vcxproj">
+      <Project>{CA4DB309-4009-31C8-9FB4-BAF972FC734E}</Project>
+      <Name>gmock_main</Name>
+    </ProjectReference>
+    <ProjectReference Include="C:\Kung-Fu-Chess\build-clean\external\googletest-1.17.0\googletest\gtest.vcxproj">
+      <Project>{A2250C50-F62F-36A2-89E3-D3CAFB2557E3}</Project>
+      <Name>gtest</Name>
+    </ProjectReference>
+    <ProjectReference Include="C:\Kung-Fu-Chess\build-clean\external\googletest-1.17.0\googletest\gtest_main.vcxproj">
+      <Project>{469FC1DA-F42C-3F5F-B0DA-1FD92EEFA062}</Project>
+      <Name>gtest_main</Name>
+    </ProjectReference>
+    <ProjectReference Include="C:\Kung-Fu-Chess\build-clean\kungfuchess.vcxproj">
+      <Project>{ECCB3603-DC6B-3452-B927-FA1E961C32FF}</Project>
+      <Name>kungfuchess</Name>
+    </ProjectReference>
+    <ProjectReference Include="C:\Kung-Fu-Chess\build-clean\kungfuchess_client.vcxproj">
+      <Project>{70DB2E1C-EB3D-3C0C-85A9-4D8787042397}</Project>
+      <Name>kungfuchess_client</Name>
+    </ProjectReference>
+    <ProjectReference Include="C:\Kung-Fu-Chess\build-clean\demo\kungfuchess_demo.vcxproj">
+      <Project>{C7CD3746-940E-3E5F-80E8-DC86610878D6}</Project>
+      <Name>kungfuchess_demo</Name>
+    </ProjectReference>
+  </ItemGroup>
+  <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
+  <ImportGroup Label="ExtensionTargets">
+  </ImportGroup>
+</Project>

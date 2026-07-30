@@ -1,8 +1,11 @@
 #include "network/GameServer.hpp"
-
 #include "config/PieceSpeedConfig.hpp"
+#include "infrastructure/postgres/PostgresConnectionConfig.hpp"
+#include "infrastructure/postgres/PostgresUserRepository.hpp"
 #include "model/Board.hpp"
-
+#include "infrastructure/redis/RedisConnectionConfig.hpp"
+#include "infrastructure/redis/RedisSessionStore.hpp"
+#include "infrastructure/postgres/PostgresGameResultRepository.hpp"
 #include <filesystem>
 #include <iostream>
 #include <string>
@@ -16,7 +19,9 @@ int main(int argc, char* argv[])
         std::string assetsPath = "assets";
 
         if (argc >= 2)
+        {
             assetsPath = argv[1];
+        }
 
         if (!std::filesystem::exists(assetsPath))
         {
@@ -77,17 +82,46 @@ int main(int argc, char* argv[])
             assetsPath + "/pieces"
         );
 
+        const PostgresConnectionConfig
+            postgresConfig =
+                PostgresConnectionConfig::
+                    fromEnvironment();
+
+        const std::string postgresConnectionString =
+            postgresConfig.toConnectionString();
+
+        PostgresUserRepository userRepository(
+            postgresConnectionString
+        );
+
+        PostgresGameResultRepository
+            gameResultRepository(
+                postgresConnectionString
+            );
+
+        std::cout
+            << "Connected to PostgreSQL"
+            << std::endl;
+            const RedisConnectionConfig redisConfig =
+            RedisConnectionConfig::fromEnvironment();
+
+        RedisSessionStore sessionStore(
+            redisConfig
+        );
         GameServer server(
             8080,
             std::move(board),
-            std::move(speedConfig)
-        );
-
-        server.run();
+            std::move(speedConfig),
+            userRepository,
+            sessionStore,
+            gameResultRepository
+        );     
+   server.run();
     }
     catch (const std::exception& exception)
     {
         std::cerr
+            << "Server startup failed: "
             << exception.what()
             << std::endl;
 

@@ -1,0 +1,515 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<Project DefaultTargets="Build" ToolsVersion="18.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <PropertyGroup>
+    <PreferredToolArchitecture>x64</PreferredToolArchitecture>
+  </PropertyGroup>
+  <ItemGroup Label="ProjectConfigurations">
+    <ProjectConfiguration Include="Debug|x64">
+      <Configuration>Debug</Configuration>
+      <Platform>x64</Platform>
+    </ProjectConfiguration>
+    <ProjectConfiguration Include="Release|x64">
+      <Configuration>Release</Configuration>
+      <Platform>x64</Platform>
+    </ProjectConfiguration>
+    <ProjectConfiguration Include="MinSizeRel|x64">
+      <Configuration>MinSizeRel</Configuration>
+      <Platform>x64</Platform>
+    </ProjectConfiguration>
+    <ProjectConfiguration Include="RelWithDebInfo|x64">
+      <Configuration>RelWithDebInfo</Configuration>
+      <Platform>x64</Platform>
+    </ProjectConfiguration>
+  </ItemGroup>
+  <PropertyGroup Label="Globals">
+    <ProjectGuid>{2EDFD12B-CD2B-304C-A131-5F593036E987}</ProjectGuid>
+    <Keyword>Win32Proj</Keyword>
+    <VcpkgEnabled>false</VcpkgEnabled>
+    <WindowsTargetPlatformVersion>10.0.22621.0</WindowsTargetPlatformVersion>
+    <Platform>x64</Platform>
+    <ProjectName>chess_tests</ProjectName>
+    <VCProjectUpgraderObjectName>NoUpgrade</VCProjectUpgraderObjectName>
+  </PropertyGroup>
+  <Import Project="$(VCTargetsPath)\Microsoft.Cpp.Default.props" />
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|x64'" Label="Configuration">
+    <ConfigurationType>Application</ConfigurationType>
+    <CharacterSet>MultiByte</CharacterSet>
+    <PlatformToolset>v145</PlatformToolset>
+  </PropertyGroup>
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|x64'" Label="Configuration">
+    <ConfigurationType>Application</ConfigurationType>
+    <CharacterSet>MultiByte</CharacterSet>
+    <PlatformToolset>v145</PlatformToolset>
+  </PropertyGroup>
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='MinSizeRel|x64'" Label="Configuration">
+    <ConfigurationType>Application</ConfigurationType>
+    <CharacterSet>MultiByte</CharacterSet>
+    <PlatformToolset>v145</PlatformToolset>
+  </PropertyGroup>
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='RelWithDebInfo|x64'" Label="Configuration">
+    <ConfigurationType>Application</ConfigurationType>
+    <CharacterSet>MultiByte</CharacterSet>
+    <PlatformToolset>v145</PlatformToolset>
+  </PropertyGroup>
+  <Import Project="$(VCTargetsPath)\Microsoft.Cpp.props" />
+  <ImportGroup Label="ExtensionSettings">
+  </ImportGroup>
+  <ImportGroup Label="PropertySheets">
+    <Import Project="do_not_import_user.props" Condition="exists('do_not_import_user.props')" Label="LocalAppDataPlatform" />
+  </ImportGroup>
+  <PropertyGroup Label="UserMacros" />
+  <PropertyGroup>
+    <_ProjectFileVersion>10.0.20506.1</_ProjectFileVersion>
+    <OutDir Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">C:\Kung-Fu-Chess\build-clean\Debug\</OutDir>
+    <IntDir Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">chess_tests.dir\Debug\</IntDir>
+    <TargetName Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">chess_tests</TargetName>
+    <TargetExt Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">.exe</TargetExt>
+    <LinkIncremental Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">true</LinkIncremental>
+    <GenerateManifest Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">true</GenerateManifest>
+    <OutDir Condition="'$(Configuration)|$(Platform)'=='Release|x64'">C:\Kung-Fu-Chess\build-clean\Release\</OutDir>
+    <IntDir Condition="'$(Configuration)|$(Platform)'=='Release|x64'">chess_tests.dir\Release\</IntDir>
+    <TargetName Condition="'$(Configuration)|$(Platform)'=='Release|x64'">chess_tests</TargetName>
+    <TargetExt Condition="'$(Configuration)|$(Platform)'=='Release|x64'">.exe</TargetExt>
+    <LinkIncremental Condition="'$(Configuration)|$(Platform)'=='Release|x64'">false</LinkIncremental>
+    <GenerateManifest Condition="'$(Configuration)|$(Platform)'=='Release|x64'">true</GenerateManifest>
+    <OutDir Condition="'$(Configuration)|$(Platform)'=='MinSizeRel|x64'">C:\Kung-Fu-Chess\build-clean\MinSizeRel\</OutDir>
+    <IntDir Condition="'$(Configuration)|$(Platform)'=='MinSizeRel|x64'">chess_tests.dir\MinSizeRel\</IntDir>
+    <TargetName Condition="'$(Configuration)|$(Platform)'=='MinSizeRel|x64'">chess_tests</TargetName>
+    <TargetExt Condition="'$(Configuration)|$(Platform)'=='MinSizeRel|x64'">.exe</TargetExt>
+    <LinkIncremental Condition="'$(Configuration)|$(Platform)'=='MinSizeRel|x64'">false</LinkIncremental>
+    <GenerateManifest Condition="'$(Configuration)|$(Platform)'=='MinSizeRel|x64'">true</GenerateManifest>
+    <OutDir Condition="'$(Configuration)|$(Platform)'=='RelWithDebInfo|x64'">C:\Kung-Fu-Chess\build-clean\RelWithDebInfo\</OutDir>
+    <IntDir Condition="'$(Configuration)|$(Platform)'=='RelWithDebInfo|x64'">chess_tests.dir\RelWithDebInfo\</IntDir>
+    <TargetName Condition="'$(Configuration)|$(Platform)'=='RelWithDebInfo|x64'">chess_tests</TargetName>
+    <TargetExt Condition="'$(Configuration)|$(Platform)'=='RelWithDebInfo|x64'">.exe</TargetExt>
+    <LinkIncremental Condition="'$(Configuration)|$(Platform)'=='RelWithDebInfo|x64'">true</LinkIncremental>
+    <GenerateManifest Condition="'$(Configuration)|$(Platform)'=='RelWithDebInfo|x64'">true</GenerateManifest>
+  </PropertyGroup>
+  <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">
+    <ClCompile>
+      <AdditionalIncludeDirectories>C:\Kung-Fu-Chess\src;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <AdditionalOptions>%(AdditionalOptions) /external:I "C:/Kung-Fu-Chess/external/googletest-1.17.0/googletest/include" /external:I "C:/Kung-Fu-Chess/external/googletest-1.17.0/googletest"</AdditionalOptions>
+      <AssemblerListingLocation>$(IntDir)</AssemblerListingLocation>
+      <BasicRuntimeChecks>EnableFastChecks</BasicRuntimeChecks>
+      <BufferSecurityCheck></BufferSecurityCheck>
+      <CallingConvention></CallingConvention>
+      <DebugInformationFormat>ProgramDatabase</DebugInformationFormat>
+      <ExceptionHandling>Sync</ExceptionHandling>
+      <ExternalWarningLevel>TurnOffAllWarnings</ExternalWarningLevel>
+      <FloatingPointModel></FloatingPointModel>
+      <ForceConformanceInForLoopScope></ForceConformanceInForLoopScope>
+      <InlineFunctionExpansion>Disabled</InlineFunctionExpansion>
+      <LanguageStandard>stdcpp17</LanguageStandard>
+      <MinimalRebuild></MinimalRebuild>
+      <Optimization>Disabled</Optimization>
+      <PrecompiledHeader>NotUsing</PrecompiledHeader>
+      <RemoveUnreferencedCodeData></RemoveUnreferencedCodeData>
+      <RuntimeLibrary>MultiThreadedDebugDLL</RuntimeLibrary>
+      <RuntimeTypeInfo>true</RuntimeTypeInfo>
+      <SupportJustMyCode></SupportJustMyCode>
+      <TreatWChar_tAsBuiltInType></TreatWChar_tAsBuiltInType>
+      <UseFullPaths>false</UseFullPaths>
+      <PreprocessorDefinitions>%(PreprocessorDefinitions);WIN32;_WINDOWS;_WIN32_WINNT=0x0A00;CMAKE_INTDIR="Debug"</PreprocessorDefinitions>
+      <ObjectFileName>$(IntDir)</ObjectFileName>
+      <ScanSourceForModuleDependencies>false</ScanSourceForModuleDependencies>
+    </ClCompile>
+    <ResourceCompile>
+      <PreprocessorDefinitions>%(PreprocessorDefinitions);WIN32;_DEBUG;_WINDOWS;_WIN32_WINNT=0x0A00;CMAKE_INTDIR=\"Debug\"</PreprocessorDefinitions>
+      <AdditionalIncludeDirectories>C:\Kung-Fu-Chess\src;C:\Kung-Fu-Chess\external\googletest-1.17.0\googletest\include;C:\Kung-Fu-Chess\external\googletest-1.17.0\googletest;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+    </ResourceCompile>
+    <Midl>
+      <AdditionalIncludeDirectories>C:\Kung-Fu-Chess\src;C:\Kung-Fu-Chess\external\googletest-1.17.0\googletest\include;C:\Kung-Fu-Chess\external\googletest-1.17.0\googletest;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <OutputDirectory>$(ProjectDir)/$(IntDir)</OutputDirectory>
+      <HeaderFileName>%(Filename).h</HeaderFileName>
+      <TypeLibraryName>%(Filename).tlb</TypeLibraryName>
+      <InterfaceIdentifierFileName>%(Filename)_i.c</InterfaceIdentifierFileName>
+      <ProxyFileName>%(Filename)_p.c</ProxyFileName>
+    </Midl>
+    <PostBuildEvent>
+      <Message>	</Message>
+      <Command>setlocal
+C:\vcpkg\vcpkg.exe z-applocal --target-binary=C:/Kung-Fu-Chess/build-clean/Debug/chess_tests.exe --installed-bin-dir=C:/vcpkg/installed/x64-windows/debug/bin
+if %errorlevel% neq 0 goto :cmEnd
+:cmEnd
+endlocal &amp; call :cmErrorLevel %errorlevel% &amp; goto :cmDone
+:cmErrorLevel
+exit /b %1
+:cmDone
+if %errorlevel% neq 0 goto :VCEnd
+setlocal
+"C:\Program Files\CMake\bin\cmake.exe" -P C:/Kung-Fu-Chess/build-clean/chess_tests_e3b0c442_Debug_discovery.cmake -- 
+if %errorlevel% neq 0 goto :cmEnd
+:cmEnd
+endlocal &amp; call :cmErrorLevel %errorlevel% &amp; goto :cmDone
+:cmErrorLevel
+exit /b %1
+:cmDone
+if %errorlevel% neq 0 goto :VCEnd</Command>
+    </PostBuildEvent>
+    <Link>
+      <AdditionalDependencies>lib\Debug\gtest_main.lib;lib\Debug\gtest.lib;kernel32.lib;user32.lib;gdi32.lib;winspool.lib;shell32.lib;ole32.lib;oleaut32.lib;uuid.lib;comdlg32.lib;advapi32.lib</AdditionalDependencies>
+      <AdditionalLibraryDirectories>%(AdditionalLibraryDirectories)</AdditionalLibraryDirectories>
+      <AdditionalOptions>%(AdditionalOptions) /machine:x64</AdditionalOptions>
+      <DataExecutionPrevention></DataExecutionPrevention>
+      <GenerateDebugInformation>true</GenerateDebugInformation>
+      <IgnoreSpecificDefaultLibraries>%(IgnoreSpecificDefaultLibraries)</IgnoreSpecificDefaultLibraries>
+      <ImageHasSafeExceptionHandlers></ImageHasSafeExceptionHandlers>
+      <ImportLibrary>C:/Kung-Fu-Chess/build-clean/Debug/chess_tests.lib</ImportLibrary>
+      <LinkErrorReporting></LinkErrorReporting>
+      <ProgramDataBaseFile>C:/Kung-Fu-Chess/build-clean/Debug/chess_tests.pdb</ProgramDataBaseFile>
+      <RandomizedBaseAddress></RandomizedBaseAddress>
+      <SubSystem>Console</SubSystem>
+    </Link>
+    <ProjectReference>
+      <LinkLibraryDependencies>false</LinkLibraryDependencies>
+    </ProjectReference>
+  </ItemDefinitionGroup>
+  <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Release|x64'">
+    <ClCompile>
+      <AdditionalIncludeDirectories>C:\Kung-Fu-Chess\src;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <AdditionalOptions>%(AdditionalOptions) /external:I "C:/Kung-Fu-Chess/external/googletest-1.17.0/googletest/include" /external:I "C:/Kung-Fu-Chess/external/googletest-1.17.0/googletest"</AdditionalOptions>
+      <AssemblerListingLocation>$(IntDir)</AssemblerListingLocation>
+      <BasicRuntimeChecks>Default</BasicRuntimeChecks>
+      <BufferSecurityCheck></BufferSecurityCheck>
+      <CallingConvention></CallingConvention>
+      <ExceptionHandling>Sync</ExceptionHandling>
+      <ExternalWarningLevel>TurnOffAllWarnings</ExternalWarningLevel>
+      <FloatingPointModel></FloatingPointModel>
+      <ForceConformanceInForLoopScope></ForceConformanceInForLoopScope>
+      <InlineFunctionExpansion>AnySuitable</InlineFunctionExpansion>
+      <LanguageStandard>stdcpp17</LanguageStandard>
+      <MinimalRebuild></MinimalRebuild>
+      <Optimization>MaxSpeed</Optimization>
+      <PrecompiledHeader>NotUsing</PrecompiledHeader>
+      <RemoveUnreferencedCodeData></RemoveUnreferencedCodeData>
+      <RuntimeLibrary>MultiThreadedDLL</RuntimeLibrary>
+      <RuntimeTypeInfo>true</RuntimeTypeInfo>
+      <SupportJustMyCode></SupportJustMyCode>
+      <TreatWChar_tAsBuiltInType></TreatWChar_tAsBuiltInType>
+      <UseFullPaths>false</UseFullPaths>
+      <PreprocessorDefinitions>%(PreprocessorDefinitions);WIN32;_WINDOWS;NDEBUG;_WIN32_WINNT=0x0A00;CMAKE_INTDIR="Release"</PreprocessorDefinitions>
+      <ObjectFileName>$(IntDir)</ObjectFileName>
+      <DebugInformationFormat>
+      </DebugInformationFormat>
+      <ScanSourceForModuleDependencies>false</ScanSourceForModuleDependencies>
+    </ClCompile>
+    <ResourceCompile>
+      <PreprocessorDefinitions>%(PreprocessorDefinitions);WIN32;_WINDOWS;NDEBUG;_WIN32_WINNT=0x0A00;CMAKE_INTDIR=\"Release\"</PreprocessorDefinitions>
+      <AdditionalIncludeDirectories>C:\Kung-Fu-Chess\src;C:\Kung-Fu-Chess\external\googletest-1.17.0\googletest\include;C:\Kung-Fu-Chess\external\googletest-1.17.0\googletest;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+    </ResourceCompile>
+    <Midl>
+      <AdditionalIncludeDirectories>C:\Kung-Fu-Chess\src;C:\Kung-Fu-Chess\external\googletest-1.17.0\googletest\include;C:\Kung-Fu-Chess\external\googletest-1.17.0\googletest;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <OutputDirectory>$(ProjectDir)/$(IntDir)</OutputDirectory>
+      <HeaderFileName>%(Filename).h</HeaderFileName>
+      <TypeLibraryName>%(Filename).tlb</TypeLibraryName>
+      <InterfaceIdentifierFileName>%(Filename)_i.c</InterfaceIdentifierFileName>
+      <ProxyFileName>%(Filename)_p.c</ProxyFileName>
+    </Midl>
+    <PostBuildEvent>
+      <Message>	</Message>
+      <Command>setlocal
+C:\vcpkg\vcpkg.exe z-applocal --target-binary=C:/Kung-Fu-Chess/build-clean/Release/chess_tests.exe --installed-bin-dir=C:/vcpkg/installed/x64-windows/bin
+if %errorlevel% neq 0 goto :cmEnd
+:cmEnd
+endlocal &amp; call :cmErrorLevel %errorlevel% &amp; goto :cmDone
+:cmErrorLevel
+exit /b %1
+:cmDone
+if %errorlevel% neq 0 goto :VCEnd
+setlocal
+"C:\Program Files\CMake\bin\cmake.exe" -P C:/Kung-Fu-Chess/build-clean/chess_tests_e3b0c442_Release_discovery.cmake -- 
+if %errorlevel% neq 0 goto :cmEnd
+:cmEnd
+endlocal &amp; call :cmErrorLevel %errorlevel% &amp; goto :cmDone
+:cmErrorLevel
+exit /b %1
+:cmDone
+if %errorlevel% neq 0 goto :VCEnd</Command>
+    </PostBuildEvent>
+    <Link>
+      <AdditionalDependencies>lib\Release\gtest_main.lib;lib\Release\gtest.lib;kernel32.lib;user32.lib;gdi32.lib;winspool.lib;shell32.lib;ole32.lib;oleaut32.lib;uuid.lib;comdlg32.lib;advapi32.lib</AdditionalDependencies>
+      <AdditionalLibraryDirectories>%(AdditionalLibraryDirectories)</AdditionalLibraryDirectories>
+      <AdditionalOptions>%(AdditionalOptions) /machine:x64</AdditionalOptions>
+      <DataExecutionPrevention></DataExecutionPrevention>
+      <GenerateDebugInformation>false</GenerateDebugInformation>
+      <IgnoreSpecificDefaultLibraries>%(IgnoreSpecificDefaultLibraries)</IgnoreSpecificDefaultLibraries>
+      <ImageHasSafeExceptionHandlers></ImageHasSafeExceptionHandlers>
+      <ImportLibrary>C:/Kung-Fu-Chess/build-clean/Release/chess_tests.lib</ImportLibrary>
+      <LinkErrorReporting></LinkErrorReporting>
+      <ProgramDataBaseFile>C:/Kung-Fu-Chess/build-clean/Release/chess_tests.pdb</ProgramDataBaseFile>
+      <RandomizedBaseAddress></RandomizedBaseAddress>
+      <SubSystem>Console</SubSystem>
+    </Link>
+    <ProjectReference>
+      <LinkLibraryDependencies>false</LinkLibraryDependencies>
+    </ProjectReference>
+  </ItemDefinitionGroup>
+  <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='MinSizeRel|x64'">
+    <ClCompile>
+      <AdditionalIncludeDirectories>C:\Kung-Fu-Chess\src;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <AdditionalOptions>%(AdditionalOptions) /external:I "C:/Kung-Fu-Chess/external/googletest-1.17.0/googletest/include" /external:I "C:/Kung-Fu-Chess/external/googletest-1.17.0/googletest"</AdditionalOptions>
+      <AssemblerListingLocation>$(IntDir)</AssemblerListingLocation>
+      <BasicRuntimeChecks>Default</BasicRuntimeChecks>
+      <BufferSecurityCheck></BufferSecurityCheck>
+      <CallingConvention></CallingConvention>
+      <ExceptionHandling>Sync</ExceptionHandling>
+      <ExternalWarningLevel>TurnOffAllWarnings</ExternalWarningLevel>
+      <FloatingPointModel></FloatingPointModel>
+      <ForceConformanceInForLoopScope></ForceConformanceInForLoopScope>
+      <InlineFunctionExpansion>OnlyExplicitInline</InlineFunctionExpansion>
+      <LanguageStandard>stdcpp17</LanguageStandard>
+      <MinimalRebuild></MinimalRebuild>
+      <Optimization>MinSpace</Optimization>
+      <PrecompiledHeader>NotUsing</PrecompiledHeader>
+      <RemoveUnreferencedCodeData></RemoveUnreferencedCodeData>
+      <RuntimeLibrary>MultiThreadedDLL</RuntimeLibrary>
+      <RuntimeTypeInfo>true</RuntimeTypeInfo>
+      <SupportJustMyCode></SupportJustMyCode>
+      <TreatWChar_tAsBuiltInType></TreatWChar_tAsBuiltInType>
+      <UseFullPaths>false</UseFullPaths>
+      <PreprocessorDefinitions>%(PreprocessorDefinitions);WIN32;_WINDOWS;NDEBUG;_WIN32_WINNT=0x0A00;CMAKE_INTDIR="MinSizeRel"</PreprocessorDefinitions>
+      <ObjectFileName>$(IntDir)</ObjectFileName>
+      <DebugInformationFormat>
+      </DebugInformationFormat>
+      <ScanSourceForModuleDependencies>false</ScanSourceForModuleDependencies>
+    </ClCompile>
+    <ResourceCompile>
+      <PreprocessorDefinitions>%(PreprocessorDefinitions);WIN32;_WINDOWS;NDEBUG;_WIN32_WINNT=0x0A00;CMAKE_INTDIR=\"MinSizeRel\"</PreprocessorDefinitions>
+      <AdditionalIncludeDirectories>C:\Kung-Fu-Chess\src;C:\Kung-Fu-Chess\external\googletest-1.17.0\googletest\include;C:\Kung-Fu-Chess\external\googletest-1.17.0\googletest;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+    </ResourceCompile>
+    <Midl>
+      <AdditionalIncludeDirectories>C:\Kung-Fu-Chess\src;C:\Kung-Fu-Chess\external\googletest-1.17.0\googletest\include;C:\Kung-Fu-Chess\external\googletest-1.17.0\googletest;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <OutputDirectory>$(ProjectDir)/$(IntDir)</OutputDirectory>
+      <HeaderFileName>%(Filename).h</HeaderFileName>
+      <TypeLibraryName>%(Filename).tlb</TypeLibraryName>
+      <InterfaceIdentifierFileName>%(Filename)_i.c</InterfaceIdentifierFileName>
+      <ProxyFileName>%(Filename)_p.c</ProxyFileName>
+    </Midl>
+    <PostBuildEvent>
+      <Message>	</Message>
+      <Command>setlocal
+C:\vcpkg\vcpkg.exe z-applocal --target-binary=C:/Kung-Fu-Chess/build-clean/MinSizeRel/chess_tests.exe --installed-bin-dir=C:/vcpkg/installed/x64-windows/bin
+if %errorlevel% neq 0 goto :cmEnd
+:cmEnd
+endlocal &amp; call :cmErrorLevel %errorlevel% &amp; goto :cmDone
+:cmErrorLevel
+exit /b %1
+:cmDone
+if %errorlevel% neq 0 goto :VCEnd
+setlocal
+"C:\Program Files\CMake\bin\cmake.exe" -P C:/Kung-Fu-Chess/build-clean/chess_tests_e3b0c442_MinSizeRel_discovery.cmake -- 
+if %errorlevel% neq 0 goto :cmEnd
+:cmEnd
+endlocal &amp; call :cmErrorLevel %errorlevel% &amp; goto :cmDone
+:cmErrorLevel
+exit /b %1
+:cmDone
+if %errorlevel% neq 0 goto :VCEnd</Command>
+    </PostBuildEvent>
+    <Link>
+      <AdditionalDependencies>lib\MinSizeRel\gtest_main.lib;lib\MinSizeRel\gtest.lib;kernel32.lib;user32.lib;gdi32.lib;winspool.lib;shell32.lib;ole32.lib;oleaut32.lib;uuid.lib;comdlg32.lib;advapi32.lib</AdditionalDependencies>
+      <AdditionalLibraryDirectories>%(AdditionalLibraryDirectories)</AdditionalLibraryDirectories>
+      <AdditionalOptions>%(AdditionalOptions) /machine:x64</AdditionalOptions>
+      <DataExecutionPrevention></DataExecutionPrevention>
+      <GenerateDebugInformation>false</GenerateDebugInformation>
+      <IgnoreSpecificDefaultLibraries>%(IgnoreSpecificDefaultLibraries)</IgnoreSpecificDefaultLibraries>
+      <ImageHasSafeExceptionHandlers></ImageHasSafeExceptionHandlers>
+      <ImportLibrary>C:/Kung-Fu-Chess/build-clean/MinSizeRel/chess_tests.lib</ImportLibrary>
+      <LinkErrorReporting></LinkErrorReporting>
+      <ProgramDataBaseFile>C:/Kung-Fu-Chess/build-clean/MinSizeRel/chess_tests.pdb</ProgramDataBaseFile>
+      <RandomizedBaseAddress></RandomizedBaseAddress>
+      <SubSystem>Console</SubSystem>
+    </Link>
+    <ProjectReference>
+      <LinkLibraryDependencies>false</LinkLibraryDependencies>
+    </ProjectReference>
+  </ItemDefinitionGroup>
+  <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='RelWithDebInfo|x64'">
+    <ClCompile>
+      <AdditionalIncludeDirectories>C:\Kung-Fu-Chess\src;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <AdditionalOptions>%(AdditionalOptions) /external:I "C:/Kung-Fu-Chess/external/googletest-1.17.0/googletest/include" /external:I "C:/Kung-Fu-Chess/external/googletest-1.17.0/googletest"</AdditionalOptions>
+      <AssemblerListingLocation>$(IntDir)</AssemblerListingLocation>
+      <BasicRuntimeChecks>Default</BasicRuntimeChecks>
+      <BufferSecurityCheck></BufferSecurityCheck>
+      <CallingConvention></CallingConvention>
+      <DebugInformationFormat>ProgramDatabase</DebugInformationFormat>
+      <ExceptionHandling>Sync</ExceptionHandling>
+      <ExternalWarningLevel>TurnOffAllWarnings</ExternalWarningLevel>
+      <FloatingPointModel></FloatingPointModel>
+      <ForceConformanceInForLoopScope></ForceConformanceInForLoopScope>
+      <InlineFunctionExpansion>OnlyExplicitInline</InlineFunctionExpansion>
+      <LanguageStandard>stdcpp17</LanguageStandard>
+      <MinimalRebuild></MinimalRebuild>
+      <Optimization>MaxSpeed</Optimization>
+      <PrecompiledHeader>NotUsing</PrecompiledHeader>
+      <RemoveUnreferencedCodeData></RemoveUnreferencedCodeData>
+      <RuntimeLibrary>MultiThreadedDLL</RuntimeLibrary>
+      <RuntimeTypeInfo>true</RuntimeTypeInfo>
+      <SupportJustMyCode></SupportJustMyCode>
+      <TreatWChar_tAsBuiltInType></TreatWChar_tAsBuiltInType>
+      <UseFullPaths>false</UseFullPaths>
+      <PreprocessorDefinitions>%(PreprocessorDefinitions);WIN32;_WINDOWS;NDEBUG;_WIN32_WINNT=0x0A00;CMAKE_INTDIR="RelWithDebInfo"</PreprocessorDefinitions>
+      <ObjectFileName>$(IntDir)</ObjectFileName>
+      <ScanSourceForModuleDependencies>false</ScanSourceForModuleDependencies>
+    </ClCompile>
+    <ResourceCompile>
+      <PreprocessorDefinitions>%(PreprocessorDefinitions);WIN32;_WINDOWS;NDEBUG;_WIN32_WINNT=0x0A00;CMAKE_INTDIR=\"RelWithDebInfo\"</PreprocessorDefinitions>
+      <AdditionalIncludeDirectories>C:\Kung-Fu-Chess\src;C:\Kung-Fu-Chess\external\googletest-1.17.0\googletest\include;C:\Kung-Fu-Chess\external\googletest-1.17.0\googletest;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+    </ResourceCompile>
+    <Midl>
+      <AdditionalIncludeDirectories>C:\Kung-Fu-Chess\src;C:\Kung-Fu-Chess\external\googletest-1.17.0\googletest\include;C:\Kung-Fu-Chess\external\googletest-1.17.0\googletest;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <OutputDirectory>$(ProjectDir)/$(IntDir)</OutputDirectory>
+      <HeaderFileName>%(Filename).h</HeaderFileName>
+      <TypeLibraryName>%(Filename).tlb</TypeLibraryName>
+      <InterfaceIdentifierFileName>%(Filename)_i.c</InterfaceIdentifierFileName>
+      <ProxyFileName>%(Filename)_p.c</ProxyFileName>
+    </Midl>
+    <PostBuildEvent>
+      <Message>	</Message>
+      <Command>setlocal
+C:\vcpkg\vcpkg.exe z-applocal --target-binary=C:/Kung-Fu-Chess/build-clean/RelWithDebInfo/chess_tests.exe --installed-bin-dir=C:/vcpkg/installed/x64-windows/bin
+if %errorlevel% neq 0 goto :cmEnd
+:cmEnd
+endlocal &amp; call :cmErrorLevel %errorlevel% &amp; goto :cmDone
+:cmErrorLevel
+exit /b %1
+:cmDone
+if %errorlevel% neq 0 goto :VCEnd
+setlocal
+"C:\Program Files\CMake\bin\cmake.exe" -P C:/Kung-Fu-Chess/build-clean/chess_tests_e3b0c442_RelWithDebInfo_discovery.cmake -- 
+if %errorlevel% neq 0 goto :cmEnd
+:cmEnd
+endlocal &amp; call :cmErrorLevel %errorlevel% &amp; goto :cmDone
+:cmErrorLevel
+exit /b %1
+:cmDone
+if %errorlevel% neq 0 goto :VCEnd</Command>
+    </PostBuildEvent>
+    <Link>
+      <AdditionalDependencies>lib\RelWithDebInfo\gtest_main.lib;lib\RelWithDebInfo\gtest.lib;kernel32.lib;user32.lib;gdi32.lib;winspool.lib;shell32.lib;ole32.lib;oleaut32.lib;uuid.lib;comdlg32.lib;advapi32.lib</AdditionalDependencies>
+      <AdditionalLibraryDirectories>%(AdditionalLibraryDirectories)</AdditionalLibraryDirectories>
+      <AdditionalOptions>%(AdditionalOptions) /machine:x64</AdditionalOptions>
+      <DataExecutionPrevention></DataExecutionPrevention>
+      <GenerateDebugInformation>true</GenerateDebugInformation>
+      <IgnoreSpecificDefaultLibraries>%(IgnoreSpecificDefaultLibraries)</IgnoreSpecificDefaultLibraries>
+      <ImageHasSafeExceptionHandlers></ImageHasSafeExceptionHandlers>
+      <ImportLibrary>C:/Kung-Fu-Chess/build-clean/RelWithDebInfo/chess_tests.lib</ImportLibrary>
+      <LinkErrorReporting></LinkErrorReporting>
+      <ProgramDataBaseFile>C:/Kung-Fu-Chess/build-clean/RelWithDebInfo/chess_tests.pdb</ProgramDataBaseFile>
+      <RandomizedBaseAddress></RandomizedBaseAddress>
+      <SubSystem>Console</SubSystem>
+    </Link>
+    <ProjectReference>
+      <LinkLibraryDependencies>false</LinkLibraryDependencies>
+    </ProjectReference>
+  </ItemDefinitionGroup>
+  <ItemGroup>
+    <CustomBuild Include="C:\Kung-Fu-Chess\CMakeLists.txt">
+      <UseUtf8Encoding>Always</UseUtf8Encoding>
+      <Message Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">Building Custom Rule C:/Kung-Fu-Chess/CMakeLists.txt</Message>
+      <Command Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">setlocal
+"C:\Program Files\CMake\bin\cmake.exe" -SC:/Kung-Fu-Chess -BC:/Kung-Fu-Chess/build-clean --check-stamp-file C:/Kung-Fu-Chess/build-clean/CMakeFiles/generate.stamp
+if %errorlevel% neq 0 goto :cmEnd
+:cmEnd
+endlocal &amp; call :cmErrorLevel %errorlevel% &amp; goto :cmDone
+:cmErrorLevel
+exit /b %1
+:cmDone
+if %errorlevel% neq 0 goto :VCEnd</Command>
+      <AdditionalInputs Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">C:\Kung-Fu-Chess\build-clean\CMakeFiles\4.4.0-rc3\CMakeCXXCompiler.cmake;C:\Kung-Fu-Chess\build-clean\CMakeFiles\4.4.0-rc3\CMakeRCCompiler.cmake;C:\Kung-Fu-Chess\build-clean\CMakeFiles\4.4.0-rc3\CMakeSystem.cmake;C:\Program Files\CMake\share\cmake-4.4\Modules\CMakeCXXInformation.cmake;C:\Program Files\CMake\share\cmake-4.4\Modules\CMakeCommonLanguageInclude.cmake;C:\Program Files\CMake\share\cmake-4.4\Modules\CMakeDependentOption.cmake;C:\Program Files\CMake\share\cmake-4.4\Modules\CMakeFindDependencyMacro.cmake;C:\Program Files\CMake\share\cmake-4.4\Modules\CMakeGenericSystem.cmake;C:\Program Files\CMake\share\cmake-4.4\Modules\CMakeInitializeConfigs.cmake;C:\Program Files\CMake\share\cmake-4.4\Modules\CMakeLanguageInformation.cmake;C:\Program Files\CMake\share\cmake-4.4\Modules\CMakeRCInformation.cmake;C:\Program Files\CMake\share\cmake-4.4\Modules\CMakeSystemSpecificInformation.cmake;C:\Program Files\CMake\share\cmake-4.4\Modules\CMakeSystemSpecificInitialize.cmake;C:\Program Files\CMake\share\cmake-4.4\Modules\Compiler\CMakeCommonCompilerMacros.cmake;C:\Program Files\CMake\share\cmake-4.4\Modules\Compiler\MSVC-CXX.cmake;C:\Program Files\CMake\share\cmake-4.4\Modules\Compiler\MSVC.cmake;C:\Program Files\CMake\share\cmake-4.4\Modules\GoogleTest.cmake;C:\Program Files\CMake\share\cmake-4.4\Modules\Internal\CMakeCXXLinkerInformation.cmake;C:\Program Files\CMake\share\cmake-4.4\Modules\Internal\CMakeCommonLinkerInformation.cmake;C:\Program Files\CMake\share\cmake-4.4\Modules\Linker\MSVC-CXX.cmake;C:\Program Files\CMake\share\cmake-4.4\Modules\Linker\MSVC.cmake;C:\Program Files\CMake\share\cmake-4.4\Modules\Platform\Linker\Windows-MSVC-CXX.cmake;C:\Program Files\CMake\share\cmake-4.4\Modules\Platform\Linker\Windows-MSVC.cmake;C:\Program Files\CMake\share\cmake-4.4\Modules\Platform\Windows-Initialize.cmake;C:\Program Files\CMake\share\cmake-4.4\Modules\Platform\Windows-MSVC-CXX.cmake;C:\Program Files\CMake\share\cmake-4.4\Modules\Platform\Windows-MSVC.cmake;C:\Program Files\CMake\share\cmake-4.4\Modules\Platform\Windows.cmake;C:\Program Files\CMake\share\cmake-4.4\Modules\Platform\WindowsPaths.cmake;C:\vcpkg\installed\x64-windows\share\boost\BoostConfig.cmake;C:\vcpkg\installed\x64-windows\share\boost\BoostConfigVersion.cmake;C:\vcpkg\installed\x64-windows\share\boost\vcpkg-cmake-wrapper.cmake;C:\vcpkg\installed\x64-windows\share\boost_assert\boost_assert-config-version.cmake;C:\vcpkg\installed\x64-windows\share\boost_assert\boost_assert-config.cmake;C:\vcpkg\installed\x64-windows\share\boost_assert\boost_assert-targets.cmake;C:\vcpkg\installed\x64-windows\share\boost_compat\boost_compat-config-version.cmake;C:\vcpkg\installed\x64-windows\share\boost_compat\boost_compat-config.cmake;C:\vcpkg\installed\x64-windows\share\boost_compat\boost_compat-targets.cmake;C:\vcpkg\installed\x64-windows\share\boost_config\boost_config-config-version.cmake;C:\vcpkg\installed\x64-windows\share\boost_config\boost_config-config.cmake;C:\vcpkg\installed\x64-windows\share\boost_config\boost_config-targets.cmake;C:\vcpkg\installed\x64-windows\share\boost_headers\boost_headers-config-version.cmake;C:\vcpkg\installed\x64-windows\share\boost_headers\boost_headers-config.cmake;C:\vcpkg\installed\x64-windows\share\boost_headers\boost_headers-targets.cmake;C:\vcpkg\installed\x64-windows\share\boost_mp11\boost_mp11-config-version.cmake;C:\vcpkg\installed\x64-windows\share\boost_mp11\boost_mp11-config.cmake;C:\vcpkg\installed\x64-windows\share\boost_mp11\boost_mp11-targets.cmake;C:\vcpkg\installed\x64-windows\share\boost_predef\boost_predef-config-version.cmake;C:\vcpkg\installed\x64-windows\share\boost_predef\boost_predef-config.cmake;C:\vcpkg\installed\x64-windows\share\boost_predef\boost_predef-targets.cmake;C:\vcpkg\installed\x64-windows\share\boost_system\boost_system-config-version.cmake;C:\vcpkg\installed\x64-windows\share\boost_system\boost_system-config.cmake;C:\vcpkg\installed\x64-windows\share\boost_system\boost_system-targets.cmake;C:\vcpkg\installed\x64-windows\share\boost_throw_exception\boost_throw_exception-config-version.cmake;C:\vcpkg\installed\x64-windows\share\boost_throw_exception\boost_throw_exception-config.cmake;C:\vcpkg\installed\x64-windows\share\boost_throw_exception\boost_throw_exception-targets.cmake;C:\vcpkg\installed\x64-windows\share\boost_variant2\boost_variant2-config-version.cmake;C:\vcpkg\installed\x64-windows\share\boost_variant2\boost_variant2-config.cmake;C:\vcpkg\installed\x64-windows\share\boost_variant2\boost_variant2-targets.cmake;C:\vcpkg\installed\x64-windows\share\boost_winapi\boost_winapi-config-version.cmake;C:\vcpkg\installed\x64-windows\share\boost_winapi\boost_winapi-config.cmake;C:\vcpkg\installed\x64-windows\share\boost_winapi\boost_winapi-targets.cmake;C:\vcpkg\scripts\buildsystems\vcpkg.cmake;%(AdditionalInputs)</AdditionalInputs>
+      <Outputs Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">C:\Kung-Fu-Chess\build-clean\CMakeFiles\generate.stamp</Outputs>
+      <LinkObjects Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">false</LinkObjects>
+      <Message Condition="'$(Configuration)|$(Platform)'=='Release|x64'">Building Custom Rule C:/Kung-Fu-Chess/CMakeLists.txt</Message>
+      <Command Condition="'$(Configuration)|$(Platform)'=='Release|x64'">setlocal
+"C:\Program Files\CMake\bin\cmake.exe" -SC:/Kung-Fu-Chess -BC:/Kung-Fu-Chess/build-clean --check-stamp-file C:/Kung-Fu-Chess/build-clean/CMakeFiles/generate.stamp
+if %errorlevel% neq 0 goto :cmEnd
+:cmEnd
+endlocal &amp; call :cmErrorLevel %errorlevel% &amp; goto :cmDone
+:cmErrorLevel
+exit /b %1
+:cmDone
+if %errorlevel% neq 0 goto :VCEnd</Command>
+      <AdditionalInputs Condition="'$(Configuration)|$(Platform)'=='Release|x64'">C:\Kung-Fu-Chess\build-clean\CMakeFiles\4.4.0-rc3\CMakeCXXCompiler.cmake;C:\Kung-Fu-Chess\build-clean\CMakeFiles\4.4.0-rc3\CMakeRCCompiler.cmake;C:\Kung-Fu-Chess\build-clean\CMakeFiles\4.4.0-rc3\CMakeSystem.cmake;C:\Program Files\CMake\share\cmake-4.4\Modules\CMakeCXXInformation.cmake;C:\Program Files\CMake\share\cmake-4.4\Modules\CMakeCommonLanguageInclude.cmake;C:\Program Files\CMake\share\cmake-4.4\Modules\CMakeDependentOption.cmake;C:\Program Files\CMake\share\cmake-4.4\Modules\CMakeFindDependencyMacro.cmake;C:\Program Files\CMake\share\cmake-4.4\Modules\CMakeGenericSystem.cmake;C:\Program Files\CMake\share\cmake-4.4\Modules\CMakeInitializeConfigs.cmake;C:\Program Files\CMake\share\cmake-4.4\Modules\CMakeLanguageInformation.cmake;C:\Program Files\CMake\share\cmake-4.4\Modules\CMakeRCInformation.cmake;C:\Program Files\CMake\share\cmake-4.4\Modules\CMakeSystemSpecificInformation.cmake;C:\Program Files\CMake\share\cmake-4.4\Modules\CMakeSystemSpecificInitialize.cmake;C:\Program Files\CMake\share\cmake-4.4\Modules\Compiler\CMakeCommonCompilerMacros.cmake;C:\Program Files\CMake\share\cmake-4.4\Modules\Compiler\MSVC-CXX.cmake;C:\Program Files\CMake\share\cmake-4.4\Modules\Compiler\MSVC.cmake;C:\Program Files\CMake\share\cmake-4.4\Modules\GoogleTest.cmake;C:\Program Files\CMake\share\cmake-4.4\Modules\Internal\CMakeCXXLinkerInformation.cmake;C:\Program Files\CMake\share\cmake-4.4\Modules\Internal\CMakeCommonLinkerInformation.cmake;C:\Program Files\CMake\share\cmake-4.4\Modules\Linker\MSVC-CXX.cmake;C:\Program Files\CMake\share\cmake-4.4\Modules\Linker\MSVC.cmake;C:\Program Files\CMake\share\cmake-4.4\Modules\Platform\Linker\Windows-MSVC-CXX.cmake;C:\Program Files\CMake\share\cmake-4.4\Modules\Platform\Linker\Windows-MSVC.cmake;C:\Program Files\CMake\share\cmake-4.4\Modules\Platform\Windows-Initialize.cmake;C:\Program Files\CMake\share\cmake-4.4\Modules\Platform\Windows-MSVC-CXX.cmake;C:\Program Files\CMake\share\cmake-4.4\Modules\Platform\Windows-MSVC.cmake;C:\Program Files\CMake\share\cmake-4.4\Modules\Platform\Windows.cmake;C:\Program Files\CMake\share\cmake-4.4\Modules\Platform\WindowsPaths.cmake;C:\vcpkg\installed\x64-windows\share\boost\BoostConfig.cmake;C:\vcpkg\installed\x64-windows\share\boost\BoostConfigVersion.cmake;C:\vcpkg\installed\x64-windows\share\boost\vcpkg-cmake-wrapper.cmake;C:\vcpkg\installed\x64-windows\share\boost_assert\boost_assert-config-version.cmake;C:\vcpkg\installed\x64-windows\share\boost_assert\boost_assert-config.cmake;C:\vcpkg\installed\x64-windows\share\boost_assert\boost_assert-targets.cmake;C:\vcpkg\installed\x64-windows\share\boost_compat\boost_compat-config-version.cmake;C:\vcpkg\installed\x64-windows\share\boost_compat\boost_compat-config.cmake;C:\vcpkg\installed\x64-windows\share\boost_compat\boost_compat-targets.cmake;C:\vcpkg\installed\x64-windows\share\boost_config\boost_config-config-version.cmake;C:\vcpkg\installed\x64-windows\share\boost_config\boost_config-config.cmake;C:\vcpkg\installed\x64-windows\share\boost_config\boost_config-targets.cmake;C:\vcpkg\installed\x64-windows\share\boost_headers\boost_headers-config-version.cmake;C:\vcpkg\installed\x64-windows\share\boost_headers\boost_headers-config.cmake;C:\vcpkg\installed\x64-windows\share\boost_headers\boost_headers-targets.cmake;C:\vcpkg\installed\x64-windows\share\boost_mp11\boost_mp11-config-version.cmake;C:\vcpkg\installed\x64-windows\share\boost_mp11\boost_mp11-config.cmake;C:\vcpkg\installed\x64-windows\share\boost_mp11\boost_mp11-targets.cmake;C:\vcpkg\installed\x64-windows\share\boost_predef\boost_predef-config-version.cmake;C:\vcpkg\installed\x64-windows\share\boost_predef\boost_predef-config.cmake;C:\vcpkg\installed\x64-windows\share\boost_predef\boost_predef-targets.cmake;C:\vcpkg\installed\x64-windows\share\boost_system\boost_system-config-version.cmake;C:\vcpkg\installed\x64-windows\share\boost_system\boost_system-config.cmake;C:\vcpkg\installed\x64-windows\share\boost_system\boost_system-targets.cmake;C:\vcpkg\installed\x64-windows\share\boost_throw_exception\boost_throw_exception-config-version.cmake;C:\vcpkg\installed\x64-windows\share\boost_throw_exception\boost_throw_exception-config.cmake;C:\vcpkg\installed\x64-windows\share\boost_throw_exception\boost_throw_exception-targets.cmake;C:\vcpkg\installed\x64-windows\share\boost_variant2\boost_variant2-config-version.cmake;C:\vcpkg\installed\x64-windows\share\boost_variant2\boost_variant2-config.cmake;C:\vcpkg\installed\x64-windows\share\boost_variant2\boost_variant2-targets.cmake;C:\vcpkg\installed\x64-windows\share\boost_winapi\boost_winapi-config-version.cmake;C:\vcpkg\installed\x64-windows\share\boost_winapi\boost_winapi-config.cmake;C:\vcpkg\installed\x64-windows\share\boost_winapi\boost_winapi-targets.cmake;C:\vcpkg\scripts\buildsystems\vcpkg.cmake;%(AdditionalInputs)</AdditionalInputs>
+      <Outputs Condition="'$(Configuration)|$(Platform)'=='Release|x64'">C:\Kung-Fu-Chess\build-clean\CMakeFiles\generate.stamp</Outputs>
+      <LinkObjects Condition="'$(Configuration)|$(Platform)'=='Release|x64'">false</LinkObjects>
+      <Message Condition="'$(Configuration)|$(Platform)'=='MinSizeRel|x64'">Building Custom Rule C:/Kung-Fu-Chess/CMakeLists.txt</Message>
+      <Command Condition="'$(Configuration)|$(Platform)'=='MinSizeRel|x64'">setlocal
+"C:\Program Files\CMake\bin\cmake.exe" -SC:/Kung-Fu-Chess -BC:/Kung-Fu-Chess/build-clean --check-stamp-file C:/Kung-Fu-Chess/build-clean/CMakeFiles/generate.stamp
+if %errorlevel% neq 0 goto :cmEnd
+:cmEnd
+endlocal &amp; call :cmErrorLevel %errorlevel% &amp; goto :cmDone
+:cmErrorLevel
+exit /b %1
+:cmDone
+if %errorlevel% neq 0 goto :VCEnd</Command>
+      <AdditionalInputs Condition="'$(Configuration)|$(Platform)'=='MinSizeRel|x64'">C:\Kung-Fu-Chess\build-clean\CMakeFiles\4.4.0-rc3\CMakeCXXCompiler.cmake;C:\Kung-Fu-Chess\build-clean\CMakeFiles\4.4.0-rc3\CMakeRCCompiler.cmake;C:\Kung-Fu-Chess\build-clean\CMakeFiles\4.4.0-rc3\CMakeSystem.cmake;C:\Program Files\CMake\share\cmake-4.4\Modules\CMakeCXXInformation.cmake;C:\Program Files\CMake\share\cmake-4.4\Modules\CMakeCommonLanguageInclude.cmake;C:\Program Files\CMake\share\cmake-4.4\Modules\CMakeDependentOption.cmake;C:\Program Files\CMake\share\cmake-4.4\Modules\CMakeFindDependencyMacro.cmake;C:\Program Files\CMake\share\cmake-4.4\Modules\CMakeGenericSystem.cmake;C:\Program Files\CMake\share\cmake-4.4\Modules\CMakeInitializeConfigs.cmake;C:\Program Files\CMake\share\cmake-4.4\Modules\CMakeLanguageInformation.cmake;C:\Program Files\CMake\share\cmake-4.4\Modules\CMakeRCInformation.cmake;C:\Program Files\CMake\share\cmake-4.4\Modules\CMakeSystemSpecificInformation.cmake;C:\Program Files\CMake\share\cmake-4.4\Modules\CMakeSystemSpecificInitialize.cmake;C:\Program Files\CMake\share\cmake-4.4\Modules\Compiler\CMakeCommonCompilerMacros.cmake;C:\Program Files\CMake\share\cmake-4.4\Modules\Compiler\MSVC-CXX.cmake;C:\Program Files\CMake\share\cmake-4.4\Modules\Compiler\MSVC.cmake;C:\Program Files\CMake\share\cmake-4.4\Modules\GoogleTest.cmake;C:\Program Files\CMake\share\cmake-4.4\Modules\Internal\CMakeCXXLinkerInformation.cmake;C:\Program Files\CMake\share\cmake-4.4\Modules\Internal\CMakeCommonLinkerInformation.cmake;C:\Program Files\CMake\share\cmake-4.4\Modules\Linker\MSVC-CXX.cmake;C:\Program Files\CMake\share\cmake-4.4\Modules\Linker\MSVC.cmake;C:\Program Files\CMake\share\cmake-4.4\Modules\Platform\Linker\Windows-MSVC-CXX.cmake;C:\Program Files\CMake\share\cmake-4.4\Modules\Platform\Linker\Windows-MSVC.cmake;C:\Program Files\CMake\share\cmake-4.4\Modules\Platform\Windows-Initialize.cmake;C:\Program Files\CMake\share\cmake-4.4\Modules\Platform\Windows-MSVC-CXX.cmake;C:\Program Files\CMake\share\cmake-4.4\Modules\Platform\Windows-MSVC.cmake;C:\Program Files\CMake\share\cmake-4.4\Modules\Platform\Windows.cmake;C:\Program Files\CMake\share\cmake-4.4\Modules\Platform\WindowsPaths.cmake;C:\vcpkg\installed\x64-windows\share\boost\BoostConfig.cmake;C:\vcpkg\installed\x64-windows\share\boost\BoostConfigVersion.cmake;C:\vcpkg\installed\x64-windows\share\boost\vcpkg-cmake-wrapper.cmake;C:\vcpkg\installed\x64-windows\share\boost_assert\boost_assert-config-version.cmake;C:\vcpkg\installed\x64-windows\share\boost_assert\boost_assert-config.cmake;C:\vcpkg\installed\x64-windows\share\boost_assert\boost_assert-targets.cmake;C:\vcpkg\installed\x64-windows\share\boost_compat\boost_compat-config-version.cmake;C:\vcpkg\installed\x64-windows\share\boost_compat\boost_compat-config.cmake;C:\vcpkg\installed\x64-windows\share\boost_compat\boost_compat-targets.cmake;C:\vcpkg\installed\x64-windows\share\boost_config\boost_config-config-version.cmake;C:\vcpkg\installed\x64-windows\share\boost_config\boost_config-config.cmake;C:\vcpkg\installed\x64-windows\share\boost_config\boost_config-targets.cmake;C:\vcpkg\installed\x64-windows\share\boost_headers\boost_headers-config-version.cmake;C:\vcpkg\installed\x64-windows\share\boost_headers\boost_headers-config.cmake;C:\vcpkg\installed\x64-windows\share\boost_headers\boost_headers-targets.cmake;C:\vcpkg\installed\x64-windows\share\boost_mp11\boost_mp11-config-version.cmake;C:\vcpkg\installed\x64-windows\share\boost_mp11\boost_mp11-config.cmake;C:\vcpkg\installed\x64-windows\share\boost_mp11\boost_mp11-targets.cmake;C:\vcpkg\installed\x64-windows\share\boost_predef\boost_predef-config-version.cmake;C:\vcpkg\installed\x64-windows\share\boost_predef\boost_predef-config.cmake;C:\vcpkg\installed\x64-windows\share\boost_predef\boost_predef-targets.cmake;C:\vcpkg\installed\x64-windows\share\boost_system\boost_system-config-version.cmake;C:\vcpkg\installed\x64-windows\share\boost_system\boost_system-config.cmake;C:\vcpkg\installed\x64-windows\share\boost_system\boost_system-targets.cmake;C:\vcpkg\installed\x64-windows\share\boost_throw_exception\boost_throw_exception-config-version.cmake;C:\vcpkg\installed\x64-windows\share\boost_throw_exception\boost_throw_exception-config.cmake;C:\vcpkg\installed\x64-windows\share\boost_throw_exception\boost_throw_exception-targets.cmake;C:\vcpkg\installed\x64-windows\share\boost_variant2\boost_variant2-config-version.cmake;C:\vcpkg\installed\x64-windows\share\boost_variant2\boost_variant2-config.cmake;C:\vcpkg\installed\x64-windows\share\boost_variant2\boost_variant2-targets.cmake;C:\vcpkg\installed\x64-windows\share\boost_winapi\boost_winapi-config-version.cmake;C:\vcpkg\installed\x64-windows\share\boost_winapi\boost_winapi-config.cmake;C:\vcpkg\installed\x64-windows\share\boost_winapi\boost_winapi-targets.cmake;C:\vcpkg\scripts\buildsystems\vcpkg.cmake;%(AdditionalInputs)</AdditionalInputs>
+      <Outputs Condition="'$(Configuration)|$(Platform)'=='MinSizeRel|x64'">C:\Kung-Fu-Chess\build-clean\CMakeFiles\generate.stamp</Outputs>
+      <LinkObjects Condition="'$(Configuration)|$(Platform)'=='MinSizeRel|x64'">false</LinkObjects>
+      <Message Condition="'$(Configuration)|$(Platform)'=='RelWithDebInfo|x64'">Building Custom Rule C:/Kung-Fu-Chess/CMakeLists.txt</Message>
+      <Command Condition="'$(Configuration)|$(Platform)'=='RelWithDebInfo|x64'">setlocal
+"C:\Program Files\CMake\bin\cmake.exe" -SC:/Kung-Fu-Chess -BC:/Kung-Fu-Chess/build-clean --check-stamp-file C:/Kung-Fu-Chess/build-clean/CMakeFiles/generate.stamp
+if %errorlevel% neq 0 goto :cmEnd
+:cmEnd
+endlocal &amp; call :cmErrorLevel %errorlevel% &amp; goto :cmDone
+:cmErrorLevel
+exit /b %1
+:cmDone
+if %errorlevel% neq 0 goto :VCEnd</Command>
+      <AdditionalInputs Condition="'$(Configuration)|$(Platform)'=='RelWithDebInfo|x64'">C:\Kung-Fu-Chess\build-clean\CMakeFiles\4.4.0-rc3\CMakeCXXCompiler.cmake;C:\Kung-Fu-Chess\build-clean\CMakeFiles\4.4.0-rc3\CMakeRCCompiler.cmake;C:\Kung-Fu-Chess\build-clean\CMakeFiles\4.4.0-rc3\CMakeSystem.cmake;C:\Program Files\CMake\share\cmake-4.4\Modules\CMakeCXXInformation.cmake;C:\Program Files\CMake\share\cmake-4.4\Modules\CMakeCommonLanguageInclude.cmake;C:\Program Files\CMake\share\cmake-4.4\Modules\CMakeDependentOption.cmake;C:\Program Files\CMake\share\cmake-4.4\Modules\CMakeFindDependencyMacro.cmake;C:\Program Files\CMake\share\cmake-4.4\Modules\CMakeGenericSystem.cmake;C:\Program Files\CMake\share\cmake-4.4\Modules\CMakeInitializeConfigs.cmake;C:\Program Files\CMake\share\cmake-4.4\Modules\CMakeLanguageInformation.cmake;C:\Program Files\CMake\share\cmake-4.4\Modules\CMakeRCInformation.cmake;C:\Program Files\CMake\share\cmake-4.4\Modules\CMakeSystemSpecificInformation.cmake;C:\Program Files\CMake\share\cmake-4.4\Modules\CMakeSystemSpecificInitialize.cmake;C:\Program Files\CMake\share\cmake-4.4\Modules\Compiler\CMakeCommonCompilerMacros.cmake;C:\Program Files\CMake\share\cmake-4.4\Modules\Compiler\MSVC-CXX.cmake;C:\Program Files\CMake\share\cmake-4.4\Modules\Compiler\MSVC.cmake;C:\Program Files\CMake\share\cmake-4.4\Modules\GoogleTest.cmake;C:\Program Files\CMake\share\cmake-4.4\Modules\Internal\CMakeCXXLinkerInformation.cmake;C:\Program Files\CMake\share\cmake-4.4\Modules\Internal\CMakeCommonLinkerInformation.cmake;C:\Program Files\CMake\share\cmake-4.4\Modules\Linker\MSVC-CXX.cmake;C:\Program Files\CMake\share\cmake-4.4\Modules\Linker\MSVC.cmake;C:\Program Files\CMake\share\cmake-4.4\Modules\Platform\Linker\Windows-MSVC-CXX.cmake;C:\Program Files\CMake\share\cmake-4.4\Modules\Platform\Linker\Windows-MSVC.cmake;C:\Program Files\CMake\share\cmake-4.4\Modules\Platform\Windows-Initialize.cmake;C:\Program Files\CMake\share\cmake-4.4\Modules\Platform\Windows-MSVC-CXX.cmake;C:\Program Files\CMake\share\cmake-4.4\Modules\Platform\Windows-MSVC.cmake;C:\Program Files\CMake\share\cmake-4.4\Modules\Platform\Windows.cmake;C:\Program Files\CMake\share\cmake-4.4\Modules\Platform\WindowsPaths.cmake;C:\vcpkg\installed\x64-windows\share\boost\BoostConfig.cmake;C:\vcpkg\installed\x64-windows\share\boost\BoostConfigVersion.cmake;C:\vcpkg\installed\x64-windows\share\boost\vcpkg-cmake-wrapper.cmake;C:\vcpkg\installed\x64-windows\share\boost_assert\boost_assert-config-version.cmake;C:\vcpkg\installed\x64-windows\share\boost_assert\boost_assert-config.cmake;C:\vcpkg\installed\x64-windows\share\boost_assert\boost_assert-targets.cmake;C:\vcpkg\installed\x64-windows\share\boost_compat\boost_compat-config-version.cmake;C:\vcpkg\installed\x64-windows\share\boost_compat\boost_compat-config.cmake;C:\vcpkg\installed\x64-windows\share\boost_compat\boost_compat-targets.cmake;C:\vcpkg\installed\x64-windows\share\boost_config\boost_config-config-version.cmake;C:\vcpkg\installed\x64-windows\share\boost_config\boost_config-config.cmake;C:\vcpkg\installed\x64-windows\share\boost_config\boost_config-targets.cmake;C:\vcpkg\installed\x64-windows\share\boost_headers\boost_headers-config-version.cmake;C:\vcpkg\installed\x64-windows\share\boost_headers\boost_headers-config.cmake;C:\vcpkg\installed\x64-windows\share\boost_headers\boost_headers-targets.cmake;C:\vcpkg\installed\x64-windows\share\boost_mp11\boost_mp11-config-version.cmake;C:\vcpkg\installed\x64-windows\share\boost_mp11\boost_mp11-config.cmake;C:\vcpkg\installed\x64-windows\share\boost_mp11\boost_mp11-targets.cmake;C:\vcpkg\installed\x64-windows\share\boost_predef\boost_predef-config-version.cmake;C:\vcpkg\installed\x64-windows\share\boost_predef\boost_predef-config.cmake;C:\vcpkg\installed\x64-windows\share\boost_predef\boost_predef-targets.cmake;C:\vcpkg\installed\x64-windows\share\boost_system\boost_system-config-version.cmake;C:\vcpkg\installed\x64-windows\share\boost_system\boost_system-config.cmake;C:\vcpkg\installed\x64-windows\share\boost_system\boost_system-targets.cmake;C:\vcpkg\installed\x64-windows\share\boost_throw_exception\boost_throw_exception-config-version.cmake;C:\vcpkg\installed\x64-windows\share\boost_throw_exception\boost_throw_exception-config.cmake;C:\vcpkg\installed\x64-windows\share\boost_throw_exception\boost_throw_exception-targets.cmake;C:\vcpkg\installed\x64-windows\share\boost_variant2\boost_variant2-config-version.cmake;C:\vcpkg\installed\x64-windows\share\boost_variant2\boost_variant2-config.cmake;C:\vcpkg\installed\x64-windows\share\boost_variant2\boost_variant2-targets.cmake;C:\vcpkg\installed\x64-windows\share\boost_winapi\boost_winapi-config-version.cmake;C:\vcpkg\installed\x64-windows\share\boost_winapi\boost_winapi-config.cmake;C:\vcpkg\installed\x64-windows\share\boost_winapi\boost_winapi-targets.cmake;C:\vcpkg\scripts\buildsystems\vcpkg.cmake;%(AdditionalInputs)</AdditionalInputs>
+      <Outputs Condition="'$(Configuration)|$(Platform)'=='RelWithDebInfo|x64'">C:\Kung-Fu-Chess\build-clean\CMakeFiles\generate.stamp</Outputs>
+      <LinkObjects Condition="'$(Configuration)|$(Platform)'=='RelWithDebInfo|x64'">false</LinkObjects>
+    </CustomBuild>
+  </ItemGroup>
+  <ItemGroup>
+    <ClCompile Include="C:\Kung-Fu-Chess\tests\PieceMovementTests.cpp" />
+    <ClCompile Include="C:\Kung-Fu-Chess\tests\GameTests.cpp" />
+    <ClCompile Include="C:\Kung-Fu-Chess\tests\GameOverTests.cpp" />
+    <ClCompile Include="C:\Kung-Fu-Chess\src\model\Piece.cpp" />
+    <ClCompile Include="C:\Kung-Fu-Chess\src\model\King.cpp" />
+    <ClCompile Include="C:\Kung-Fu-Chess\src\model\Queen.cpp" />
+    <ClCompile Include="C:\Kung-Fu-Chess\src\model\Rook.cpp" />
+    <ClCompile Include="C:\Kung-Fu-Chess\src\model\Bishop.cpp" />
+    <ClCompile Include="C:\Kung-Fu-Chess\src\model\Knight.cpp" />
+    <ClCompile Include="C:\Kung-Fu-Chess\src\model\Pawn.cpp" />
+    <ClCompile Include="C:\Kung-Fu-Chess\src\model\Board.cpp" />
+    <ClCompile Include="C:\Kung-Fu-Chess\src\movement\Move.cpp" />
+    <ClCompile Include="C:\Kung-Fu-Chess\src\movement\PieceFactory.cpp" />
+    <ClCompile Include="C:\Kung-Fu-Chess\src\rule_engine\RuleEngine.cpp" />
+    <ClCompile Include="C:\Kung-Fu-Chess\src\arbiter\RealTimeArbiter.cpp" />
+    <ClCompile Include="C:\Kung-Fu-Chess\src\arbiter\CollisionResolver.cpp" />
+    <ClCompile Include="C:\Kung-Fu-Chess\src\game_engine\GameStateMachine.cpp" />
+    <ClCompile Include="C:\Kung-Fu-Chess\src\game_engine\BoardController.cpp" />
+    <ClCompile Include="C:\Kung-Fu-Chess\src\game_engine\MoveCompletionService.cpp" />
+    <ClCompile Include="C:\Kung-Fu-Chess\src\game_engine\GameEngine.cpp" />
+    <ClCompile Include="C:\Kung-Fu-Chess\src\game_engine\ClickPreparationService.cpp" />
+    <ClCompile Include="C:\Kung-Fu-Chess\src\game_engine\ScoreTracker.cpp" />
+    <ClCompile Include="C:\Kung-Fu-Chess\src\game_engine\MoveRecorder.cpp" />
+    <ClCompile Include="C:\Kung-Fu-Chess\src\game_engine\CooldownService.cpp" />
+    <ClCompile Include="C:\Kung-Fu-Chess\src\game_engine\SnapshotBuilder.cpp" />
+    <ClCompile Include="C:\Kung-Fu-Chess\src\controllerClick\GameController.cpp" />
+    <ClCompile Include="C:\Kung-Fu-Chess\src\text_io\BoardParser.cpp" />
+    <ClCompile Include="C:\Kung-Fu-Chess\src\text_io\TextTestRunner.cpp" />
+    <ClCompile Include="C:\Kung-Fu-Chess\src\config\PieceSpeedConfig.cpp" />
+    <ClCompile Include="C:\Kung-Fu-Chess\src\config\PieceConfigReader.cpp" />
+  </ItemGroup>
+  <ItemGroup />
+  <ItemGroup>
+    <ProjectReference Include="C:\Kung-Fu-Chess\build-clean\ZERO_CHECK.vcxproj">
+      <Project>{C407B818-5DC4-3BCE-BCB1-56ADDBF23D28}</Project>
+      <Name>ZERO_CHECK</Name>
+      <ReferenceOutputAssembly>false</ReferenceOutputAssembly>
+      <CopyToOutputDirectory>Never</CopyToOutputDirectory>
+    </ProjectReference>
+    <ProjectReference Include="C:\Kung-Fu-Chess\build-clean\external\googletest-1.17.0\googletest\gtest.vcxproj">
+      <Project>{A2250C50-F62F-36A2-89E3-D3CAFB2557E3}</Project>
+      <Name>gtest</Name>
+    </ProjectReference>
+    <ProjectReference Include="C:\Kung-Fu-Chess\build-clean\external\googletest-1.17.0\googletest\gtest_main.vcxproj">
+      <Project>{469FC1DA-F42C-3F5F-B0DA-1FD92EEFA062}</Project>
+      <Name>gtest_main</Name>
+    </ProjectReference>
+  </ItemGroup>
+  <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
+  <ImportGroup Label="ExtensionTargets">
+  </ImportGroup>
+</Project>

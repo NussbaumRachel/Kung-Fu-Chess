@@ -9,9 +9,10 @@
 #include <memory>
 #include <set>
 #include <string>
-#include <unordered_map>
 
 class ClientSession;
+class ISessionStore;
+class IUserRepository;
 
 class SessionManager
 {
@@ -34,6 +35,8 @@ public:
     SessionManager(
         boost::asio::io_context& ioContext,
         std::uint16_t port,
+        IUserRepository& userRepository,
+        ISessionStore& sessionStore,
         ReadyHandler onReady,
         MessageHandler onMessage,
         ClosedHandler onClosed
@@ -57,8 +60,11 @@ private:
     void handleSessionClosed(
         SessionPtr session
     );
-
-    void releaseUsername(
+    [[nodiscard]]
+    bool refreshAuthentication(
+        const SessionPtr& session
+    );
+    void releaseAuthentication(
         const SessionPtr& session
     );
 
@@ -70,14 +76,12 @@ private:
 private:
     boost::asio::ip::tcp::acceptor acceptor_;
 
+    IUserRepository& userRepository_;
+    ISessionStore& sessionStore_;
+
     ReadyHandler onReady_;
     MessageHandler onMessage_;
     ClosedHandler onClosed_;
 
     std::set<SessionPtr> sessions_;
-
-    std::unordered_map<
-        std::string,
-        std::weak_ptr<ClientSession>
-    > usersByName_;
 };

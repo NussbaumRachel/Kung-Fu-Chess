@@ -10,7 +10,6 @@
 #include <filesystem>
 #include <iostream>
 #include <mutex>
-#include <optional>
 #include <stdexcept>
 #include <string>
 #include <thread>
@@ -190,17 +189,17 @@ StartupRoomAction parseRoomAction(
     char* argv[]
 )
 {
-    if (argc == 3)
+    if (argc == 5)
     {
         return {};
     }
 
     const std::string action =
-        argv[3];
+        argv[5];
 
     if (action == "create")
     {
-        if (argc != 5)
+        if (argc != 7)
         {
             throw std::invalid_argument(
                 "The create action requires a room ID"
@@ -209,13 +208,13 @@ StartupRoomAction parseRoomAction(
 
         return {
             StartupRoomActionType::Create,
-            argv[4]
+            argv[6]
         };
     }
 
     if (action == "join")
     {
-        if (argc != 5)
+        if (argc != 7)
         {
             throw std::invalid_argument(
                 "The join action requires a room ID"
@@ -224,13 +223,13 @@ StartupRoomAction parseRoomAction(
 
         return {
             StartupRoomActionType::Join,
-            argv[4]
+            argv[6]
         };
     }
 
     if (action == "leave")
     {
-        if (argc != 4)
+        if (argc != 6)
         {
             throw std::invalid_argument(
                 "The leave action does not accept a room ID"
@@ -284,7 +283,6 @@ bool waitForConnection(
         );
     }
 }
-
 bool isRunning(
     SharedState& shared
 )
@@ -295,6 +293,33 @@ bool isRunning(
 
     return shared.running;
 }
+
+bool waitForLoginResult(
+    SharedState& shared,
+    ClientMessageProcessor& messageProcessor
+)
+{
+    while (isRunning(shared))
+    {
+        messageProcessor.processPendingMessages();
+
+        if (messageProcessor.hasLoginResult())
+        {
+            return messageProcessor.loginSucceeded();
+        }
+
+        const int key =
+            Img::wait_key(16);
+
+        if (key == 27)
+        {
+            return false;
+        }
+    }
+
+    return false;
+}
+
 
 void requestStop(
     SharedState& shared
@@ -307,29 +332,45 @@ void requestStop(
     shared.running = false;
 }
 
+void stopClient(
+    SharedState& shared,
+    NetworkClient& networkClient,
+    std::thread& networkThread
+)
+{
+    Img::destroy_all_windows();
+
+    requestStop(shared);
+    networkClient.stop();
+
+    if (networkThread.joinable())
+    {
+        networkThread.join();
+    }
+}
+
 void printUsage()
 {
     std::cerr
         << "Usage:\n"
         << "  kungfuchess_client "
-        << "<assets-path> <username>\n"
+        << "<assets-path> <username> <host> <port>\n"
         << "  kungfuchess_client "
-        << "<assets-path> <username> "
+        << "<assets-path> <username> <host> <port> "
         << "create <room-id>\n"
         << "  kungfuchess_client "
-        << "<assets-path> <username> "
+        << "<assets-path> <username> <host> <port> "
         << "join <room-id>\n"
         << "  kungfuchess_client "
-        << "<assets-path> <username> "
+        << "<assets-path> <username> <host> <port> "
         << "leave"
         << std::endl;
 }
-
 } // namespace
 
 int main(int argc, char* argv[])
 {
-    if (argc < 3 || argc > 5)
+    if (argc < 5 || argc > 7)
     {
         printUsage();
         return 1;
@@ -364,7 +405,18 @@ int main(int argc, char* argv[])
 
     const std::string username =
         argv[2];
+    const std::string host =
+        argv[3];
 
+    const std::string port =
+        argv[4];
+
+    std::cout
+        << "Server: "
+        << host
+        << ":"
+        << port
+        << std::endl;
     std::cout
         << "Assets path: "
         << assetsPath
@@ -385,10 +437,9 @@ int main(int argc, char* argv[])
 
     NetworkClient networkClient(
         shared,
-        "127.0.0.1",
-        "8080"
+        host,
+        port
     );
-
     std::thread networkThread(
         [&networkClient]()
         {
@@ -398,12 +449,11 @@ int main(int argc, char* argv[])
 
     if (!waitForConnection(shared))
     {
-        networkClient.stop();
-
-        if (networkThread.joinable())
-        {
-            networkThread.join();
-        }
+        stopClient(
+            shared,
+            networkClient,
+            networkThread
+        );
 
         std::cerr
             << "Failed to connect"
@@ -412,14 +462,35 @@ int main(int argc, char* argv[])
         return 1;
     }
 
-    /*
-     * תור היציאה הוא FIFO:
-     * ה-login נשלח לפני פעולת החדר.
-     */
+    ClientMessageProcessor messageProcessor(
+        shared,
+        renderer
+    );
+
     enqueueLogin(
         shared,
         username
     );
+
+    /*
+     * פעולת החדר אינה נשלחת עד שהשרת מאשר
+     * שה-login הצליח.
+     */
+    if (
+        !waitForLoginResult(
+            shared,
+            messageProcessor
+        )
+    )
+    {
+        stopClient(
+            shared,
+            networkClient,
+            networkThread
+        );
+
+        return 1;
+    }
 
     enqueueRoomAction(
         shared,
@@ -438,11 +509,6 @@ int main(int argc, char* argv[])
     );
 
     renderer.attachMouse();
-
-    ClientMessageProcessor messageProcessor(
-        shared,
-        renderer
-    );
 
     while (isRunning(shared))
     {
@@ -464,15 +530,11 @@ int main(int argc, char* argv[])
         }
     }
 
-    Img::destroy_all_windows();
-
-    requestStop(shared);
-    networkClient.stop();
-
-    if (networkThread.joinable())
-    {
-        networkThread.join();
-    }
+    stopClient(
+        shared,
+        networkClient,
+        networkThread
+    );
 
     return 0;
 }

@@ -8,9 +8,9 @@
 #include "network/GameLoop.hpp"
 #include "network/Messages.hpp"
 #include "network/PlayerRole.hpp"
-
+#include "game_result/IGameResultRepository.hpp"
 #include <boost/asio.hpp>
-
+#include <optional>
 #include <cstddef>
 #include <memory>
 #include <set>
@@ -23,14 +23,13 @@ class Room
 public:
     using SessionPtr =
         std::shared_ptr<ClientSession>;
-
     Room(
         std::string id,
         boost::asio::io_context& ioContext,
         Board board,
-        PieceSpeedConfig speedConfig
+        PieceSpeedConfig speedConfig,
+        IGameResultRepository& gameResultRepository
     );
-
     void start();
 
     void stop();
@@ -105,7 +104,14 @@ private:
     void clearExpiredSelectionOwner(
         const GameSnapshot& snapshot
     );
+    void handleGameOver(
+    const GameSnapshot& snapshot
+    );
 
+    [[nodiscard]]
+    std::optional<UserId> findUserIdByRole(
+        PlayerRole role
+    ) const;
 private:
     std::string id_;
 
@@ -127,6 +133,10 @@ private:
      * הבחירה שייכת למשחק המסוים בחדר,
      * ולכן המצב נשמר כאן ולא ב-MessageRouter הגלובלי.
      */
+     IGameResultRepository&
+    gameResultRepository_;
+
+bool gameResultSaveAttempted_ = false;
     std::weak_ptr<ClientSession>
         selectionOwner_;
 };

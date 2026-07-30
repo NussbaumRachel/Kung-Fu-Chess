@@ -1,9 +1,9 @@
 #include "network/Room.hpp"
-
+#include "game_result/GameResult.hpp"
 #include "network/ClientSession.hpp"
 #include "network/JsonProtocol.hpp"
 #include "network/PlayerRole.hpp"
-
+#include <exception>
 #include <cstddef>
 #include <iostream>
 #include <memory>
@@ -15,7 +15,8 @@ Room::Room(
     std::string id,
     boost::asio::io_context& ioContext,
     Board board,
-    PieceSpeedConfig speedConfig
+    PieceSpeedConfig speedConfig,
+    IGameResultRepository& gameResultRepository
 )
     : id_(std::move(id)),
       speedConfig_(std::move(speedConfig)),
@@ -30,7 +31,14 @@ Room::Room(
           [this](const std::string& message)
           {
               broadcast(message);
+          },
+          [this](const GameSnapshot& snapshot)
+          {
+              handleGameOver(snapshot);
           }
+      ),
+      gameResultRepository_(
+          gameResultRepository
       )
 {
 }
@@ -467,4 +475,138 @@ void Room::clearExpiredSelectionOwner(
     {
         selectionOwner_.reset();
     }
+}
+void Room::handleGameOver(
+    const GameSnapshot& snapshot)
+{
+    if (gameResultSaveAttempted_)
+    {
+        return;
+    }
+
+    gameResultSaveAttempted_ = true;
+
+    if (!snapshot.winner.has_value())
+    {
+        std::cerr
+            << "Game ended in room '"
+            << id_
+            << "' without a winner; "
+            << "result was not saved"
+            << std::endl;
+
+        return;
+    }
+
+    const std::optional<UserId> whiteUserId =
+        findUserIdByRole(
+            PlayerRole::White
+        );
+
+    const std::optional<UserId> blackUserId =
+        findUserIdByRole(
+            PlayerRole::Black
+        );
+
+    if (
+        !whiteUserId.has_value() ||
+        !blackUserId.has_value()
+    )
+    {
+        std::cerr
+            << "Game ended in room '"
+            << id_
+            << "' without two authenticated "
+            << "players; result was not saved"
+            << std::endl;
+
+        return;
+    }
+
+    GameWinner winner;
+
+    if (
+        snapshot.winner.value() ==
+        Color::White
+    )
+    {
+        winner = GameWinner::White;
+    }
+    else if (
+        snapshot.winner.value() ==
+        Color::Black
+    )
+    {
+        winner = GameWinner::Black;
+    }
+    else
+    {
+        std::cerr
+            << "Game ended in room '"
+            << id_
+            << "' with an unsupported winner; "
+            << "result was not saved"
+            << std::endl;
+
+        return;
+    }
+
+    const GameResult result{
+        whiteUserId.value(),
+        blackUserId.value(),
+        winner
+    };
+
+    try
+    {
+        const GameResultId resultId =
+            gameResultRepository_.save(
+                result
+            );
+
+        std::cout
+            << "Game result "
+            << resultId
+            << " saved for room '"
+            << id_
+            << "'"
+            << std::endl;
+    }
+    catch (const std::exception& exception)
+    {
+        std::cerr
+            << "Failed to save game result "
+            << "for room '"
+            << id_
+            << "': "
+            << exception.what()
+            << std::endl;
+    }
+}
+
+std::optional<UserId>
+Room::findUserIdByRole(
+    PlayerRole role) const
+{
+    for (const SessionPtr& session :
+         sessions_)
+    {
+        if (
+            !session ||
+            session->role() != role
+        )
+        {
+            continue;
+        }
+
+        const std::optional<UserId> userId =
+            session->userId();
+
+        if (userId.has_value())
+        {
+            return userId;
+        }
+    }
+
+    return std::nullopt;
 }

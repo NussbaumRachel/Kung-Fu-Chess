@@ -40,10 +40,6 @@ void ClientMessageProcessor::processPendingMessages()
 {
     std::queue<std::string> pendingMessages;
 
-    /*
-     * החלפת התורים היא פעולה מהירה.
-     * אין parsing או rendering בזמן שה-mutex נעול.
-     */
     {
         std::lock_guard<std::mutex> lock(
             sharedState_.mtx
@@ -66,9 +62,6 @@ void ClientMessageProcessor::processPendingMessages()
 
         pendingMessages.pop();
 
-        /*
-         * רק ה-snapshot האחרון נשמר.
-         */
         if (
             message.find(
                 "\"type\":\"snapshot\""
@@ -100,6 +93,16 @@ void ClientMessageProcessor::processPendingMessages()
             latestSnapshotMessage
         );
     }
+}
+
+bool ClientMessageProcessor::hasLoginResult() const
+{
+    return loginSucceeded_.has_value();
+}
+
+bool ClientMessageProcessor::loginSucceeded() const
+{
+    return loginSucceeded_.value_or(false);
 }
 
 void ClientMessageProcessor::processControlMessage(
@@ -154,6 +157,9 @@ void ClientMessageProcessor::processControlMessage(
                         deserializeLoginResult(
                             message
                         );
+
+                loginSucceeded_ =
+                    result.success;
 
                 {
                     std::lock_guard<std::mutex> lock(

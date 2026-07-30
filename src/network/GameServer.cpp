@@ -1,9 +1,10 @@
 #include "network/GameServer.hpp"
-
+#include "game_result/IGameResultRepository.hpp"
 #include "network/ClientSession.hpp"
 #include "network/LoginAttemptResult.hpp"
 #include "network/Messages.hpp"
 #include "network/RoomOperationResult.hpp"
+#include "user/IUserRepository.hpp"
 
 #include <memory>
 #include <string>
@@ -12,14 +13,19 @@
 GameServer::GameServer(
     std::uint16_t port,
     Board boardTemplate,
-    PieceSpeedConfig speedConfig
+    PieceSpeedConfig speedConfig,
+    IUserRepository& userRepository,
+    ISessionStore& sessionStore,
+    IGameResultRepository& gameResultRepository
 )
     : ioContext_(),
 
       sessionManager_(
           ioContext_,
           port,
-
+          userRepository,
+          sessionStore,
+          
           [this](
               std::shared_ptr<ClientSession> session)
           {
@@ -47,12 +53,12 @@ GameServer::GameServer(
           }
       ),
 
-      roomManager_(
-          ioContext_,
-          std::move(boardTemplate),
-          std::move(speedConfig)
-      ),
-
+        roomManager_(
+            ioContext_,
+            std::move(boardTemplate),
+            std::move(speedConfig),
+            gameResultRepository
+        ),  
       messageRouter_(
           [this](
               const std::shared_ptr<ClientSession>& session,

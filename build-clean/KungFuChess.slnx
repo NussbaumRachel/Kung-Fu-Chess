@@ -1,0 +1,64 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<Solution>
+	<Configurations>
+		<BuildType Name="Debug"/>
+		<BuildType Name="Release"/>
+		<BuildType Name="MinSizeRel"/>
+		<BuildType Name="RelWithDebInfo"/>
+		<Platform Name="x64"/>
+	</Configurations>
+	<Project Path="ALL_BUILD.vcxproj" Type="8bc9ceb8-8b4a-11d0-8d11-00a0c91bc942" Id="91e041e6-30a2-3c19-8d20-be91a86c13c8" DefaultStartup="true">
+		<BuildDependency Project="ZERO_CHECK.vcxproj"/>
+		<BuildDependency Project="chess_tests.vcxproj"/>
+		<BuildDependency Project="external/googletest-1.17.0/googlemock/gmock.vcxproj"/>
+		<BuildDependency Project="external/googletest-1.17.0/googlemock/gmock_main.vcxproj"/>
+		<BuildDependency Project="external/googletest-1.17.0/googletest/gtest.vcxproj"/>
+		<BuildDependency Project="external/googletest-1.17.0/googletest/gtest_main.vcxproj"/>
+		<BuildDependency Project="kungfuchess.vcxproj"/>
+		<BuildDependency Project="kungfuchess_client.vcxproj"/>
+		<BuildDependency Project="demo/kungfuchess_demo.vcxproj"/>
+	</Project>
+	<Project Path="INSTALL.vcxproj" Type="8bc9ceb8-8b4a-11d0-8d11-00a0c91bc942" Id="13b8d8fd-2f19-3387-be67-34e0b95dfa52">
+		<BuildDependency Project="ALL_BUILD.vcxproj"/>
+		<BuildDependency Project="ZERO_CHECK.vcxproj"/>
+		<Build Solution="Debug|*" Project="false"/>
+		<Build Solution="Release|*" Project="false"/>
+		<Build Solution="MinSizeRel|*" Project="false"/>
+		<Build Solution="RelWithDebInfo|*" Project="false"/>
+	</Project>
+	<Project Path="RUN_TESTS.vcxproj" Type="8bc9ceb8-8b4a-11d0-8d11-00a0c91bc942" Id="33fd3581-76c2-35e9-90cd-4812cf84b0c4">
+		<BuildDependency Project="ZERO_CHECK.vcxproj"/>
+		<Build Solution="Debug|*" Project="false"/>
+		<Build Solution="Release|*" Project="false"/>
+		<Build Solution="MinSizeRel|*" Project="false"/>
+		<Build Solution="RelWithDebInfo|*" Project="false"/>
+	</Project>
+	<Project Path="ZERO_CHECK.vcxproj" Type="8bc9ceb8-8b4a-11d0-8d11-00a0c91bc942" Id="c407b818-5dc4-3bce-bcb1-56addbf23d28"/>
+	<Project Path="chess_tests.vcxproj" Type="8bc9ceb8-8b4a-11d0-8d11-00a0c91bc942" Id="2edfd12b-cd2b-304c-a131-5f593036e987">
+		<BuildDependency Project="ZERO_CHECK.vcxproj"/>
+		<BuildDependency Project="external/googletest-1.17.0/googletest/gtest.vcxproj"/>
+		<BuildDependency Project="external/googletest-1.17.0/googletest/gtest_main.vcxproj"/>
+	</Project>
+	<Project Path="external/googletest-1.17.0/googlemock/gmock.vcxproj" Type="8bc9ceb8-8b4a-11d0-8d11-00a0c91bc942" Id="908079b3-8ced-372d-a11f-1c68b2e883a3">
+		<BuildDependency Project="ZERO_CHECK.vcxproj"/>
+	</Project>
+	<Project Path="external/googletest-1.17.0/googlemock/gmock_main.vcxproj" Type="8bc9ceb8-8b4a-11d0-8d11-00a0c91bc942" Id="ca4db309-4009-31c8-9fb4-baf972fc734e">
+		<BuildDependency Project="ZERO_CHECK.vcxproj"/>
+	</Project>
+	<Project Path="external/googletest-1.17.0/googletest/gtest.vcxproj" Type="8bc9ceb8-8b4a-11d0-8d11-00a0c91bc942" Id="a2250c50-f62f-36a2-89e3-d3cafb2557e3">
+		<BuildDependency Project="ZERO_CHECK.vcxproj"/>
+	</Project>
+	<Project Path="external/googletest-1.17.0/googletest/gtest_main.vcxproj" Type="8bc9ceb8-8b4a-11d0-8d11-00a0c91bc942" Id="469fc1da-f42c-3f5f-b0da-1fd92eefa062">
+		<BuildDependency Project="ZERO_CHECK.vcxproj"/>
+		<BuildDependency Project="external/googletest-1.17.0/googletest/gtest.vcxproj"/>
+	</Project>
+	<Project Path="kungfuchess.vcxproj" Type="8bc9ceb8-8b4a-11d0-8d11-00a0c91bc942" Id="eccb3603-dc6b-3452-b927-fa1e961c32ff">
+		<BuildDependency Project="ZERO_CHECK.vcxproj"/>
+	</Project>
+	<Project Path="kungfuchess_client.vcxproj" Type="8bc9ceb8-8b4a-11d0-8d11-00a0c91bc942" Id="70db2e1c-eb3d-3c0c-85a9-4d8787042397">
+		<BuildDependency Project="ZERO_CHECK.vcxproj"/>
+	</Project>
+	<Project Path="demo/kungfuchess_demo.vcxproj" Type="8bc9ceb8-8b4a-11d0-8d11-00a0c91bc942" Id="c7cd3746-940e-3e5f-80e8-dc86610878d6">
+		<BuildDependency Project="ZERO_CHECK.vcxproj"/>
+	</Project>
+</Solution>
