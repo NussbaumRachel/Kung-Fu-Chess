@@ -109,34 +109,94 @@ public:
     }
 
 private:
-    void connectToServer()
+void connectToServer()
+{
+    std::cout
+        << "Resolving..."
+        << std::endl;
+
+    Tcp::resolver resolver(ioContext_);
+
+    const auto endpoints =
+        resolver.resolve(host_, port_);
+
+    std::cout
+        << "Connecting..."
+        << std::endl;
+
+    boost::asio::connect(
+        webSocket_->next_layer(),
+        endpoints);
+
+    std::cout
+        << "Starting handshake..."
+        << std::endl;
+
+    boost::beast::http::response<
+        boost::beast::http::string_body> response;
+
+    try
     {
-        Tcp::resolver resolver(ioContext_);
-
-        const auto endpoints =
-            resolver.resolve(host_, port_);
-
-        boost::asio::connect(
-            webSocket_->next_layer(),
-            endpoints);
-
         webSocket_->handshake(
+            response,
             host_,
             "/");
 
-        {
-            std::lock_guard<std::mutex> lock(
-                state_.mtx);
-
-            state_.connected = true;
-            state_.running = true;
-        }
+        std::cout
+            << "Handshake status: "
+            << response.result_int()
+            << " "
+            << response.reason()
+            << std::endl;
 
         std::cout
-            << "Connected to server"
+            << "Handshake OK"
             << std::endl;
     }
+    catch (const boost::system::system_error& error)
+----==    {
+        std::cerr
+            << "Handshake failed!"
+            << std::endl;
 
+        std::cerr
+            << "Error code: "
+            << error.code().value()
+            << std::endl;
+
+        std::cerr
+            << "Category: "
+            << error.code().category().name()
+            << std::endl;
+
+        std::cerr
+            << "Message: "
+            << error.code().message()
+            << std::endl;
+
+        std::cerr
+            << "HTTP response:"
+            << std::endl;
+
+        std::cerr
+            << response
+            << std::endl;
+
+        throw;
+    }
+
+    {
+        std::lock_guard<std::mutex> lock(
+            state_.mtx);
+
+        state_.connected = true;
+        state_.running = true;
+    }
+
+    std::cout
+        << "Connected to server"
+        << std::endl;
+}
     void startRead()
     {
         if (stopping_)
